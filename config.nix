@@ -13,13 +13,14 @@ in
         # Rust
         rustc cargo rls pkgs-unstable.rust-analyzer rustracer
         # C/C++
-        gcc clang ccls cmake gnumake
+        gcc clang_9 ccls cmake gnumake lld clang-tools llvmPackages.bintools
         # Java
         adoptopenjdk-bin maven
         # Misc
-        gdb (python3.withPackages(ps: with ps; [ numpy scipy matplotlib regex jupyter ipython opencv3])) 
+        gdb (python3.withPackages(ps: with ps; [ numpy scipy matplotlib regex jupyter ipython opencv3 compiledb jedi])) 
         python37Packages.jsbeautifier nixfmt
         material-design-icons powerline-fonts nodejs
+        rnix-lsp
       ];
     });
     # WIP
@@ -27,7 +28,7 @@ in
       name = "embedded-env";
       ignoreCollisions = true;
       paths = with pkgs; [
-        openocd pulseview
+        openocd pulseview gcc-arm-embedded
       ];
     });
     myNvim = pkgs.neovim.override {
@@ -111,7 +112,7 @@ in
         set novisualbell
         set lbr
         if has('conceal')
-          set conceallevel=3
+          set conceallevel=2
         endif
         " ========================= Utilities ======================
         " Delete trailing white space on save, useful for some filetypes ;)
@@ -362,8 +363,8 @@ in
         nmap <leader>cr <Plug>(coc-rename)
 
         " Remap for format selected region
-        " xmap <leader>cf  <Plug>(coc-format-selected)
-        " nmap <leader>cf  <Plug>(coc-format-selected)
+        xmap <leader>cf  <Plug>(coc-format-selected)
+        nmap <leader>cf  <Plug>(coc-format)
 
         " Use `:Fold` to fold current buffer
         command! -nargs=? Fold :call     CocActionAsync('fold', <f-args>)
@@ -371,21 +372,7 @@ in
         " Using CocList
         " Show all diagnostics
         nnoremap <silent> <leader>ca  :<C-u>CocList diagnostics<cr>
-        " Manage extensions
-        " nnoremap <silent> <leader>ce  :<C-u>CocList extensions<cr>
-        " Show commands
-        " nnoremap <silent> <leader>cc  :<C-u>CocList commands<cr>
-        " Find symbol of current document
-        " nnoremap <silent> <leader>co  :<C-u>CocList outline<cr>
-        " Search workspace symbols
-        " nnoremap <silent> <leader>cs  :<C-u>CocList -I symbols<cr>
-        " Do default action for next item.
-        " nnoremap <silent> <leader>cj  :<C-u>CocNext<CR>
-        " Do default action for previous item.
-        " nnoremap <silent> <leader>ck  :<C-u>CocPrev<CR>
-        " Resume latest coc list
-        " nnoremap <silent> <leader>cp  :<C-u>CocListResume<CR>
-
+        let g:tex_conceal="abdgm"
         " ======================================================
         " ====================== startify ======================
         " ======================================================
@@ -414,15 +401,45 @@ in
         " ==================== Path for NixOS ==================
         " ======================================================
         let g:coc_node_path = '${pkgs.nodejs}/bin/node' 
-        let g:coc_user_config = {'rust-analyzer': {'serverPath': '${pkgs-unstable.rust-analyzer}/bin/rust-analyzer'}}
+        let g:coc_user_config = {
+          \'rust-analyzer': {
+          \  'serverPath': '${pkgs-unstable.rust-analyzer}/bin/rust-analyzer'
+          \},
+          \'python': {
+          \  'jediEnabled': 1,
+          \  'jediPath': '${pkgs.python37Packages.jedi}/bin/jedi'
+          \},
+          \'languageserver': {
+          \  'nix': {
+          \    'command': '${pkgs.rnix-lsp}/bin/rnix-lsp',
+          \    'filetypes': ['nix']
+          \  },
+          \  'ccls': {
+          \    'command': '${pkgs.ccls}/bin/ccls',
+          \    'filetypes': ['c', 'cc', 'cpp', 'c++', 'objc', 'objcpp'],
+          \    'rootPatterns': ['.ccls', 'compile_commands.json', '.git/', '.hg/'],
+          \    'initializationOptions': {
+          \      'cache': {
+          \        'directory': '.ccls-cache'
+          \      },
+          \      'index': {
+          \        'comment': 2
+          \      }
+          \    }
+          \  }
+          \},
+          \'diagnostic.checkCurrentLine': 1,
+          \'diagnostic.warningSign': "*",
+          \'suggest.enablePreview': 1
+        \}
         '';
         packages.myVimPackages = with pkgs-unstable.vimPlugins; {
           start = [ vim-gitgutter vim-commentary vim-surround lightline-vim vim-fugitive vim-sneak
-                    vim-polyglot
+                    vim-polyglot vimtex
                     coc-nvim defx-icons molokai vim-startify nerdtree nerdtree-git-plugin lightline-bufferline
                     # coc plugins
                     coc-json coc-python coc-tsserver
-                    coc-rust-analyzer
+                    coc-rust-analyzer coc-vimtex
                   ];
         };
       };
