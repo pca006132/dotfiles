@@ -81,7 +81,6 @@ in
         set autoindent shiftwidth=4
         set expandtab
         set smarttab
-        set hidden
         set shortmess=aFc
         set signcolumn=yes
         set completefunc=emoji#complete
@@ -258,6 +257,7 @@ in
         hi MatchParen      guifg=254 guifg=208 gui=bold
 
         highlight EndOfBuffer ctermfg=bg guifg=bg
+        hi Conceal ctermbg=233
 
         " ======================================================
         " ====================== Gitgutter =====================
@@ -356,7 +356,7 @@ in
         endfunction
 
         " Highlight symbol under cursor on CursorHold
-        autocmd CursorHold * silent call CocActionAsync('highlight')
+        " autocmd CursorHold * silent call CocActionAsync('highlight')
         autocmd CursorHoldI * silent call CocActionAsync('doHover')
 
         " Remap for rename current word
