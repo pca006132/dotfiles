@@ -56,7 +56,7 @@
 ;; automatically turns on midnight-mode for pdfs)
 (add-hook 'pdf-view-mode-hook (lambda ()
                                  (pdf-view-midnight-minor-mode)))
-(add-hook 'LaTeX-mode-hook #'latex-preview-pane-mode)
+;; (add-hook 'LaTeX-mode-hook #'latex-preview-pane-mode)
 (map! :n "C-l" #'centaur-tabs-forward
       :n "C-h" #'centaur-tabs-backward
       :n "K"   #'+lookup/documentation

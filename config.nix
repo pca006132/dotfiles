@@ -17,7 +17,7 @@ in
         # Java
         adoptopenjdk-bin maven
         # Misc
-        gdb (python3.withPackages(ps: with ps; [ numpy scipy matplotlib regex jupyter ipython opencv3 compiledb jedi])) 
+        gdb (pkgs-unstable.python38.withPackages(ps: with ps; [ numpy scipy matplotlib regex jupyter ipython opencv3 compiledb jedi])) 
         python37Packages.jsbeautifier nixfmt
         material-design-icons powerline-fonts nodejs
         rnix-lsp
@@ -60,6 +60,7 @@ in
             set encoding=UTF-8
             scriptencoding UTF-8
         endif
+        set t_Co=256
         set laststatus=2
         set statusline=-
 
@@ -237,10 +238,10 @@ in
         nnoremap <leader>l <C-w>l
 
         " go to next buffer
-        nnoremap <silent> <C-l> :bn<CR>
+        nnoremap <silent> <M-l> :bn<CR>
 
         " go to previous buffer
-        nnoremap <silent> <C-h> :bp<CR>
+        nnoremap <silent> <M-h> :bp<CR>
 
         " close buffer
         nnoremap <silent> <leader>bd :Bclose<CR>
@@ -357,7 +358,7 @@ in
 
         " Highlight symbol under cursor on CursorHold
         " autocmd CursorHold * silent call CocActionAsync('highlight')
-        autocmd CursorHoldI * silent call CocActionAsync('doHover')
+        " autocmd CursorHoldI * silent call CocActionAsync('doHover')
 
         " Remap for rename current word
         nmap <leader>cr <Plug>(coc-rename)
@@ -403,11 +404,12 @@ in
         let g:coc_node_path = '${pkgs.nodejs}/bin/node' 
         let g:coc_user_config = {
           \'rust-analyzer': {
-          \  'serverPath': '${pkgs-unstable.rust-analyzer}/bin/rust-analyzer'
+          \  'serverPath': '${pkgs-unstable.rust-analyzer}/bin/rust-analyzer',
+          \  'inlayHints.chainingHints': 0,
           \},
           \'python': {
           \  'jediEnabled': 1,
-          \  'jediPath': '${pkgs.python37Packages.jedi}/bin/jedi'
+          \  'jediPath': '${pkgs-unstable.python38Packages.jedi}/bin/jedi'
           \},
           \'languageserver': {
           \  'nix': {
@@ -435,7 +437,7 @@ in
         '';
         packages.myVimPackages = with pkgs-unstable.vimPlugins; {
           start = [ vim-gitgutter vim-commentary vim-surround lightline-vim vim-fugitive vim-sneak
-                    vim-polyglot vimtex
+                    vim-polyglot vimtex vim-tmux-navigator
                     coc-nvim defx-icons molokai vim-startify nerdtree nerdtree-git-plugin lightline-bufferline
                     # coc plugins
                     coc-json coc-python coc-tsserver
