@@ -13,8 +13,16 @@
   nixpkgs.config.allowUnfree = true;
 
   # Use the systemd-boot EFI boot loader.
-  boot.loader.systemd-boot.enable = true;
+  #boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  #boot.loader.efi.efiSysMountPoint = "/mnt/boot";
+  boot.loader.grub = {
+    devices = ["nodev"];
+    version = 2;
+    useOSProber = true;
+    enable = true;
+    efiSupport = true;
+  };
 
   # networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -27,8 +35,6 @@
   networking.interfaces.wlo1.useDHCP = true;
 
   # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
   networking.networkmanager.enable = true;
   
   # Select internationalisation properties.
@@ -45,42 +51,19 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    wget vim ripgrep fd curl aria rustfmt bat
-    usbutils pciutils tmux minicom kitty
-    emacs-all-the-icons-fonts fd nodejs firefox-bin gparted thunderbird
-    git binutils htop unzip zip p7zip tldr texlive.combined.scheme-full
-    ntfs3g gnome3.gnome-tweaks gnome3.gnome-shell-extensions
+    wget vim ripgrep fd curl aria gcc clang rustc cargo bat emacs
+    usbutils pciutils tmux gdb minicom kitty
+    fd nodejs firefox-bin gparted thunderbird
+    git binutils htop unzip zip p7zip #texlive.combined.scheme-full #tldr
+    ntfs3g #(python3.withPackages(ps: with ps; [ numpy scipy matplotlib regex ]))
+    gnome3.gnome-tweaks gnome3.gnome-shell-extensions
     udevil
   ];
 
   nixpkgs.config.firefox.enableGnomeExtensions = true;
   services.gnome3.chrome-gnome-shell.enable = true;
 
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  #   pinentryFlavor = "gnome3";
-  # };
   programs.wireshark.enable = true;
-
-  #services.xserver.videoDrivers = ["modesetting" "nvidia"];
-  #hardware.nvidia.modesetting.enable = true;
-  #hardware.nvidia.optimus_prime.enable = true;
-  #hardware.nvidia.optimus_prime.nvidiaBusId = "PCI:1:0:0";
-  #hardware.nvidia.optimus_prime.intelBusId = "PCI:0:2:0";
-  # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
@@ -106,17 +89,15 @@
 
   i18n.inputMethod = {
     enabled = "fcitx";
-    fcitx.engines = with pkgs.fcitx-engines; [ rime cloudpinyin];
+    fcitx.engines = with pkgs.fcitx-engines; [ rime ];
   };
   fonts.fonts = [ 
     pkgs.noto-fonts pkgs.noto-fonts-cjk pkgs.noto-fonts-emoji pkgs.noto-fonts-extra 
   ];
   
-  users.defaultUserShell = pkgs.fish;
+  users.defaultUserShell = pkgs.zsh;
 
   # Enable the KDE Desktop Environment.
-  # services.xserver.displayManager.sddm.enable = true;
-  # services.xserver.desktopManager.plasma5.enable = true;
   services.xserver = {
     displayManager.gdm.enable = true;
     desktopManager.gnome3.enable = true;
@@ -141,6 +122,8 @@
   SUBSYSTEM=="usb", ATTRS{idVendor}=="2cf0", ATTRS{idProduct}=="5250", MODE="0660", GROUP="plugdev"
   # personal measurement device
   SUBSYSTEM=="usb", ATTRS{idVendor}=="09db", ATTRS{idProduct}=="007a", MODE="0660", GROUP="plugdev"
+  # logic analyzer
+  SUBSYSTEM=="usb", ATTRS{idVendor}=="0925", ATTRS{idProduct}=="3881", MODE="0660", GROUP="plugdev"
   '';
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
@@ -150,7 +133,6 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "20.03"; # Did you read the comment?
   nix.binaryCaches = [
-    "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
     "https://cache.nixos.org"
   ];
 
