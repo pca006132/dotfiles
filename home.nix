@@ -1,52 +1,92 @@
-{ pkgs }:
+{ pkgs, ... }:
 let
-  inherit (pkgs) lib buildEnv;
   pkgs-unstable = import (fetchTarball https://nixos.org/channels/nixos-unstable/nixexprs.tar.xz) {};
 in
 {
-  allowUnfree = true;
-  packageOverrides = pkgs: {
-    devEnv = lib.lowPrio (buildEnv {
-      name = "dev-env";
-      ignoreCollisions = true;
-      paths = with pkgs; [
-        # Rust
-        rustc cargo rls pkgs-unstable.rust-analyzer rustracer
-        # C/C++
-        gcc clang_9 ccls cmake gnumake lld clang-tools llvmPackages.bintools
-        # Java
-        adoptopenjdk-bin maven
-        # Misc
-        gdb (pkgs-unstable.python38.withPackages(ps: with ps; [ numpy scipy matplotlib regex jupyter ipython opencv3 compiledb jedi])) 
-        python37Packages.jsbeautifier nixfmt
-        material-design-icons powerline-fonts nodejs
-        rnix-lsp
-      ];
-    });
-    # WIP
-    embeddedEnv = lib.lowPrio (buildEnv {
-      name = "embedded-env";
-      ignoreCollisions = true;
-      paths = with pkgs; [
-        openocd pulseview gcc-arm-embedded
-      ];
-    });
-    myNvim = pkgs.neovim.override {
-      configure = {
-        customRC = ''
-        " Basic configurations
+  home.packages = with pkgs; [
+    # Rust
+    rustc cargo rls pkgs-unstable.rust-analyzer rustracer rustfmt
+    # C/C++
+    clang_9 ccls cmake gnumake lld clang-tools llvmPackages.bintools
+    # Java
+    adoptopenjdk-bin maven
+    # Misc
+    git gdb (pkgs-unstable.python38.withPackages(ps: with ps; [ 
+      numpy scipy matplotlib regex jupyter ipython opencv3 compiledb jedi jsbeautifier
+    ])) 
+    nixfmt material-design-icons powerline-fonts nodejs rnix-lsp
+    tldr texlive.combined.scheme-full
+    pulseview gcc-arm-embedded
+  ];
 
+  programs.home-manager = {
+    enable = true;
+  };
+  # Home Manager needs a bit of information about you and the
+  # paths it should manage.
+  home.username = "pca";
+  home.homeDirectory = "/home/pca";
+  home.stateVersion = "20.09";
+
+  programs.git = {
+    enable = true;
+    delta.enable = true;
+    extraConfig = {
+      core = {
+        editor = "nvim";
+        autocrlf = "input";
+      };
+    };
+    userEmail = "john.lck40@gmail.com";
+    userName = "pca006132";
+  };
+
+  programs.zsh.enable = true;
+  programs.zsh.oh-my-zsh = {
+    enable = true;
+    plugins = [ "git" "z" ];
+    theme = "avit";
+  };
+
+  programs.tmux = {
+    enable = true;
+    escapeTime = 0;
+    extraConfig = ''
+    bind v split-window -h -c "#{pane_current_path}"
+    bind s split-window -v -c "#{pane_current_path}"
+    '';
+    keyMode = "vi";
+    plugins = with pkgs.tmuxPlugins; [vim-tmux-navigator];
+    shortcut = "a";
+    terminal = "xterm";
+  };
+
+  programs.neovim = {
+    enable = true;
+    withNodeJs = true;
+    withPython3 = true;
+    configure = {
+      packages.myVimPackage = with pkgs-unstable.vimPlugins; {
+        start = [
+          vim-gitgutter vim-commentary vim-surround lightline-vim vim-fugitive vim-sneak
+          vim-polyglot vimtex vim-tmux-navigator
+          molokai vim-startify nerdtree nerdtree-git-plugin lightline-bufferline
+          # coc plugins
+          pkgs.vimPlugins.coc-nvim coc-json coc-python coc-tsserver
+          coc-rust-analyzer coc-vimtex
+        ];
+        opt = [];
+      };
+      customRC = ''
+        " Basic configurations
         if &compatible
           set nocompatible
         endif
-
         set guifont=Hack:h10
-
         filetype on
         filetype plugin on
         filetype indent on
         syntax enable
-
         set nobackup
         set noswapfile
         set autoread
@@ -63,7 +103,6 @@ in
         set t_Co=256
         set laststatus=2
         set statusline=-
-
         set showtabline=2
         set history=2000
         set number              "hybrid line number
@@ -94,7 +133,6 @@ in
         set ruler
         set wrap
         set sessionoptions+=globals
-
         set ignorecase      " Search ignoring case
         set smartcase       " Keep case when searching with *
         set infercase       " Adjust case in insert completion mode
@@ -123,14 +161,12 @@ in
             call setpos('.', save_cursor)
             call setreg('/', old_query)
         endfun
-
         if has('folding')
           set foldenable
           set foldmethod=syntax
           set foldlevelstart=99
           set foldtext=FoldText()
         endif
-
         " Improved Vim fold-text
         " See: http://www.gregsexton.org/2011/03/improving-the-text-displayed-in-a-fold/
         function! FoldText()
@@ -143,7 +179,6 @@ in
           else
             let line = substitute(getline(fs), '\t', repeat(' ', &tabstop), 'g')
           endif
-
           let w = winwidth(0) - &foldcolumn - (&number ? 8 : 0)
           let foldSize = 1 + v:foldend - v:foldstart
           let foldSizeStr = ' ' . foldSize . ' lines '
@@ -153,49 +188,39 @@ in
           let expansionString = repeat('.', w - strwidth(foldSizeStr.line.foldLevelStr.foldPercentage))
           return line . expansionString . foldSizeStr . foldPercentage . foldLevelStr
         endfunction
-
         if has("autocmd")
             autocmd BufWritePre *.txt,*.js,*.py,*.md,*.sh,*.ts,*.mk,*.rs,*.c,*.cpp :call CleanExtraSpaces()
             autocmd FileType make setlocal noexpandtab
         endif
-
         " Return to last edit position when opening files (You want this!)
         au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-
         " Don't close window, when deleting a buffer
         command! Bclose call <SID>BufcloseCloseIt()
         function! <SID>BufcloseCloseIt()
             let l:currentBufNum = bufnr("%")
             let l:alternateBufNum = bufnr("#")
-
             if buflisted(l:alternateBufNum)
                 buffer #
             else
                 bnext
             endif
-
             if bufnr("%") == l:currentBufNum
                 new
             endif
-
             if buflisted(l:currentBufNum)
                 execute("bdelete! ".l:currentBufNum)
             endif
         endfunction
-
         function! VisualSelection(direction, extra_filter) range
             let l:saved_reg = @"
             execute "normal! vgvy"
-
             let l:pattern = escape(@", "\\/.*'$^~[]")
             let l:pattern = substitute(l:pattern, "\n$", "", "")
-
             if a:direction == 'gv'
                 call CmdLine("Ack '" . l:pattern . "' " )
             elseif a:direction == 'replace'
                 call CmdLine("%s" . '/'. l:pattern . '/')
             endif
-
             let @/ = l:pattern
             let @" = l:saved_reg
         endfunction
@@ -208,47 +233,36 @@ in
         map <Leader>y "+y
         map <Leader>p "+p
         map <Leader>P "+P
-
         " Visual mode pressing * or # searches for the current selection
         " Super useful! From an idea by Michael Naumann
         vnoremap <silent> * :<C-u>call VisualSelection(\'\', \'\')<CR>/<C-R>=@/<CR><CR>
         vnoremap <silent> # :<C-u>call VisualSelection(\'\', \'\')<CR>?<C-R>=@/<CR><CR>
-
         " Disable highlight when <leader><cr> is pressed
         map <silent> <leader><cr> :noh<cr>
-
         " Indent multiple times in visual mode
         vnoremap > >gv
         vnoremap < <gv
-
         " Move on visual line instead of logical lines
         noremap j gj
         noremap k gk
-
         " Move a line of text using ALT+[jk] or Command+[jk] on mac
         nmap <M-j> mz:m+<cr>`z
         nmap <M-k> mz:m-2<cr>`z
         vmap <M-j> :m'>+<cr>`<my`>mzgv`yo`z
         vmap <M-k> :m'<-2<cr>`>my`<mzgv`yo`z
-
         " improved keyboard navigation
         nnoremap <leader>h <C-w>h
         nnoremap <leader>j <C-w>j
         nnoremap <leader>k <C-w>k
         nnoremap <leader>l <C-w>l
-
         " go to next buffer
         nnoremap <silent> <M-l> :bn<CR>
-
         " go to previous buffer
         nnoremap <silent> <M-h> :bp<CR>
-
         " close buffer
         nnoremap <silent> <leader>bd :Bclose<CR>
-
         " kill buffer
         nnoremap <silent> <leader>bk :bd!<CR>
-
         " ======================================================
         " ==================== Color scheme ====================
         " ======================================================
@@ -256,25 +270,20 @@ in
         colo molokai
         hi MatchParen      ctermfg=254 ctermbg=208 cterm=bold
         hi MatchParen      guifg=254 guifg=208 gui=bold
-
         highlight EndOfBuffer ctermfg=bg guifg=bg
         hi Conceal ctermbg=233
-
         " ======================================================
         " ====================== Gitgutter =====================
         " ======================================================
         set updatetime=250
-
         let g:gitgutter_sign_added = ''
         let g:gitgutter_sign_modified = ''
         let g:gitgutter_sign_removed = ''
         let g:gitgutter_sign_removed_first_line = ''
         let g:gitgutter_sign_modified_removed = ''
-
         let g:gitgutter_override_sign_column_highlight = 1
         highlight SignColumn guibg=bg
         highlight SignColumn ctermbg=bg
-
         " ======================================================
         " ================== Lightline config ==================
         " ======================================================
@@ -305,13 +314,12 @@ in
           \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3"},
           \ 'enable': {'statusline': 1, 'tabline': 1}
           \ }
-
-
         " ======================================================
         " ==================== Sneak config ====================
         " ======================================================
         let g:sneak#label = 1
-
+        map f <Plug>Sneak_s
+        map F <Plug>Sneak_S
         " ======================================================
         " ==================== Coc setting =====================
         " ======================================================
@@ -322,32 +330,25 @@ in
               \ <SID>check_back_space() ? "\<TAB>" :
               \ coc#refresh()
         inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
         function! s:check_back_space() abort
           let col = col('.') - 1
           return !col || getline('.')[col - 1]  =~# '\s'
         endfunction
-
         " Use <c-space> to trigger completion.
         inoremap <silent><expr> <c-space> coc#refresh()
-
         " Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
         " Coc only does snippet and additional edit on confirm.
         inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-
         " Use `[c` and `]c` to navigate diagnostics
         nmap <silent> [c <Plug>(coc-diagnostic-prev)
         nmap <silent> ]c <Plug>(coc-diagnostic-next)
-
         " Remap keys for gotos
         nmap <silent> gd <Plug>(coc-definition)
         nmap <silent> gy <Plug>(coc-type-definition)
         nmap <silent> gi <Plug>(coc-implementation)
         nmap <silent> gr <Plug>(coc-references)
-
         " Use K to show documentation in preview window
         nnoremap <silent> K :call <SID>show_documentation()<CR>
-
         function! s:show_documentation()
           if (index(['vim','help'], &filetype) >= 0)
             execute 'h '.expand('<cword>')
@@ -355,21 +356,16 @@ in
             call CocActionAsync('doHover')
           endif
         endfunction
-
         " Highlight symbol under cursor on CursorHold
         " autocmd CursorHold * silent call CocActionAsync('highlight')
         " autocmd CursorHoldI * silent call CocActionAsync('doHover')
-
         " Remap for rename current word
         nmap <leader>cr <Plug>(coc-rename)
-
         " Remap for format selected region
         xmap <leader>cf  <Plug>(coc-format-selected)
         nmap <leader>cf  <Plug>(coc-format)
-
         " Use `:Fold` to fold current buffer
         command! -nargs=? Fold :call     CocActionAsync('fold', <f-args>)
-
         " Using CocList
         " Show all diagnostics
         nnoremap <silent> <leader>ca  :<C-u>CocList diagnostics<cr>
@@ -383,7 +379,6 @@ in
             \ {'type': 'dir', 'header': ['MRU', getcwd()]},
             \ {'type': 'files', 'header': ['MRU']}
             \ ]
-
         " ======================================================
         " ===================== Fugitive =======================
         " ======================================================
@@ -392,12 +387,10 @@ in
         nnoremap <silent> <leader>gp :Gpush<cr>
         nnoremap <silent> <leader>gd :Gdiff<cr>
         nnoremap <silent> <leader>gf :Gpull<cr>
-
         " ======================================================
         " ===================== NerdTree =======================
         " ======================================================
         nnoremap <silent> <C-n> :NERDTreeFocus<cr>
-
         " ======================================================
         " ==================== Path for NixOS ==================
         " ======================================================
@@ -435,16 +428,6 @@ in
           \'suggest.enablePreview': 1
         \}
         '';
-        packages.myVimPackages = with pkgs-unstable.vimPlugins; {
-          start = [ vim-gitgutter vim-commentary vim-surround lightline-vim vim-fugitive vim-sneak
-                    vim-polyglot vimtex vim-tmux-navigator
-                    coc-nvim defx-icons molokai vim-startify nerdtree nerdtree-git-plugin lightline-bufferline
-                    # coc plugins
-                    coc-json coc-python coc-tsserver
-                    coc-rust-analyzer coc-vimtex
-                  ];
-        };
-      };
     };
   };
 }
