@@ -2,3 +2,7 @@ jupyter
 ipython
 jedi
 pylint
+numpy
+scipy
+matplotlib
+regex
