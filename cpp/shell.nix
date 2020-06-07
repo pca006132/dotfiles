@@ -10,6 +10,12 @@ pkgs.mkShell {
       lld
       clang-tools
       llvmPackages.bintools
+      (
+        python38.withPackages
+          (
+            ps: with ps; [ compiledb ]
+          )
+      )
     ]
   );
 }

@@ -7,9 +7,21 @@ in
     # Misc
     git
     tldr
-    material-design-icons 
-    powerline-fonts 
-    nodejs 
+    material-design-icons
+    powerline-fonts
+    nodejs
+    (
+      pkgs-unstable.python38.withPackages
+        (
+          ps: with ps; [
+            numpy
+            scipy
+            matplotlib
+            regex
+            jsbeautifier
+          ]
+        )
+    )
   ];
 
   programs.home-manager = {
@@ -43,14 +55,14 @@ in
   programs.zsh = {
     enable = true;
     initExtra = ''
-    source /etc/profile
+      source /etc/profile
     '';
     enableAutosuggestions = true;
     oh-my-zsh = {
       enable = true;
       plugins = [
-        "git" 
-        "z" 
+        "git"
+        "z"
       ];
       theme = "avit";
     };
@@ -60,11 +72,11 @@ in
     enable = true;
     escapeTime = 0;
     extraConfig = ''
-    bind v split-window -h -c "#{pane_current_path}"
-    bind s split-window -v -c "#{pane_current_path}"
+      bind v split-window -h -c "#{pane_current_path}"
+      bind s split-window -v -c "#{pane_current_path}"
     '';
     keyMode = "vi";
-    plugins = with pkgs.tmuxPlugins; [vim-tmux-navigator];
+    plugins = with pkgs.tmuxPlugins; [ vim-tmux-navigator ];
     shortcut = "a";
     terminal = "xterm";
   };
@@ -76,12 +88,27 @@ in
     configure = {
       packages.myVimPackage = with pkgs-unstable.vimPlugins; {
         start = [
-          vim-gitgutter vim-commentary vim-surround lightline-vim vim-fugitive vim-sneak
-          vim-polyglot vimtex vim-tmux-navigator
-          molokai vim-startify nerdtree nerdtree-git-plugin lightline-bufferline
+          vim-gitgutter
+          vim-commentary
+          vim-surround
+          lightline-vim
+          vim-fugitive
+          vim-sneak
+          vim-polyglot
+          vimtex
+          vim-tmux-navigator
+          molokai
+          vim-startify
+          nerdtree
+          nerdtree-git-plugin
+          lightline-bufferline
           # coc plugins
-          pkgs.vimPlugins.coc-nvim coc-json coc-python coc-tsserver
-          coc-rust-analyzer coc-vimtex
+          pkgs.vimPlugins.coc-nvim
+          coc-json
+          coc-python
+          coc-tsserver
+          coc-rust-analyzer
+          coc-vimtex
         ];
         opt = [];
       };
@@ -427,7 +454,7 @@ in
           \'diagnostic.warningSign': "*",
           \'suggest.enablePreview': 1
         \}
-        '';
+      '';
     };
   };
 }
