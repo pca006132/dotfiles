@@ -20,15 +20,17 @@ Install NixOS according to the [manual](https://nixos.org/nixos/manual/index.htm
 * I recommend using GRUB for boot.
   For UEFI system, you may want to set the following:
   ```nix
+  {
     boot.loader.efi.canTouchEfiVariables = true;
     boot.loader.grub = {
-        devices = [ "nodev" ];
-        version = 2;
-        # For Windows dual boot.
-        useOSProber = true;
-        enable = true;
-        efiSupport = true;
+      devices = [ "nodev" ];
+      version = 2;
+      # For Windows dual boot.
+      useOSProber = true;
+      enable = true;
+      efiSupport = true;
     };
+  }
   ```
   If errors occurred when installing the boot loader, try to set the `canTouchEfiVariables` to `false`, and set `boot.loader.grub.efiInstallAsRemovable` to `true`.
 
