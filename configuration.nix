@@ -12,16 +12,14 @@
 
   nixpkgs.config.allowUnfree = true;
 
-  # Use the systemd-boot EFI boot loader.
-  #boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  #boot.loader.efi.efiSysMountPoint = "/mnt/boot";
   boot.loader.grub = {
     devices = ["nodev"];
     version = 2;
     useOSProber = true;
     enable = true;
     efiSupport = true;
+    #efiInstallAsRemovable = true;
   };
 
   # networking.hostName = "nixos"; # Define your hostname.
@@ -76,9 +74,6 @@
     extraModules = [ pkgs.pulseaudio-modules-bt]; 
   };
   
-  hardware.bluetooth.enable = true;
-  services.blueman.enable = true;
-
   # Enable the X11 windowing system.
   services.xserver.enable = true;
   services.xserver.layout = "us";
@@ -136,6 +131,10 @@
     "https://cache.nixos.org"
   ];
 
+  nix.extraOptions = ''
+    keep-outputs = true
+    keep-derivations = true
+  '';
+
   services.devmon.enable = true; 
 }
-

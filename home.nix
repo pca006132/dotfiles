@@ -4,19 +4,12 @@ let
 in
 {
   home.packages = with pkgs; [
-    # Rust
-    rustc cargo rls pkgs-unstable.rust-analyzer rustracer rustfmt
-    # C/C++
-    clang_9 ccls cmake gnumake lld clang-tools llvmPackages.bintools
-    # Java
-    adoptopenjdk-bin maven
     # Misc
-    git gdb (pkgs-unstable.python38.withPackages(ps: with ps; [ 
-      numpy scipy matplotlib regex jupyter ipython opencv3 compiledb jedi jsbeautifier
-    ])) 
-    nixfmt material-design-icons powerline-fonts nodejs rnix-lsp
-    tldr texlive.combined.scheme-full
-    pulseview gcc-arm-embedded
+    git
+    tldr
+    material-design-icons 
+    powerline-fonts 
+    nodejs 
   ];
 
   programs.home-manager = {
@@ -27,6 +20,12 @@ in
   home.username = "pca";
   home.homeDirectory = "/home/pca";
   home.stateVersion = "20.09";
+
+  programs.direnv = {
+    enable = true;
+    enableNixDirenvIntegration = true;
+    enableZshIntegration = true;
+  };
 
   programs.git = {
     enable = true;
@@ -41,11 +40,20 @@ in
     userName = "pca006132";
   };
 
-  programs.zsh.enable = true;
-  programs.zsh.oh-my-zsh = {
+  programs.zsh = {
     enable = true;
-    plugins = [ "git" "z" ];
-    theme = "avit";
+    initExtra = ''
+    source /etc/profile
+    '';
+    enableAutosuggestions = true;
+    oh-my-zsh = {
+      enable = true;
+      plugins = [
+        "git" 
+        "z" 
+      ];
+      theme = "avit";
+    };
   };
 
   programs.tmux = {
@@ -276,12 +284,6 @@ in
         " ====================== Gitgutter =====================
         " ======================================================
         set updatetime=250
-        let g:gitgutter_sign_added = ''
-        let g:gitgutter_sign_modified = ''
-        let g:gitgutter_sign_removed = ''
-        let g:gitgutter_sign_removed_first_line = ''
-        let g:gitgutter_sign_modified_removed = ''
-        let g:gitgutter_override_sign_column_highlight = 1
         highlight SignColumn guibg=bg
         highlight SignColumn ctermbg=bg
         " ======================================================
@@ -318,8 +320,6 @@ in
         " ==================== Sneak config ====================
         " ======================================================
         let g:sneak#label = 1
-        map f <Plug>Sneak_s
-        map F <Plug>Sneak_S
         " ======================================================
         " ==================== Coc setting =====================
         " ======================================================
