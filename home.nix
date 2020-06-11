@@ -9,6 +9,11 @@ in
     tldr
     material-design-icons
     powerline-fonts
+    fd
+    bat
+    aria2
+    tldr
+    ripgrep
     ydiff
     nodejs
     (
