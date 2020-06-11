@@ -12,6 +12,7 @@
 
   nixpkgs.config.allowUnfree = true;
 
+  # Bootloader settings
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.grub = {
     devices = ["nodev"];
@@ -22,12 +23,7 @@
     #efiInstallAsRemovable = true;
   };
 
-  # networking.hostName = "nixos"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-
-  # The global useDHCP flag is deprecated, therefore explicitly set to false here.
-  # Per-interface useDHCP will be mandatory in the future, so this generated config
-  # replicates the default behaviour.
+  # Networking settings
   networking.useDHCP = false;
   networking.interfaces.enp2s0.useDHCP = true;
   networking.interfaces.wlo1.useDHCP = true;
@@ -36,32 +32,37 @@
   networking.networkmanager.enable = true;
   
   # Select internationalisation properties.
-  # i18n.defaultLocale = "en_US.UTF-8";
-  # console = {
-  #   font = "Lat2-Terminus16";
-  #   keyMap = "us";
-  # };
+  i18n.defaultLocale = "en_US.UTF-8";
+
+  i18n.inputMethod = {
+    enabled = "fcitx";
+    fcitx.engines = with pkgs.fcitx-engines; [ rime ];
+  };
+
+  fonts.fonts = [ 
+    pkgs.noto-fonts pkgs.noto-fonts-cjk pkgs.noto-fonts-emoji pkgs.noto-fonts-extra 
+  ];
 
   # Set your time zone.
   time.timeZone = "Asia/Hong_Kong";
   time.hardwareClockInLocalTime = true;
 
   # List packages installed in system profile. To search, run:
-  # $ nix search wget
   environment.systemPackages = with pkgs; [
-    wget vim ripgrep fd curl aria gcc clang rustc cargo bat emacs
-    usbutils pciutils tmux gdb minicom kitty
+    wget vim ripgrep fd curl aria bat ydiff
+    usbutils pciutils tmux minicom kitty
     fd nodejs firefox-bin gparted thunderbird
-    git binutils htop unzip zip p7zip #texlive.combined.scheme-full #tldr
-    ntfs3g #(python3.withPackages(ps: with ps; [ numpy scipy matplotlib regex ]))
-    gnome3.gnome-tweaks gnome3.gnome-shell-extensions
-    udevil
+    git binutils htop unzip zip p7zip ntfs3g 
+    udevil nix-index
+    # XFCE stuff
+    xfce.xfce4-battery-plugin xfce.xfce4-weather-plugin
   ];
 
-  nixpkgs.config.firefox.enableGnomeExtensions = true;
-  services.gnome3.chrome-gnome-shell.enable = true;
-
   programs.wireshark.enable = true;
+  programs.command-not-found.enable = false;
+  programs.zsh.interactiveShellInit = ''
+    source ${pkgs.nix-index}/etc/profile.d/command-not-found.sh
+  '';
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
@@ -74,6 +75,9 @@
     extraModules = [ pkgs.pulseaudio-modules-bt]; 
   };
   
+  hardware.bluetooth.enable = true;
+  services.blueman.enable = true;
+
   # Enable the X11 windowing system.
   services.xserver.enable = true;
   services.xserver.layout = "us";
@@ -82,43 +86,43 @@
   # Enable touchpad support.
   services.xserver.libinput.enable = true;
 
-  i18n.inputMethod = {
-    enabled = "fcitx";
-    fcitx.engines = with pkgs.fcitx-engines; [ rime ];
-  };
-  fonts.fonts = [ 
-    pkgs.noto-fonts pkgs.noto-fonts-cjk pkgs.noto-fonts-emoji pkgs.noto-fonts-extra 
-  ];
-  
-  users.defaultUserShell = pkgs.zsh;
-
-  # Enable the KDE Desktop Environment.
   services.xserver = {
-    displayManager.gdm.enable = true;
-    desktopManager.gnome3.enable = true;
+    desktopManager = {
+      xfce.enable = true;
+    };
+    displayManager.defaultSession = "xfce";
   };
+
+  # Nvidia driver
+  hardware.nvidia.optimus_prime.enable = true;
+  hardware.nvidia.optimus_prime.allowExternalGpu = true;
+  hardware.nvidia.optimus_prime.intelBusId = "PCI:0:2:0";
+  hardware.nvidia.optimus_prime.nvidiaBusId = "PCI:1:0:0";
+  services.xserver.videoDrivers = ["nvidia" "nvidiaLegacy390"];
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
+  users.defaultUserShell = pkgs.zsh;
   users.users.pca = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "uucp" "audio" "dialout" "plugdev" ]; # Enable ‘sudo’ for the user.
+    extraGroups = [ "wheel" "uucp" "audio" "dialout" "plugdev" ]; 
   };
 
+  # udev settings
   services.udev.packages = [ pkgs.openocd ];
   services.udev.extraRules = ''
-  # leaf maple
-  SUBSYSTEM=="usb", ATTRS{idVendor}=="1eaf", ATTRS{idProduct}=="0003", MODE="0660", GROUP="plugdev"
-  SUBSYSTEM=="usb", ATTRS{idVendor}=="1eaf", ATTRS{idProduct}=="0004", MODE="0660", GROUP="plugdev"
-  # glasgow
-  SUBSYSTEM=="usb", ATTRS{idVendor}=="20b7", ATTRS{idProduct}=="9db1", MODE="0660", GROUP="plugdev"
-  # hackrf
-  SUBSYSTEM=="usb", ATTRS{idVendor}=="1d50", ATTRS{idProduct}=="6089", MODE="0660", GROUP="plugdev"
-  # bladerf
-  SUBSYSTEM=="usb", ATTRS{idVendor}=="2cf0", ATTRS{idProduct}=="5250", MODE="0660", GROUP="plugdev"
-  # personal measurement device
-  SUBSYSTEM=="usb", ATTRS{idVendor}=="09db", ATTRS{idProduct}=="007a", MODE="0660", GROUP="plugdev"
-  # logic analyzer
-  SUBSYSTEM=="usb", ATTRS{idVendor}=="0925", ATTRS{idProduct}=="3881", MODE="0660", GROUP="plugdev"
+    # leaf maple
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="1eaf", ATTRS{idProduct}=="0003", MODE="0660", GROUP="plugdev"
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="1eaf", ATTRS{idProduct}=="0004", MODE="0660", GROUP="plugdev"
+    # glasgow
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="20b7", ATTRS{idProduct}=="9db1", MODE="0660", GROUP="plugdev"
+    # hackrf
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="1d50", ATTRS{idProduct}=="6089", MODE="0660", GROUP="plugdev"
+    # bladerf
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="2cf0", ATTRS{idProduct}=="5250", MODE="0660", GROUP="plugdev"
+    # personal measurement device
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="09db", ATTRS{idProduct}=="007a", MODE="0660", GROUP="plugdev"
+    # logic analyzer
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="0925", ATTRS{idProduct}=="3881", MODE="0660", GROUP="plugdev"
   '';
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
@@ -127,14 +131,12 @@
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "20.03"; # Did you read the comment?
+
   nix.binaryCaches = [
     "https://cache.nixos.org"
   ];
 
-  nix.extraOptions = ''
-    keep-outputs = true
-    keep-derivations = true
-  '';
-
+  # enable auto-mounting
   services.devmon.enable = true; 
 }
+
