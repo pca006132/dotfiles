@@ -9,6 +9,7 @@ in
     tldr
     material-design-icons
     powerline-fonts
+    ydiff
     nodejs
     (
       pkgs-unstable.python38.withPackages
