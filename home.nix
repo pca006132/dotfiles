@@ -1,6 +1,24 @@
 { pkgs, ... }:
 let
   pkgs-unstable = import (fetchTarball https://nixos.org/channels/nixos-unstable/nixexprs.tar.xz) {};
+  coquille = pkgs.vimUtils.buildVimPlugin {
+    name = "coquille";
+    src = builtins.fetchGit {
+      url = "https://framagit.org/tyreunom/coquille.git";
+    };
+  };
+  coq-vim = pkgs.vimUtils.buildVimPlugin {
+    name = "coq-vim";
+    src = builtins.fetchGit {
+      url = "git@github.com:jvoorhis/coq.vim.git";
+    };
+  };
+  vim-bufsync = pkgs.vimUtils.buildVimPlugin {
+    name = "vim-bufsync";
+    src = builtins.fetchGit {
+      url = "git@github.com:let-def/vimbufsync.git";
+    };
+  };
 in
 {
   home.packages = with pkgs; [
@@ -48,6 +66,9 @@ in
                 nerdtree
                 nerdtree-git-plugin
                 lightline-bufferline
+                vim-bufsync
+                coquille
+                coq-vim
                 # coc plugins
                 coc-nvim
                 coc-json
@@ -260,6 +281,17 @@ in
               highlight SignColumn guibg=bg
               highlight SignColumn ctermbg=bg
               " ======================================================
+              " ====================== Coq =====================
+              " ======================================================
+              " disable vlang, we use coq instead
+              let g:polyglot_disabled = ['v']
+              nmap <C-c>l :call CoqLaunch()<CR>
+              nmap <C-c>c :call CoqToCursor()<CR>
+              nmap <C-c>n :call CoqNext()<CR>
+              imap <C-c>c <C-o>:call CoqToCursor()<CR>
+              imap <C-c>n <C-o>:call CoqNext()<CR>
+              " ======================================================
+              " ======================================================
               " ================== Lightline config ==================
               " ======================================================
               let g:lightline = {
@@ -432,6 +464,10 @@ in
     };
     userEmail = "john.lck40@gmail.com";
     userName = "pca006132";
+    ignores = [
+      ".direnv"
+      ".venv"
+    ];
   };
 
   programs.zsh = {
