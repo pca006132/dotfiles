@@ -14,4 +14,5 @@ pkgs.mkShell {
   ++ (with pkgs-unstable; [ rust-analyzer ]);
   # Set Environment Variables
   RUST_BACKTRACE = 1;
+  RUST_ANALYZER_PATH = "${pkgs-unstable.rust-analyzer}/bin/rust-analyzer";
 }

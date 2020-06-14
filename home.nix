@@ -34,7 +34,6 @@ in
     ripgrep
     ydiff
     nodejs
-    pkgs-unstable.rust-analyzer # we have to use it here as vimrc depends on it
     (
       pkgs-unstable.python38.withPackages
         (
@@ -286,6 +285,15 @@ in
           let @" = l:saved_reg
       endfunction
       " ====================== Key Maps ======================
+      " Alt key escape hack
+      let c='a'
+      while c <= 'z'
+        exec "set <A-".c.">=\e".c
+        exec "imap \e".c." <A-".c.">"
+        let c = nr2char(1+char2nr(c))
+      endw
+      set timeout ttimeoutlen=50
+
       let mapleader = " "
       nmap ; :
       set backspace=eol,start,indent
@@ -456,7 +464,7 @@ in
       let g:coc_user_config = {
         \'rust-analyzer': {
         \  'inlayHints.chainingHints': 0,
-        \  'serverPath': '${pkgs-unstable.rust-analyzer}/bin/rust-analyzer',
+        \  'serverPath': $RUST_ANALYZER_PATH,
         \},
         \'python': {
         \  'jediEnabled': 1,
@@ -467,7 +475,7 @@ in
         \    'filetypes': ['nix']
         \  },
         \  'ccls': {
-        \    'command': '${pkgs.ccls}/bin/ccls',
+        \    'command': $CCLS_PATH,
         \    'filetypes': ['c', 'cc', 'cpp', 'c++', 'objc', 'objcpp'],
         \    'rootPatterns': ['.ccls', 'compile_commands.json', '.git/', '.hg/'],
         \    'initializationOptions': {
