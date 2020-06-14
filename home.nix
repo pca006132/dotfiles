@@ -34,6 +34,7 @@ in
     ripgrep
     ydiff
     nodejs
+    pkgs-unstable.rust-analyzer # we have to use it here as vimrc depends on it
     (
       pkgs-unstable.python38.withPackages
         (
@@ -455,6 +456,7 @@ in
       let g:coc_user_config = {
         \'rust-analyzer': {
         \  'inlayHints.chainingHints': 0,
+        \  'serverPath': '${pkgs-unstable.rust-analyzer}/bin/rust-analyzer',
         \},
         \'python': {
         \  'jediEnabled': 1,
