@@ -10,6 +10,7 @@ in
     material-design-icons
     powerline-fonts
     nodejs
+    ranger
     (
       pkgs-unstable.python38.withPackages
         (
@@ -405,8 +406,8 @@ in
   };
   # Home Manager needs a bit of information about you and the
   # paths it should manage.
-  home.username = "pca";
-  home.homeDirectory = "/home/pca";
+  home.username = "pca006132";
+  home.homeDirectory = "/home/pca006132";
   home.stateVersion = "20.09";
 
   programs.direnv = {
@@ -417,7 +418,7 @@ in
 
   programs.git = {
     enable = true;
-    delta.enable = true;
+    #delta.enable = true;
     extraConfig = {
       core = {
         editor = "nvim";
@@ -426,6 +427,7 @@ in
     };
     userEmail = "john.lck40@gmail.com";
     userName = "pca006132";
+    ignores = [ ".envrc" ".direnv/" ".venv" ];
   };
 
   programs.zsh = {
