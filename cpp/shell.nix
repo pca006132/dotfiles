@@ -18,4 +18,5 @@ pkgs.mkShell {
       )
     ]
   );
+  CCLS_PATH = "${pkgs.ccls}/bin/ccls";
 }
