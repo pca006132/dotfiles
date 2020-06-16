@@ -56,7 +56,10 @@
     udevil nix-index
     # XFCE stuff
     xfce.xfce4-battery-plugin xfce.xfce4-weather-plugin
+    # Yubikey stuff
+    gnupg pinentry-curses pinentry-qt paperkey
   ];
+
 
   programs.wireshark.enable = true;
   programs.command-not-found.enable = false;
@@ -108,7 +111,7 @@
   };
 
   # udev settings
-  services.udev.packages = [ pkgs.openocd ];
+  services.udev.packages = [ pkgs.openocd pkgs.yubikey-personalization ];
   services.udev.extraRules = ''
     # leaf maple
     SUBSYSTEM=="usb", ATTRS{idVendor}=="1eaf", ATTRS{idProduct}=="0003", MODE="0660", GROUP="plugdev"
@@ -124,6 +127,7 @@
     # logic analyzer
     SUBSYSTEM=="usb", ATTRS{idVendor}=="0925", ATTRS{idProduct}=="3881", MODE="0660", GROUP="plugdev"
   '';
+  services.pcscd.enable = true;
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
