@@ -76,6 +76,19 @@ in
     userEmail = "john.lck40@gmail.com";
     userName = "pca006132";
     ignores = [ ".envrc" ".direnv/" ".venv" ];
+    signing = {
+      key = "E9D2B552F9801C5D";
+      signByDefault = true;
+    };
+  };
+
+  programs.gpg.enable = true;
+
+  services.gpg-agent = {
+    defaultCacheTtlSsh = 60;
+    enable = true;
+    enableSshSupport = true;
+    sshKeys = ["996D13DF48B5A21F57298DD1B542F46ABECF3015"];
   };
 
   programs.zsh = {
@@ -207,6 +220,7 @@ in
       set novisualbell
       set lbr
       set fillchars+=vert:│
+      set t_ut= | set ttyscroll=1
       if has('conceal')
         set conceallevel=2
       endif
