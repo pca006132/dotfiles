@@ -50,7 +50,7 @@ in
         )
     )
     (
-      neovim.override
+      pkgs-unstable.neovim.override
         {
           configure = {
             packages.myVimPackage = with pkgs-unstable.vimPlugins; {
@@ -278,6 +278,7 @@ in
               hi MatchParen      guifg=254 guifg=208 gui=bold
               highlight EndOfBuffer ctermfg=bg guifg=bg
               hi Conceal ctermbg=233
+              hi Comment ctermfg=gray
               " ======================================================
               " ====================== Gitgutter =====================
               " ======================================================
@@ -480,6 +481,14 @@ in
     enableSshSupport = true;
     enableExtraSocket = true;
     sshKeys = [ "996D13DF48B5A21F57298DD1B542F46ABECF3015" ];
+  };
+
+  programs.alacritty = {
+    enable = true;
+    settings = {
+      font.normal.family = "DejaVu Sans Mono for Powerline";
+      font.size = 9.0;
+    };
   };
 
   programs.zsh = {
