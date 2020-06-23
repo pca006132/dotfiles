@@ -70,6 +70,7 @@ in
                 nerdtree-git-plugin
                 lightline-bufferline
                 neoterm
+                delimitMate
                 vim-bufsync
                 coq-vim
                 coqtail
@@ -155,6 +156,7 @@ in
               set noerrorbells
               set novisualbell
               set lbr
+              set textwidth=80
               if has('conceal')
                 set conceallevel=2
               endif
@@ -487,7 +489,7 @@ in
     enable = true;
     settings = {
       font.normal.family = "DejaVu Sans Mono for Powerline";
-      font.size = 9.0;
+      font.size = 11.0;
     };
   };
 
