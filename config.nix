@@ -93,7 +93,7 @@ in
       plugins = [
         "git"
         "z"
-        "vi"
+        "vi-mode"
       ];
       theme = "avit";
     };
