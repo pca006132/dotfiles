@@ -2,12 +2,17 @@
 , mozillaOverlay ? import (fetchTarball https://github.com/mozilla/nixpkgs-mozilla/archive/master.tar.gz)
 , pkgs ? import <nixpkgs> { overlays = [ mozillaOverlay ]; }
 }:
+let
+  targets = [];
+in
 pkgs.mkShell {
   buildInputs = (
-    with pkgs.rustPlatform.rust;
     [
-      rustc
-      cargo
+      (
+        (pkgs.rustChannelOf { channels = "nightly"; }).rust.override {
+          inherit targets;
+        }
+      )
     ]
   )
   ++ (with pkgs; [ rls rustracer rustfmt gdb ])
