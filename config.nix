@@ -20,6 +20,7 @@ in
     nodejs
     ranger
     xclip
+    fzf
     (
       pkgs-unstable.python38.withPackages
         (

@@ -41,6 +41,8 @@ pkgs-unstable.neovim.override
           nerdtree-git-plugin
           lightline-bufferline
           delimitMate
+          fzfWrapper
+          fzf-vim
           vim-bufsync
           coq-vim
           coqtail
@@ -365,6 +367,11 @@ pkgs-unstable.neovim.override
         " ===================== NerdTree =======================
         " ======================================================
         nnoremap <silent> <C-n> :NERDTreeFocus<cr>
+        " ======================================================
+        " ======================= FZF ==========================
+        nnoremap <silent> <C-f> :FZF<cr>
+        nnoremap <silent> <C-r> :Rg 
+        " ======================================================
         " ======================================================
         " ===================== Neoterm  =======================
         " ======================================================
