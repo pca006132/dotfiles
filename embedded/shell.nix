@@ -5,6 +5,7 @@ pkgs.mkShell {
     [
       pulseview
       gcc-arm-embedded
+      libusb1
     ]
   );
 }

@@ -24,6 +24,7 @@ in
 {
   home.packages = with pkgs; [
     # Misc
+    pkg-config
     git
     tldr
     material-design-icons
