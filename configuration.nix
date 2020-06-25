@@ -56,16 +56,17 @@
     udevil nix-index
     # XFCE stuff
     xfce.xfce4-battery-plugin xfce.xfce4-weather-plugin
-    # Yubikey stuff
-    gnupg pinentry-curses pinentry-qt paperkey
+    # Smart card
+    yubico-piv-tool pinentry-curses pinentry-qt paperkey
   ];
-
 
   programs.wireshark.enable = true;
   programs.command-not-found.enable = false;
   programs.zsh.interactiveShellInit = ''
     source ${pkgs.nix-index}/etc/profile.d/command-not-found.sh
   '';
+
+  environment.shells = [ pkgs.bashInteractive pkgs.zsh ];
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
@@ -91,9 +92,11 @@
 
   services.xserver = {
     desktopManager = {
-      xfce.enable = true;
+      plasma5.enable = true;
     };
-    displayManager.defaultSession = "xfce";
+    displayManager = {
+      sddm.enable = true;
+    };
   };
 
   # Nvidia driver
@@ -111,7 +114,7 @@
   };
 
   # udev settings
-  services.udev.packages = [ pkgs.openocd pkgs.yubikey-personalization ];
+  services.udev.packages = [ pkgs.openocd pkgs.yubikey-personalization pkgs.libu2f-host ];
   services.udev.extraRules = ''
     # leaf maple
     SUBSYSTEM=="usb", ATTRS{idVendor}=="1eaf", ATTRS{idProduct}=="0003", MODE="0660", GROUP="plugdev"
@@ -126,13 +129,17 @@
     SUBSYSTEM=="usb", ATTRS{idVendor}=="09db", ATTRS{idProduct}=="007a", MODE="0660", GROUP="plugdev"
     # logic analyzer
     SUBSYSTEM=="usb", ATTRS{idVendor}=="0925", ATTRS{idProduct}=="3881", MODE="0660", GROUP="plugdev"
+    # Segger JLink
+    SUBSYSTEM=="usb", ATTRS{idVendor}=="1366", ATTRS{idProduct}=="0101", MODE="0660", GROUP="plugdev"
   '';
+
   services.pcscd.enable = true;
   hardware.u2f.enable = true;
   programs.ssh.extraConfig = 
-    ''
-    PKCS11Provider "${pkgs.opensc}/lib/opensc-pkcs11.so"
-    '';
+  ''
+  PKCS11Provider "${pkgs.opensc}/lib/opensc-pkcs11.so"
+  '';
+
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
