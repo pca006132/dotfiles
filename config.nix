@@ -49,6 +49,10 @@ in
     mynvim
   ];
 
+  home.sessionVariables =   {
+    "EDITOR" = "nvim";
+  };
+
   programs.home-manager = {
     enable = true;
   };
@@ -104,6 +108,12 @@ in
         "vi-mode"
       ];
       theme = "avit";
+    };
+    autocd = true;
+    shellAliases = {
+      ll = "ls -l";
+      v = "nvim";
+      r = "ranger --choosedir=$HOME/.rangerdir; LASTDIR=`cat $HOME/.rangerdir`; cd \"$LASTDIR\"";
     };
   };
 
