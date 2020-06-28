@@ -21,6 +21,18 @@ in
     ranger
     xclip
     fzf
+    (pkgs.iosevka.override {
+      privateBuildPlan = {
+        family = "Iosevka";
+        design = [
+          "sans"
+          "expanded"
+          "ligset-haskell"
+          "v-l-italic"
+        ];
+      };
+      set = "Iosevka";
+    })
     (
       pkgs-unstable.python38.withPackages
         (
@@ -41,6 +53,8 @@ in
     enable = true;
   };
   home.stateVersion = "20.09";
+
+  fonts.fontconfig.enable = true;
 
   programs.direnv = {
     enable = true;
@@ -74,13 +88,6 @@ in
     enableSshSupport = true;
     enableExtraSocket = true;
     sshKeys = [ "996D13DF48B5A21F57298DD1B542F46ABECF3015" ];
-  };
-
-  programs.alacritty = {
-    enable = true;
-    settings = {
-      font.normal.family = "DejaVu Sans Mono for Powerline";
-    };
   };
 
   programs.zsh = {
