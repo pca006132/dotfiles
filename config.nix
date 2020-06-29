@@ -21,18 +21,35 @@ in
     ranger
     xclip
     fzf
-    (pkgs.iosevka.override {
-      privateBuildPlan = {
-        family = "Iosevka";
-        design = [
-          "sans"
-          "expanded"
-          "ligset-haskell"
-          "v-l-italic"
-        ];
-      };
-      set = "Iosevka";
-    })
+    (
+      pkgs.iosevka.override {
+        privateBuildPlan = {
+          family = "Iosevka";
+          design = [
+            "sans"
+            "expanded"
+            "ligset-haskell"
+            # for some reason, ss12 does not work
+            "v-at-threefold"
+            "v-a-doublestorey"
+            "v-f-straight"
+            "v-underscore-low"
+            "v-i-italic"
+            "v-k-straight"
+            "v-l-italic"
+            "v-m-shortleg"
+            "v-y-straight-turn"
+            "v-brace-straight"
+            "v-zero-dotted"
+            "v-one-base"
+            "v-numbersign-slanted"
+            "v-six-open-contour"
+            "v-nine-open-contour"
+          ];
+        };
+        set = "Iosevka";
+      }
+    )
     (
       pkgs-unstable.python38.withPackages
         (
@@ -49,7 +66,7 @@ in
     mynvim
   ];
 
-  home.sessionVariables =   {
+  home.sessionVariables = {
     "EDITOR" = "nvim";
   };
 
