@@ -57,6 +57,27 @@ export NIX_PATH=$HOME/.nix-defexpr/channels${NIX_PATH:+:}$NIX_PATH
 nix-shell '<home-manager>' -A install
 ```
 
+Example `~/.config/nixpkgs/home.nix` setup:
+```nix
+{ pkgs, ... }:
+let
+  username = "pca";
+in
+  {
+    home = {
+      username = username;
+      homeDirectory = "/home/${username}";
+    };
+
+    imports = [
+      ( import "/home/pca/code/dotfiles/config.nix" {
+        inherit pkgs;
+        install-iosevka = true;
+      } )
+    ];
+  }
+```
+
 ### Setup direnv
 I use `direnv` for setting up the development environments when I `cd` or `z`
 into the project directory. It is managed using Home-Manager so no additional
