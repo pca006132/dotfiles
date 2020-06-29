@@ -5,7 +5,7 @@
 }:
 let
   mynvim = import ./nvim.nix { inherit pkgs; };
-  pkgs-unstable = import (fetchTarball https://nixos.org/channels/nixos-unstable/nixexprs.tar.xz) {};
+  pkgs-unstable = import <nixpkgs-unstable> {};
 in
 {
   home.packages = with pkgs; [

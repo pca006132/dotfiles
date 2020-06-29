@@ -95,3 +95,14 @@ If the environment somehow breaks, such as some commands do not exist but they
 do exist when you run `nix-shell` manually, try to remove the cache by `rm -rf
 .direnv` and setup it again.
 
+You can use `inputsFrom` to merge inputs from several `shell.nix` files to
+compose your shell. Example:
+```nix
+{ pkgs, ...}:
+pkgs.mkShell {
+    inputsFrom = [
+        ( import ./rust/shell.nix {} )
+        ( import ./embedded/shell.nix {} )
+    ];
+}
+```

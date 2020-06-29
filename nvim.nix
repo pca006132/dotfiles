@@ -1,6 +1,7 @@
-{ pkgs ? import <nixpkgs> }:
+{ pkgs ? import <nixpkgs>,
+  pkgs-unstable ? import <nixpkgs-unstable>
+}:
 let
-  pkgs-unstable = import (fetchTarball https://nixos.org/channels/nixos-unstable/nixexprs.tar.xz) {};
   coq-vim = pkgs.vimUtils.buildVimPlugin {
     name = "coq-vim";
     src = builtins.fetchGit {
