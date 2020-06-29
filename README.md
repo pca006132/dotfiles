@@ -95,10 +95,29 @@ If the environment somehow breaks, such as some commands do not exist but they
 do exist when you run `nix-shell` manually, try to remove the cache by `rm -rf
 .direnv` and setup it again.
 
-You can use `inputsFrom` to merge inputs from several `shell.nix` files to
-compose your shell. Example:
+The following compose function is made to allow the retreiving of environment
+variables defined in other scripts.
 ```nix
 { pkgs, ...}:
+let
+  # clean the unwanted attributes
+  # this would not be stable as I just got it from `nix repl`.
+  clean = (
+    p: removeAttrs p
+      [ "__ignoreNulls" "all" "args" "buildInputs" "builder" "configureFlags" "depsBuildBuild" "depsBuildBuildPropagated" "depsBuildTarget" "depsBuildTargetPropagated" "depsHostHost" "depsHostHostPropagated" "depsTargetTarget" "depsTargetTargetPropagated" "doCheck" "doInstallCheck" "drvAttrs" "drvPath" "meta" "name" "nativeBuildInputs" "nobuildPhase" "out" "outPath" "outputName" "outputUnspecified" "outputs" "overrideAttrs" "passthru" "patches" "phases" "propagatedBuildInputs" "propagatedNativeBuildInputs" "shellHook" "stdenv" "strictDeps" "system" "type" "userHook" ]
+  );
+  compose = (
+    attr: (
+      pkgs.mkShell
+        (
+          builtins.foldl'
+            (a: b: a // clean b)
+            attr
+            attr.inputsFrom
+        )
+    )
+  );
+in
 pkgs.mkShell {
     inputsFrom = [
         ( import ./rust/shell.nix {} )
