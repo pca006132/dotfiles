@@ -1,27 +1,6 @@
-{ pkgs ? import <nixpkgs>,
-  pkgs-unstable ? import <nixpkgs-unstable>
+{ pkgs ? import <nixpkgs> {}
+, pkgs-unstable ? import <nixpkgs-unstable> {}
 }:
-let
-  coq-vim = pkgs.vimUtils.buildVimPlugin {
-    name = "coq-vim";
-    src = builtins.fetchGit {
-      url = "git@github.com:jvoorhis/coq.vim.git";
-    };
-  };
-  vim-bufsync = pkgs.vimUtils.buildVimPlugin {
-    name = "vim-bufsync";
-    src = builtins.fetchGit {
-      url = "git@github.com:let-def/vimbufsync.git";
-    };
-  };
-  coqtail = pkgs.vimUtils.buildVimPlugin {
-    name = "coqtail";
-    src = builtins.fetchGit {
-      url = "git@github.com:whonore/Coqtail.git";
-      ref = "async";
-    };
-  };
-in
 pkgs-unstable.neovim.override
   {
     configure = {
@@ -44,9 +23,7 @@ pkgs-unstable.neovim.override
           delimitMate
           fzfWrapper
           fzf-vim
-          vim-bufsync
-          coq-vim
-          coqtail
+          nvim-gdb
           # coc plugins
           coc-nvim
           coc-json
@@ -62,7 +39,7 @@ pkgs-unstable.neovim.override
         if &compatible
           set nocompatible
         endif
-        set guifont=Hack:h10
+        set guifont=Iosevka:h12
         filetype on
         filetype plugin on
         filetype indent on
@@ -383,11 +360,18 @@ pkgs-unstable.neovim.override
         nnoremap <silent> <C-f> :FZF<cr>
         " ======================================================
         " ======================================================
-        " ===================== Neoterm  =======================
+        " ===================== nvim-gdb =======================
         " ======================================================
-        let g:neoterm_default_mod='botright'
         tnoremap <Esc> <C-\><C-n>
-        nnoremap <C-t> :Ttoggle<cr>
+        let g:nvimgdb_config_override = {
+          \ 'key_next': 'n',
+          \ 'key_step': 's',
+          \ 'key_finish': 'f',
+          \ 'key_continue': 'c',
+          \ 'key_until': 'u',
+          \ 'key_breakpoint': 'b',
+          \ 'set_tkeymaps': "NvimGdbNoTKeymaps",
+          \ }
         " ======================================================
         " ==================== Path for NixOS ==================
         " ======================================================
