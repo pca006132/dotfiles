@@ -43,17 +43,23 @@ Install NixOS according to the [manual](https://nixos.org/nixos/manual/index.htm
   `boot.loader.grub.efiInstallAsRemovable` to `true`.
 
 ### Setup Home-Manager
-First, run the `setup.sh`, which would setup the nix scripts for home-manager,
+The `setup.sh` would setup the nix scripts for home-manager,
 handle user name etc. Note that this scripts has to be run in its own directory,
 without symlink, as it uses `pwd` to print the path to `config.nix`. While other
 more sophisticated solutions exist, I just want to keep it simple.
 
-Install Home-Manager according to the [README](https://github.com/rycee/home-manager/blob/master/README.md), basically the following commands:
-
+Setup the channels and config as follow:
 ```bash
 nix-channel --add https://github.com/rycee/home-manager/archive/master.tar.gz home-manager
+# It is recommended to use 20.03, as some modules in home-manager only support
+# 20.03.
+nix-channel --add https://nixos.org/channels/nixos-20.03 nixos
+# Unstable channel is needed for some packages, especially vim plugins.
+nix-channel --add https://nixos.org/channels/nixos-unstable nixpkgs-unstable
 nix-channel --update
 export NIX_PATH=$HOME/.nix-defexpr/channels${NIX_PATH:+:}$NIX_PATH
+# Setup the `home.nix` config, you should edit it if needed.
+./setup.sh
 nix-shell '<home-manager>' -A install
 ```
 
@@ -104,8 +110,15 @@ let
   # this would not be stable as I just got it from `nix repl`.
   clean = (
     p: removeAttrs p
-      [ "__ignoreNulls" "all" "args" "buildInputs" "builder" "configureFlags" "depsBuildBuild" "depsBuildBuildPropagated" "depsBuildTarget" "depsBuildTargetPropagated" "depsHostHost" "depsHostHostPropagated" "depsTargetTarget" "depsTargetTargetPropagated" "doCheck" "doInstallCheck" "drvAttrs" "drvPath" "meta" "name" "nativeBuildInputs" "nobuildPhase" "out" "outPath" "outputName" "outputUnspecified" "outputs" "overrideAttrs" "passthru" "patches" "phases" "propagatedBuildInputs" "propagatedNativeBuildInputs" "shellHook" "stdenv" "strictDeps" "system" "type" "userHook" ]
-  );
+      [ "__ignoreNulls" "all" "args" "buildInputs" "builder" "configureFlags"
+      "depsBuildBuild" "depsBuildBuildPropagated" "depsBuildTarget"
+      "depsBuildTargetPropagated" "depsHostHost" "depsHostHostPropagated"
+      "depsTargetTarget" "depsTargetTargetPropagated" "doCheck" "doInstallCheck"
+      "drvAttrs" "drvPath" "meta" "name" "nativeBuildInputs" "nobuildPhase"
+      "out" "outPath" "outputName" "outputUnspecified" "outputs" "overrideAttrs"
+      "passthru" "patches" "phases" "propagatedBuildInputs"
+      "propagatedNativeBuildInputs" "shellHook" "stdenv" "strictDeps" "system"
+      "type" "userHook" ]);
   compose = (
     attr: (
       pkgs.mkShell

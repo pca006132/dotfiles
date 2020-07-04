@@ -14,7 +14,7 @@ in
     };
 
     imports = [
-      "$(pwd)/config.nix"
+      (import "$(pwd)/config.nix" {} )
     ];
   }
 EOM

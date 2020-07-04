@@ -24,12 +24,18 @@
   };
 
   # Networking settings
-  networking.useDHCP = false;
-  networking.interfaces.enp2s0.useDHCP = true;
-  networking.interfaces.wlo1.useDHCP = true;
-
-  # Configure network proxy if necessary
-  networking.networkmanager.enable = true;
+  networking = {
+    useDHCP = false;
+    interfaces = {
+      enp2s0.useDHCP = true;
+      wlo1.useDHCP = true;
+    };
+    networkmanager = {
+      enable = true;
+      dhcp = "dhcpcd";
+      appendNameservers = [ "8.8.8.8" "8.8.4.4" ];
+    };
+  };
   
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
@@ -50,12 +56,12 @@
   # List packages installed in system profile. To search, run:
   environment.systemPackages = with pkgs; [
     wget vim ripgrep fd curl aria bat ydiff
-    usbutils pciutils tmux minicom kitty
+    usbutils pciutils tmux minicom 
     fd nodejs firefox-bin gparted thunderbird
-    git binutils htop unzip zip p7zip ntfs3g 
+    git binutils htop unzip zip p7zip ntfs3g
     udevil nix-index
-    # XFCE stuff
-    xfce.xfce4-battery-plugin xfce.xfce4-weather-plugin
+    # KDE
+    arc-kde-theme latte-dock
     # Smart card
     yubico-piv-tool pinentry-curses pinentry-qt paperkey
   ];
@@ -76,9 +82,9 @@
   hardware.pulseaudio = {
     enable = true;
     package = pkgs.pulseaudioFull;
-    extraModules = [ pkgs.pulseaudio-modules-bt]; 
+    extraModules = [ pkgs.pulseaudio-modules-bt];
   };
-  
+
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
 
