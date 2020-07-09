@@ -12,13 +12,12 @@ in
     # Misc
     pkg-config
     git
-    tldr
+    tealdeer
     material-design-icons
     powerline-fonts
     fd
     bat
     aria2
-    tldr
     ripgrep
     ydiff
     nodejs
