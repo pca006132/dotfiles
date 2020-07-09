@@ -9,6 +9,7 @@ pkgs-unstable.neovim.override
           vim-gitgutter
           vim-commentary
           vim-surround
+          vim-dispatch
           lightline-vim
           vim-fugitive
           vim-sneak
