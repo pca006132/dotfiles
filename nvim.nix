@@ -343,6 +343,8 @@ pkgs-unstable.neovim.override
           \ ',"cmd": "! task".matchstr(v:val, "^\\s\\d\\+") ." done"}')
         endfunction
         let g:startify_session_persistence=1
+        let g:startify_change_to_dir=0
+        let g:startify_fortune_use_unicode=1
         let g:startify_lists = [
             \ {'type': 'sessions', 'header': ['Sessions']},
             \ {'type': 'dir', 'header': ['MRU', getcwd()]},
