@@ -337,11 +337,16 @@ pkgs-unstable.neovim.override
         " ======================================================
         " ====================== startify ======================
         " ======================================================
+        function s:list_todo()
+          return map(systemlist('task list | head -n -2 | tail -n +4'),
+          \ '{"line": matchlist(v:val, "^\\s\\d\\+\\s\\w\\+\\s\\(.\\+\\)")[1]'.
+          \ ',"cmd": "! task".matchstr(v:val, "^\\s\\d\\+") ." done"}')
+        endfunction
         let g:startify_session_persistence=1
         let g:startify_lists = [
             \ {'type': 'sessions', 'header': ['Sessions']},
             \ {'type': 'dir', 'header': ['MRU', getcwd()]},
-            \ {'type': 'files', 'header': ['MRU']}
+            \ {'type': function('s:list_todo'), 'header': ['TODO']}
             \ ]
         " ======================================================
         " ===================== Fugitive =======================
@@ -382,6 +387,7 @@ pkgs-unstable.neovim.override
           \  'inlayHints.chainingHints': 0,
           \},
           \'python': {
+          \  'venvFolders': [$VIRTUAL_ENV],
           \  'jediEnabled': 1
           \},
           \'languageserver': {

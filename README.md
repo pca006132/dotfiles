@@ -55,7 +55,7 @@ nix-channel --add https://github.com/rycee/home-manager/archive/master.tar.gz ho
 # 20.03.
 nix-channel --add https://nixos.org/channels/nixos-20.03 nixos
 # Unstable channel is needed for some packages, especially vim plugins.
-nix-channel --add https://nixos.org/channels/nixos-unstable nixpkgs-unstable
+nix-channel --add https://nixos.org/channels/nixpkgs-unstable nixpkgs-unstable
 nix-channel --update
 export NIX_PATH=$HOME/.nix-defexpr/channels${NIX_PATH:+:}$NIX_PATH
 # Setup the `home.nix` config, you should edit it if needed.
@@ -131,7 +131,7 @@ let
     )
   );
 in
-pkgs.mkShell {
+compose {
     inputsFrom = [
         ( import ./rust/shell.nix {} )
         ( import ./embedded/shell.nix {} )

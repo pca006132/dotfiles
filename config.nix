@@ -98,6 +98,9 @@ in
         editor = "nvim";
         autocrlf = "input";
       };
+      merge = {
+        ff = "only";
+      };
     };
     userEmail = "john.lck40@gmail.com";
     userName = "pca006132";
@@ -152,5 +155,9 @@ in
     plugins = with pkgs.tmuxPlugins; [ vim-tmux-navigator ];
     shortcut = "a";
     terminal = "xterm";
+  };
+
+  programs.taskwarrior = {
+    enable = true;
   };
 }
