@@ -132,6 +132,7 @@ in
         "git"
         "z"
         "vi-mode"
+        "history-substring-search"
       ];
       theme = "avit";
     };
