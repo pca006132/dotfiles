@@ -148,8 +148,10 @@ in
     enable = true;
     escapeTime = 0;
     extraConfig = ''
+      set -g default-terminal "tmux-256color"
       bind | split-window -h -c "#{pane_current_path}"
       bind - split-window -v -c "#{pane_current_path}"
+      bind t new
     '';
     keyMode = "vi";
     plugins = with pkgs.tmuxPlugins; [ vim-tmux-navigator ];
