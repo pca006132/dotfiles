@@ -1,10 +1,10 @@
 { pkgs ? import <nixpkgs> {}
 , pkgs-unstable ? import <nixpkgs-unstable> {}
 }:
-pkgs-unstable.neovim.override
+pkgs.neovim.override
   {
     configure = {
-      packages.myVimPackage = with pkgs-unstable.vimPlugins; {
+      packages.myVimPackage = with pkgs.vimPlugins; {
         start = [
           vim-gitgutter
           vim-commentary
@@ -18,8 +18,9 @@ pkgs-unstable.neovim.override
           vim-tmux-navigator
           molokai
           vim-startify
-          nerdtree
-          nerdtree-git-plugin
+          pkgs-unstable.vimPlugins.nerdtree
+          pkgs-unstable.vimPlugins.nerdtree-git-plugin
+          neoterm
           lightline-bufferline
           delimitMate
           fzfWrapper
@@ -33,7 +34,9 @@ pkgs-unstable.neovim.override
           coc-rust-analyzer
           coc-vimtex
         ];
-        opt = [];
+        opt = [
+          vim-latex-live-preview
+        ];
       };
       customRC = ''
         " Basic configurations
@@ -108,6 +111,7 @@ pkgs-unstable.neovim.override
         set novisualbell
         set lbr
         set textwidth=80
+        set mouse=a
         if has('conceal')
           set conceallevel=2
         endif
@@ -227,7 +231,6 @@ pkgs-unstable.neovim.override
         " ======================================================
         let g:molokai_original = 0
         colo molokai
-        hi MatchParen      ctermfg=254 ctermbg=208 cterm=bold
         hi MatchParen      guifg=254 guifg=208 gui=bold
         highlight EndOfBuffer ctermfg=bg guifg=bg
         hi Conceal ctermbg=233
@@ -336,6 +339,10 @@ pkgs-unstable.neovim.override
         omap ac <Plug>(coc-classobj-a)
         let g:tex_conceal="abdgm"
         " ======================================================
+        " ======================= LaTex ========================
+        " ======================================================
+        let g:livepreview_cursorhold_recompile = 0
+        " ======================================================
         " ====================== startify ======================
         " ======================================================
         function s:list_todo()
@@ -416,6 +423,7 @@ pkgs-unstable.neovim.override
           \'diagnostic.warningSign': "*",
           \'suggest.enablePreview': 1
         \}
+        hi MatchParen      ctermfg=208 ctermbg=0 cterm=bold
       '';
     };
   }

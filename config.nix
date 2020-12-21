@@ -5,7 +5,6 @@
 }:
 let
   mynvim = import ./nvim.nix { inherit pkgs; };
-  pkgs-unstable = import <nixpkgs-unstable> {};
 in
 {
   home.packages = with pkgs; [
@@ -24,53 +23,22 @@ in
     ranger
     xclip
     fzf
+    (texlive.combine {
+      inherit (texlive)
+      scheme-full
+      minted;
+    })
     (
-      pkgs-unstable.python38.withPackages
+      python39.withPackages
         (
           ps: with ps; [
-            numpy
-            scipy
-            matplotlib
-            regex
-            jsbeautifier
+            pygments
           ]
         )
     )
   ] ++ [
     mynvim
-  ] ++ extra-pkgs ++ (
-    if install-iosevka then [
-      (
-        pkgs.iosevka.override {
-          privateBuildPlan = {
-            family = "Iosevka";
-            design = [
-              "sans"
-              "expanded"
-              "ligset-haskell"
-              # for some reason, ss12 does not work
-              "v-at-threefold"
-              "v-a-doublestorey"
-              "v-f-straight"
-              "v-underscore-low"
-              "v-i-italic"
-              "v-k-straight"
-              "v-l-italic"
-              "v-m-shortleg"
-              "v-y-straight-turn"
-              "v-brace-straight"
-              "v-zero-dotted"
-              "v-one-base"
-              "v-numbersign-slanted"
-              "v-six-open-contour"
-              "v-nine-open-contour"
-            ];
-          };
-          set = "Iosevka";
-        }
-      )
-    ] else []
-  );
+  ] ++ extra-pkgs;
 
   home.sessionVariables = {
     "EDITOR" = "nvim";
@@ -148,6 +116,7 @@ in
     enable = true;
     escapeTime = 0;
     extraConfig = ''
+      set -g mouse on
       set -g default-terminal "tmux-256color"
       bind | split-window -h -c "#{pane_current_path}"
       bind - split-window -v -c "#{pane_current_path}"
