@@ -65,7 +65,7 @@ in
         editor = "nvim";
         autocrlf = "input";
       };
-      merge = {
+      pull = {
         ff = "only";
       };
     };
