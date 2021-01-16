@@ -23,8 +23,8 @@ pkgs.neovim.override
           neoterm
           lightline-bufferline
           delimitMate
-          fzfWrapper
-          fzf-vim
+          pkgs-unstable.vimPlugins.fzfWrapper
+          pkgs-unstable.vimPlugins.fzf-vim
           nvim-gdb
           # coc plugins
           coc-nvim
@@ -342,6 +342,7 @@ pkgs.neovim.override
         " ======================= LaTex ========================
         " ======================================================
         let g:livepreview_cursorhold_recompile = 0
+        let g:livepreview_use_biber = 1
         " ======================================================
         " ====================== startify ======================
         " ======================================================
@@ -395,6 +396,7 @@ pkgs.neovim.override
           \'rust-analyzer': {
           \  'serverPath': $RUST_ANALYZER_PATH,
           \  'inlayHints.chainingHints': 0,
+          \  'checkOnSave.command': 'clippy',
           \},
           \'python': {
           \  'venvFolders': [$VIRTUAL_ENV],

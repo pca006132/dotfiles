@@ -1,6 +1,6 @@
 { pkgs
+, pkgs-unstable ? import <nixpkgs-unstable> {}
 , extra-pkgs ? []
-, install-iosevka ? false
 , ...
 }:
 let
@@ -12,7 +12,6 @@ in
     pkg-config
     git
     tealdeer
-    material-design-icons
     powerline-fonts
     fd
     bat
@@ -22,20 +21,23 @@ in
     nodejs
     ranger
     xclip
-    fzf
+    sshfs
+    pkgs-unstable.fzf
     (texlive.combine {
       inherit (texlive)
       scheme-full
       minted;
     })
-    (
-      python39.withPackages
-        (
-          ps: with ps; [
-            pygments
-          ]
-        )
-    )
+    (python38.withPackages (
+      ps: with ps; [
+        numpy
+        pygments
+        matplotlib
+        scipy
+        ipython
+        jupyter
+      ]
+      ))
   ] ++ [
     mynvim
   ] ++ extra-pkgs;
@@ -92,6 +94,7 @@ in
     enable = true;
     initExtra = ''
       source /etc/profile
+      task | awk '{ z = '$(tput cols)' - length; y = int(z / 2); x = z - y; printf "%*s%s%*s\n", x, "", $0, y, ""; }'
     '';
     enableAutosuggestions = true;
     oh-my-zsh = {
