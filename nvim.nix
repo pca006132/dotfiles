@@ -33,6 +33,7 @@ pkgs.neovim.override
           coc-tsserver
           coc-rust-analyzer
           coc-vimtex
+          coc-html
         ];
         opt = [
           vim-latex-live-preview

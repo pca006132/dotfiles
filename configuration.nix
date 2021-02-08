@@ -3,10 +3,40 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 { config, pkgs, ... }:
-
+let
+  zoom-version = "5.5.7011.0206";
+  zoom-srcs = {
+    x86_64-linux = pkgs.fetchurl {
+      url = "https://zoom.us/client/${zoom-version}/zoom_x86_64.pkg.tar.xz";
+      sha256 = "00ahly3kjjznn73vcxgm5wj2pxgw6wdk6vzgd8svfmnl5kqq6c02";
+    };
+  };
+  unstable = import <nixpkgs> {
+    config = { allowUnfree = true; };
+    overlays = [
+      (
+        self: super: {
+          zoom-us = super.zoom-us.overrideAttrs (
+            _: rec{
+              name = "zoom-${zoom-version}";
+              installPhase = ''
+                runHook preInstall
+                mkdir $out
+                tar -C $out -xf ${zoom-srcs.${super.stdenv.hostPlatform.system}}
+                mv $out/usr/* $out/
+                runHook postInstall
+              '';
+            }
+          );
+        }
+      )
+    ];
+  };
+in
 {
   imports =
-    [ # Include the results of the hardware scan.
+    [
+      # Include the results of the hardware scan.
       ./hardware-configuration.nix
     ];
 
@@ -15,7 +45,7 @@
   # Bootloader settings
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.grub = {
-    devices = ["nodev"];
+    devices = [ "nodev" ];
     version = 2;
     useOSProber = true;
     enable = true;
@@ -30,13 +60,14 @@
       enp2s0.useDHCP = true;
       wlo1.useDHCP = true;
     };
+    dhcpcd.persistent = true;
     networkmanager = {
       enable = true;
-      dhcp = "dhcpcd";
+      dhcp = "dhclient";
       appendNameservers = [ "8.8.8.8" "8.8.4.4" ];
     };
   };
-  
+
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
 
@@ -45,8 +76,12 @@
     fcitx.engines = with pkgs.fcitx-engines; [ rime ];
   };
 
-  fonts.fonts = [ 
-    pkgs.noto-fonts pkgs.noto-fonts-cjk pkgs.noto-fonts-emoji pkgs.noto-fonts-extra 
+  fonts.fonts = [
+    pkgs.noto-fonts
+    pkgs.noto-fonts-cjk
+    pkgs.noto-fonts-emoji
+    pkgs.noto-fonts-extra
+    pkgs.symbola
   ];
 
   # Set your time zone.
@@ -55,15 +90,39 @@
 
   # List packages installed in system profile. To search, run:
   environment.systemPackages = with pkgs; [
-    wget vim ripgrep fd curl aria bat ydiff
-    usbutils pciutils tmux minicom 
-    fd nodejs firefox-bin gparted thunderbird
-    git binutils htop unzip zip p7zip ntfs3g
-    udevil nix-index
+    wget
+    vim
+    ripgrep
+    fd
+    curl
+    aria
+    bat
+    ydiff
+    usbutils
+    pciutils
+    tmux
+    minicom
+    fd
+    nodejs
+    firefox-bin
+    gparted
+    thunderbird
+    git
+    binutils
+    htop
+    unzip
+    zip
+    p7zip
+    ntfs3g
+    udevil
     # KDE
-    arc-kde-theme latte-dock
+    arc-kde-theme
     # Smart card
-    yubico-piv-tool pinentry-curses pinentry-qt paperkey
+    yubico-piv-tool
+    pinentry-curses
+    pinentry-qt
+    paperkey
+    unstable.zoom-us
   ];
 
   programs.wireshark.enable = true;
@@ -77,12 +136,18 @@
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
+  services.earlyoom.enable = true;
+
   # Enable sound.
   sound.enable = true;
   hardware.pulseaudio = {
     enable = true;
     package = pkgs.pulseaudioFull;
-    extraModules = [ pkgs.pulseaudio-modules-bt];
+    extraModules = [ pkgs.pulseaudio-modules-bt ];
+    zeroconf = {
+      discovery.enable = true;
+      publish.enable = true;
+    };
   };
 
   hardware.bluetooth.enable = true;
@@ -106,17 +171,22 @@
   };
 
   # Nvidia driver
-  hardware.nvidia.optimus_prime.enable = true;
-  hardware.nvidia.optimus_prime.allowExternalGpu = true;
-  hardware.nvidia.optimus_prime.intelBusId = "PCI:0:2:0";
-  hardware.nvidia.optimus_prime.nvidiaBusId = "PCI:1:0:0";
-  services.xserver.videoDrivers = ["nvidia" "nvidiaLegacy390"];
+  hardware.nvidia.prime.sync.enable = true;
+  hardware.nvidia.prime.sync.allowExternalGpu = true;
+  hardware.nvidia.prime.intelBusId = "PCI:0:2:0";
+  hardware.nvidia.prime.nvidiaBusId = "PCI:1:0:0";
+  services.xserver.videoDrivers = [ "nvidia" "nvidiaLegacy390" ];
+
+  systemd.services.nvidia-control-devices = {
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig.ExecStart = "${pkgs.linuxPackages.nvidia_x11.bin}/bin/nvidia-smi";
+  };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.defaultUserShell = pkgs.zsh;
   users.users.pca = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "uucp" "audio" "dialout" "plugdev" ]; 
+    extraGroups = [ "wheel" "uucp" "audio" "dialout" "plugdev" "wireshark" ];
   };
 
   # udev settings
@@ -140,11 +210,12 @@
   '';
 
   services.pcscd.enable = true;
-  hardware.u2f.enable = true;
-  programs.ssh.extraConfig = 
-  ''
-  PKCS11Provider "${pkgs.opensc}/lib/opensc-pkcs11.so"
-  '';
+  programs.ssh.extraConfig =
+    ''
+      PKCS11Provider "${pkgs.opensc}/lib/opensc-pkcs11.so"
+    '';
+
+  hardware.opengl.driSupport32Bit = true;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
@@ -152,13 +223,10 @@
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "20.03"; # Did you read the comment?
-
-  nix.binaryCaches = [
-    "https://cache.nixos.org"
-  ];
+  system.stateVersion = "20.09"; # Did you read the comment?
 
   # enable auto-mounting
-  services.devmon.enable = true; 
-}
+  services.devmon.enable = true;
 
+  networking.nameservers = [ "8.8.8.8" ];
+}
