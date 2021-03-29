@@ -4,33 +4,8 @@
 
 { config, pkgs, ... }:
 let
-  zoom-version = "5.5.7011.0206";
-  zoom-srcs = {
-    x86_64-linux = pkgs.fetchurl {
-      url = "https://zoom.us/client/${zoom-version}/zoom_x86_64.pkg.tar.xz";
-      sha256 = "00ahly3kjjznn73vcxgm5wj2pxgw6wdk6vzgd8svfmnl5kqq6c02";
-    };
-  };
   unstable = import <nixpkgs> {
     config = { allowUnfree = true; };
-    overlays = [
-      (
-        self: super: {
-          zoom-us = super.zoom-us.overrideAttrs (
-            _: rec{
-              name = "zoom-${zoom-version}";
-              installPhase = ''
-                runHook preInstall
-                mkdir $out
-                tar -C $out -xf ${zoom-srcs.${super.stdenv.hostPlatform.system}}
-                mv $out/usr/* $out/
-                runHook postInstall
-              '';
-            }
-          );
-        }
-      )
-    ];
   };
 in
 {
@@ -126,10 +101,6 @@ in
   ];
 
   programs.wireshark.enable = true;
-  programs.command-not-found.enable = false;
-  programs.zsh.interactiveShellInit = ''
-    source ${pkgs.nix-index}/etc/profile.d/command-not-found.sh
-  '';
 
   environment.shells = [ pkgs.bashInteractive pkgs.zsh ];
 
@@ -170,12 +141,14 @@ in
     };
   };
 
+  hardware.enableAllFirmware = true;
+
   # Nvidia driver
   hardware.nvidia.prime.sync.enable = true;
   hardware.nvidia.prime.sync.allowExternalGpu = true;
   hardware.nvidia.prime.intelBusId = "PCI:0:2:0";
   hardware.nvidia.prime.nvidiaBusId = "PCI:1:0:0";
-  services.xserver.videoDrivers = [ "nvidia" "nvidiaLegacy390" ];
+  services.xserver.videoDrivers = [ "nvidiaLegacy430" "nvidia" ];
 
   systemd.services.nvidia-control-devices = {
     wantedBy = [ "multi-user.target" ];
@@ -215,6 +188,7 @@ in
       PKCS11Provider "${pkgs.opensc}/lib/opensc-pkcs11.so"
     '';
 
+  hardware.opengl.enable = true;
   hardware.opengl.driSupport32Bit = true;
 
   # This value determines the NixOS release from which the default

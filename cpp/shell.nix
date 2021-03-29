@@ -4,12 +4,15 @@ pkgs.mkShell {
     with pkgs;
     [
       clang_9
+      gcc
       ccls
       cmake
       gnumake
       lld
+      cargo-flamegraph
       clang-tools
       llvmPackages.bintools
+      linuxPackages.perf
       (
         python38.withPackages
           (

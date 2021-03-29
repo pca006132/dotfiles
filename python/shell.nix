@@ -1,11 +1,15 @@
-{ pkgs ? import <nixpkgs> {}, pkgs-unstable ? import <nixpkgs-unstable> {} }:
-pkgs.mkShell {
+{ pkgs ? import <nixpkgs> {} }:
+with pkgs;
+mkShell {
   buildInputs = [
-    pkgs-unstable.python38
+    (python38.withPackages(ps: with ps; [
+      virtualenv
+    ]))
+    stdenv.cc.cc.lib
   ];
+
+  # libstdc++.so.6 and CUDA
   shellHook = ''
-    python -m venv .venv
-    source .venv/bin/activate
-    pip install -r requirements.txt
+    export LD_LIBRARY_PATH=${stdenv.cc.cc.lib}/lib/:/run/opengl-driver/lib:$LD_LIBRARY_PATH
   '';
 }

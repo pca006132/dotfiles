@@ -28,6 +28,7 @@ in
       scheme-full
       minted;
     })
+    hyperfine
     (python38.withPackages (
       ps: with ps; [
         numpy
@@ -36,6 +37,8 @@ in
         scipy
         ipython
         jupyter
+        pytest
+        jedi
       ]
       ))
   ] ++ [
