@@ -17,7 +17,7 @@ pkgs.neovim.override
           vimtex
           vim-tmux-navigator
           molokai
-          vim-startify
+          pkgs-unstable.vimPlugins.vim-startify
           pkgs-unstable.vimPlugins.nerdtree
           pkgs-unstable.vimPlugins.nerdtree-git-plugin
           neoterm
@@ -26,14 +26,16 @@ pkgs.neovim.override
           pkgs-unstable.vimPlugins.fzfWrapper
           pkgs-unstable.vimPlugins.fzf-vim
           nvim-gdb
+          pkgs-unstable.vimPlugins.nvim-treesitter
           # coc plugins
-          coc-nvim
-          coc-json
-          coc-python
-          coc-tsserver
-          coc-rust-analyzer
-          coc-vimtex
-          coc-html
+          pkgs-unstable.vimPlugins.coc-nvim
+          pkgs-unstable.vimPlugins.coc-java
+          pkgs-unstable.vimPlugins.coc-json
+          pkgs-unstable.vimPlugins.coc-python
+          pkgs-unstable.vimPlugins.coc-tsserver
+          pkgs-unstable.vimPlugins.coc-rust-analyzer
+          pkgs-unstable.vimPlugins.coc-vimtex
+          pkgs-unstable.vimPlugins.coc-html
         ];
         opt = [
           vim-latex-live-preview
@@ -427,6 +429,23 @@ pkgs.neovim.override
           \'suggest.enablePreview': 1
         \}
         hi MatchParen      ctermfg=208 ctermbg=0 cterm=bold
+
+        lua <<EOF
+        require'nvim-treesitter.configs'.setup {
+          highlight = {
+            enable = true,
+          },
+          incremental_selection = {
+            enable = true,
+            keymaps = {
+              init_selection = "gnn",
+              node_incremental = "grn",
+              scope_incremental = "grc",
+              node_decremental = "grm",
+            },
+          },
+        }
+        EOF
       '';
     };
   }
