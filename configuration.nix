@@ -203,4 +203,39 @@ in
   services.devmon.enable = true;
 
   networking.nameservers = [ "8.8.8.8" ];
+
+  # power management
+  services.tlp = {
+    enable = true;
+    extraConfig = ''
+        START_CHARGE_THRESH_BAT0=75
+        STOP_CHARGE_THRESH_BAT0=80
+
+        CPU_SCALING_GOVERNOR_ON_AC=schedutil
+        CPU_SCALING_GOVERNOR_ON_BAT=schedutil
+
+        # Enable audio power saving for Intel HDA, AC97 devices (timeout in secs).
+        # A value of 0 disables, >=1 enables power saving (recommended: 1).
+        # Default: 0 (AC), 1 (BAT)
+        SOUND_POWER_SAVE_ON_AC=0
+        SOUND_POWER_SAVE_ON_BAT=1
+
+        # Runtime Power Management for PCI(e) bus devices: on=disable, auto=enable.
+        # Default: on (AC), auto (BAT)
+        RUNTIME_PM_ON_AC=on
+        RUNTIME_PM_ON_BAT=auto
+
+        RADEON_DPM_STATE_ON_AC=performance
+        RADEON_DPM_STATE_ON_BAT=auto
+
+        CPU_ENERGY_PERF_POLICY_ON_AC=performance
+        CPU_ENERGY_PERF_POLICY_ON_BAT=balanced_power
+
+        # Battery feature drivers: 0=disable, 1=enable
+        # Default: 1 (all)
+        NATACPI_ENABLE=1
+        TPACPI_ENABLE=1
+        TPSMAPI_ENABLE=1
+    '';
+  };
 }
