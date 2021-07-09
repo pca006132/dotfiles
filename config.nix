@@ -73,7 +73,7 @@ in
 
   programs.direnv = {
     enable = true;
-    enableNixDirenvIntegration = true;
+    nix-direnv.enable = true;
     enableZshIntegration = true;
   };
 
@@ -103,7 +103,7 @@ in
   services.gpg-agent = {
     defaultCacheTtlSsh = 60;
     enable = true;
-    enableSshSupport = true;
+    enableSshSupport = false;
     enableExtraSocket = true;
     sshKeys = [ "996D13DF48B5A21F57298DD1B542F46ABECF3015" ];
   };
