@@ -23,32 +23,41 @@ in
     xclip
     sshfs
     pkgs-unstable.fzf
-    (texlive.combine {
-      inherit (texlive)
-      scheme-full
-      minted;
-    })
+    (
+      texlive.combine {
+        inherit (texlive)
+          scheme-full
+          minted
+          ;
+      }
+    )
     hyperfine
-    (python38.withPackages (
-      ps: with ps; [
-        numpy
-        pygments
-        matplotlib
-        scipy
-        ipython
-        jupyter
-        pytest
-        jedi
-      ]
-      ))
+    (
+      python38.withPackages (
+        ps: with ps; [
+          numpy
+          pygments
+          matplotlib
+          scipy
+          ipython
+          jupyter
+          pytest
+          autopep8
+        ]
+      )
+    )
   ] ++ [
     mynvim
   ] ++ extra-pkgs;
 
   nixpkgs.overlays = [
-    (import (builtins.fetchTarball {
-      url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
-    }))
+    (
+      import (
+        builtins.fetchTarball {
+          url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
+        }
+      )
+    )
   ];
 
   home.sessionVariables = {

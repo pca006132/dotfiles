@@ -31,14 +31,15 @@ pkgs.neovim.override
           pkgs-unstable.vimPlugins.coc-nvim
           pkgs-unstable.vimPlugins.coc-java
           pkgs-unstable.vimPlugins.coc-json
-          pkgs-unstable.vimPlugins.coc-python
+          pkgs-unstable.vimPlugins.coc-pyright
           pkgs-unstable.vimPlugins.coc-tsserver
           pkgs-unstable.vimPlugins.coc-rust-analyzer
           pkgs-unstable.vimPlugins.coc-vimtex
           pkgs-unstable.vimPlugins.coc-html
+
+          pkgs-unstable.vimPlugins.vim-latex-live-preview
         ];
         opt = [
-          vim-latex-live-preview
         ];
       };
       customRC = ''
@@ -402,8 +403,7 @@ pkgs.neovim.override
           \  'checkOnSave.command': 'clippy',
           \},
           \'python': {
-          \  'venvFolders': [$VIRTUAL_ENV],
-          \  'jediEnabled': 1
+          \  'venvPath': [$VIRTUAL_ENV],
           \},
           \'languageserver': {
           \  'nix': {
@@ -429,6 +429,7 @@ pkgs.neovim.override
           \'suggest.enablePreview': 1
         \}
         hi MatchParen      ctermfg=208 ctermbg=0 cterm=bold
+        autocmd FileType python let b:coc_root_patterns = ['.git', '.env', 'setup.py']
 
         lua <<EOF
         require'nvim-treesitter.configs'.setup {
@@ -446,6 +447,8 @@ pkgs.neovim.override
           },
         }
         EOF
+        set foldmethod=expr
+        set foldexpr=nvim_treesitter#foldexpr()
       '';
     };
   }
