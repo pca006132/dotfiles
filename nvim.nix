@@ -1,45 +1,49 @@
-{ pkgs ? import <nixpkgs> {}
-, pkgs-unstable ? import <nixpkgs-unstable> {}
-}:
-pkgs.neovim.override
+{ pkgs , pkgs-unstable }:
+pkgs-unstable.neovim.override
   {
     configure = {
-      packages.myVimPackage = with pkgs.vimPlugins; {
+      packages.myVimPackage = with pkgs-unstable.vimPlugins; {
         start = [
+          plenary-nvim
           vim-gitgutter
           vim-commentary
           vim-surround
           vim-dispatch
           lightline-vim
           vim-fugitive
-          vim-sneak
           vim-polyglot
           vimtex
           vim-tmux-navigator
           molokai
-          pkgs-unstable.vimPlugins.vim-startify
-          pkgs-unstable.vimPlugins.nerdtree
-          pkgs-unstable.vimPlugins.nerdtree-git-plugin
+          codi-vim
+          vim-startify
+          nerdtree
+          nerdtree-git-plugin
           neoterm
           lightline-bufferline
           delimitMate
-          pkgs-unstable.vimPlugins.fzfWrapper
-          pkgs-unstable.vimPlugins.fzf-vim
+          # fzfWrapper
+          # fzf-vim
+          telescope-nvim
+          indent-blankline-nvim
           nvim-gdb
-          pkgs-unstable.vimPlugins.nvim-treesitter
+          lightspeed-nvim
+          pkgs.vimPlugins.nvim-treesitter
+          nvim-dap
+          copilot-vim
           # coc plugins
-          pkgs-unstable.vimPlugins.coc-nvim
-          pkgs-unstable.vimPlugins.coc-java
-          pkgs-unstable.vimPlugins.coc-json
-          pkgs-unstable.vimPlugins.coc-pyright
-          pkgs-unstable.vimPlugins.coc-tsserver
-          pkgs-unstable.vimPlugins.coc-rust-analyzer
-          pkgs-unstable.vimPlugins.coc-vimtex
-          pkgs-unstable.vimPlugins.coc-html
-
-          pkgs-unstable.vimPlugins.vim-latex-live-preview
+          coc-nvim
+          coc-metals
+          coc-java
+          coc-json
+          coc-pyright
+          coc-tsserver
+          coc-rust-analyzer
+          coc-vimtex
+          coc-html
         ];
         opt = [
+          vim-latex-live-preview
         ];
       };
       customRC = ''
@@ -47,7 +51,7 @@ pkgs.neovim.override
         if &compatible
           set nocompatible
         endif
-        set guifont=Iosevka:h12
+        set guifont=monospace:h11
         filetype on
         filetype plugin on
         filetype indent on
@@ -130,7 +134,7 @@ pkgs.neovim.override
         endfun
         if has('folding')
           set foldenable
-          set foldmethod=syntax
+          set foldmethod=indent
           set foldlevelstart=99
           set foldtext=FoldText()
         endif
@@ -230,6 +234,15 @@ pkgs.neovim.override
         nnoremap <silent> <leader>bd :Bclose<CR>
         " kill buffer
         nnoremap <silent> <leader>bk :bd!<CR>
+        " disable middle mouse click paste
+        map <MiddleMouse> <Nop>
+        imap <MiddleMouse> <Nop>
+        map <2-MiddleMouse> <Nop>
+        imap <2-MiddleMouse> <Nop>
+        map <3-MiddleMouse> <Nop>
+        imap <3-MiddleMouse> <Nop>
+        map <4-MiddleMouse> <Nop>
+        imap <4-MiddleMouse> <Nop>
         " ======================================================
         " ==================== Color scheme ====================
         " ======================================================
@@ -281,10 +294,6 @@ pkgs.neovim.override
           \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3"},
           \ 'enable': {'statusline': 1, 'tabline': 1}
           \ }
-        " ======================================================
-        " ==================== Sneak config ====================
-        " ======================================================
-        let g:sneak#label = 1
         " ======================================================
         " ==================== Coc setting =====================
         " ======================================================
@@ -350,27 +359,21 @@ pkgs.neovim.override
         " ======================================================
         " ====================== startify ======================
         " ======================================================
-        function s:list_todo()
-          return map(systemlist('task list | head -n -2 | tail -n +4'),
-          \ '{"line": matchlist(v:val, "^\\s\\d\\+\\s\\w\\+\\s\\(.\\+\\)")[1]'.
-          \ ',"cmd": "! task".matchstr(v:val, "^\\s\\d\\+") ." done"}')
-        endfunction
         let g:startify_session_persistence=1
         let g:startify_change_to_dir=0
         let g:startify_fortune_use_unicode=1
         let g:startify_lists = [
             \ {'type': 'sessions', 'header': ['Sessions']},
-            \ {'type': 'dir', 'header': ['MRU', getcwd()]},
-            \ {'type': function('s:list_todo'), 'header': ['TODO']}
+            \ {'type': 'dir', 'header': ['MRU', getcwd()]}
             \ ]
         " ======================================================
         " ===================== Fugitive =======================
         " ======================================================
-        nnoremap <silent> <leader>gg :G<cr>
-        nnoremap <silent> <leader>gc :Gcommit<cr>
-        nnoremap <silent> <leader>gp :Gpush<cr>
-        nnoremap <silent> <leader>gd :Gdiff<cr>
-        nnoremap <silent> <leader>gf :Gpull<cr>
+        nnoremap <silent> <leader>gg :Git<cr>
+        nnoremap <silent> <leader>gc :Git commit<cr>
+        nnoremap <silent> <leader>gp :Git push<cr>
+        nnoremap <silent> <leader>gd :Git diff<cr>
+        nnoremap <silent> <leader>gf :Git pull<cr>
         " ======================================================
         " ===================== NerdTree =======================
         " ======================================================
@@ -401,6 +404,9 @@ pkgs.neovim.override
           \  'serverPath': $RUST_ANALYZER_PATH,
           \  'inlayHints.chainingHints': 0,
           \  'checkOnSave.command': 'clippy',
+          \  'rustfmt': {
+          \    'enableRangeFormatting': 1
+          \  }
           \},
           \'python': {
           \  'venvPath': [$VIRTUAL_ENV],
@@ -431,6 +437,12 @@ pkgs.neovim.override
         hi MatchParen      ctermfg=208 ctermbg=0 cterm=bold
         autocmd FileType python let b:coc_root_patterns = ['.git', '.env', 'setup.py']
 
+        " Find files using Telescope command-line sugar.
+        nnoremap <leader>ff <cmd>Telescope find_files<cr>
+        nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+        nnoremap <leader>fb <cmd>Telescope buffers<cr>
+        nnoremap <leader>fh <cmd>Telescope help_tags<cr>
+
         lua <<EOF
         require'nvim-treesitter.configs'.setup {
           highlight = {
@@ -447,8 +459,6 @@ pkgs.neovim.override
           },
         }
         EOF
-        set foldmethod=expr
-        set foldexpr=nvim_treesitter#foldexpr()
       '';
     };
   }

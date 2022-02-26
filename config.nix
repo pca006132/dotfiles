@@ -1,14 +1,12 @@
-{ pkgs
-, pkgs-unstable ? import <nixpkgs-unstable> {}
-, extra-pkgs ? []
-, ...
-}:
+{ pkgs , pkgs-unstable, neovim-nightly-overlay, ... }:
 let
-  mynvim = import ./nvim.nix { inherit pkgs; };
+  mynvim = import ./nvim.nix { inherit pkgs pkgs-unstable; };
 in
 {
   home.packages = with pkgs; [
     # Misc
+    dconf
+    gcc
     pkg-config
     git
     tealdeer
@@ -22,6 +20,7 @@ in
     ranger
     xclip
     sshfs
+    neovide
     pkgs-unstable.fzf
     (
       texlive.combine {
@@ -46,18 +45,11 @@ in
         ]
       )
     )
-  ] ++ [
     mynvim
-  ] ++ extra-pkgs;
+  ];
 
   nixpkgs.overlays = [
-    (
-      import (
-        builtins.fetchTarball {
-          url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
-        }
-      )
-    )
+    neovim-nightly-overlay.overlay
   ];
 
   home.sessionVariables = {
@@ -67,7 +59,6 @@ in
   programs.home-manager = {
     enable = true;
   };
-  home.stateVersion = "20.09";
 
   fonts.fontconfig.enable = true;
 
@@ -75,6 +66,11 @@ in
     enable = true;
     nix-direnv.enable = true;
     enableZshIntegration = true;
+  };
+
+  services.pulseeffects = {
+    enable = true;
+    package = pkgs.pulseeffects-pw;
   };
 
   programs.git = {
@@ -98,13 +94,18 @@ in
     };
   };
 
-  programs.gpg.enable = true;
+  programs.gpg = {
+    enable = true;
+    publicKeys = [
+      { source = ./public.key; trust = 5; }
+    ];
+  };
 
   services.gpg-agent = {
     defaultCacheTtlSsh = 60;
     enable = true;
-    enableSshSupport = false;
-    enableExtraSocket = true;
+    enableSshSupport = true;
+    enableExtraSocket = false;
     sshKeys = [ "996D13DF48B5A21F57298DD1B542F46ABECF3015" ];
   };
 
@@ -112,7 +113,6 @@ in
     enable = true;
     initExtra = ''
       source /etc/profile
-      task | awk '{ z = '$(tput cols)' - length; y = int(z / 2); x = z - y; printf "%*s%s%*s\n", x, "", $0, y, ""; }'
     '';
     enableAutosuggestions = true;
     oh-my-zsh = {
@@ -144,12 +144,8 @@ in
       bind t new
     '';
     keyMode = "vi";
-    plugins = with pkgs.tmuxPlugins; [ vim-tmux-navigator ];
+    plugins = [ pkgs.tmuxPlugins.vim-tmux-navigator ];
     shortcut = "a";
     terminal = "xterm";
-  };
-
-  programs.taskwarrior = {
-    enable = true;
   };
 }
