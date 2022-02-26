@@ -4,8 +4,36 @@
 
 { config, pkgs, ... }:
 let
-  unstable = import <nixpkgs> {
+  pkgs-unstable = import (fetchTarball https://github.com/NixOS/nixpkgs/archive/master.tar.gz) {
     config = { allowUnfree = true; };
+  }; 
+  rtw89 = { pkgs, kernel }: 
+  let
+    stdenv = pkgs.stdenv;
+    fetchFromGitHub = pkgs.fetchFromGitHub;
+    modDestDir = "$out/lib/modules/${kernel.modDirVersion}/kernel/drivers/net/wireless/realtek/rtw89";
+  in pkgs.stdenv.mkDerivation {
+    pname = "rtw89";
+    version = "unstable-2022-01-22";
+
+    src = fetchFromGitHub {
+      owner = "lwfinger";
+      repo = "rtw89";
+      rev = "72c62621c207eb4e8b68b92522fd104ebc32fa69";
+      sha256 = "0xjzbm21zf3b87kgam0dn68c2dk0sqnia6c751lb5jkxwzsqxnn1";
+    };
+
+    makeFlags = [ "KSRC=${kernel.dev}/lib/modules/${kernel.modDirVersion}/build" ];
+
+    enableParallelBuilding = true;
+
+    installPhase = ''
+      runHook preInstall
+      mkdir -p ${modDestDir}
+      find . -name '*.ko' -exec cp --parents {} ${modDestDir} \;
+      find ${modDestDir} -name '*.ko' -exec xz -f {} \;
+      runHook postInstall
+    '';
   };
 in
 {
@@ -16,52 +44,165 @@ in
     ];
 
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.pulseaudio = true;
 
-  # Bootloader settings
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.grub = {
-    devices = [ "nodev" ];
-    version = 2;
-    useOSProber = true;
-    enable = true;
-    efiSupport = true;
-    #efiInstallAsRemovable = true;
+  nix = {
+    package = pkgs.nixUnstable;
+    extraOptions = ''
+      experimental-features = nix-command flakes
+      keep-outputs = true
+      keep-derivations = true
+    '';
+    trustedUsers = [
+      "root"
+      "pca006132"
+    ];
   };
 
-  # Networking settings
-  networking = {
-    useDHCP = false;
-    interfaces = {
-      enp2s0.useDHCP = true;
-      wlo1.useDHCP = true;
-    };
-    dhcpcd.persistent = true;
-    networkmanager = {
+  # Use the systemd-boot EFI boot loader.
+  boot.initrd.kernelModules = [ "amdgpu" ];
+  boot.kernelPackages = pkgs.linuxPackages_xanmod;
+
+  boot.extraModulePackages = [
+    (rtw89 {inherit pkgs; kernel = pkgs.linuxPackages_xanmod.kernel; })
+  ];
+  boot.loader = {
+    #efi.canTouchEfiVariables = true;
+    grub = {
+      devices = [ "nodev" ];
+      version = 2;
+      useOSProber = true;
       enable = true;
-      dhcp = "dhclient";
-      appendNameservers = [ "8.8.8.8" "8.8.4.4" ];
+      efiSupport = true;
+      efiInstallAsRemovable = true;
     };
   };
+
+  networking.hostName = "pca-yoga"; # Define your hostname.
+  networking.networkmanager.enable = true;
+  networking.networkmanager.wifi.backend = "iwd";
+  networking.networkmanager.wifi.powersave = true;
+  networking.wireless.iwd.enable = true;
+
+  # Set your time zone.
+  time.timeZone = "Asia/Hong_Kong";
+  time.hardwareClockInLocalTime = true;
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
-
   i18n.inputMethod = {
     enabled = "fcitx";
     fcitx.engines = with pkgs.fcitx-engines; [ rime ];
   };
 
-  fonts.fonts = [
-    pkgs.noto-fonts
-    pkgs.noto-fonts-cjk
-    pkgs.noto-fonts-emoji
-    pkgs.noto-fonts-extra
-    pkgs.symbola
+  fonts.fonts = with pkgs; [
+    noto-fonts
+    noto-fonts-cjk
+    noto-fonts-emoji
+    noto-fonts-extra
+  ];
+  fonts.fontconfig.hinting.enable = false;
+
+  # Enable the X11 windowing system.
+  services.xserver.enable = true;
+  services.xserver.videoDrivers = [ "amdgpu" ];
+
+  hardware.opengl.enable = true;
+  hardware.opengl.extraPackages = with pkgs; [
+    rocm-opencl-icd
+    rocm-opencl-runtime
+    amdvlk
   ];
 
-  # Set your time zone.
-  time.timeZone = "Asia/Hong_Kong";
-  time.hardwareClockInLocalTime = true;
+  hardware.opengl.driSupport = true;
+  hardware.opengl.driSupport32Bit = true;
+
+  programs.ssh.startAgent = false;
+
+  # power management
+  services.auto-cpufreq.enable = true;
+  services.tlp = {
+    enable = true;
+    settings = {
+      SOUND_POWER_SAVE_ON_AC = 0;
+      SOUND_POWER_SAVE_ON_BAT = 1;
+
+      CPU_SCALING_GOVERNOR_ON_AC = "performance";
+      CPU_SCALING_GOVERNOR_ON_BAT = "schedutil";
+
+      RADEON_DPM_STATE_ON_AC = "performance";
+      RADEON_DPM_STATE_ON_BAT = "auto";
+
+      CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
+      CPU_ENERGY_PERF_POLICY_ON_BAT = "schedutil";
+
+      NATACPI_ENABLE = 1;
+      TPACPI_ENABLE = 1;
+      TPSMAPI_ENABLE = 1;
+    };
+  };
+
+  services.xserver.displayManager.sddm.enable = true;
+  services.xserver.desktopManager.plasma5.enable = true;
+
+  # Configure keymap in X11
+  services.xserver.layout = "us";
+  services.xserver.xkbOptions = "eurosign:e";
+
+  # Enable CUPS to print documents.
+  services.printing.enable = true;
+  services.avahi.enable = true;
+  services.avahi.nssmdns = true;
+
+  services.earlyoom.enable = true;
+  services.logind.extraConfig = ''
+    RuntimeDirectorySize=50%
+  '';
+  services.journald.extraConfig = ''
+    MaxRetentionSec=4day
+  '';
+
+  services.kmscon.enable = true;
+
+  # Enable sound.
+  sound.enable = true;
+  services.pipewire = {
+    enable = true;
+    pulse.enable = true;
+    jack.enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+  };
+  services.ofono.enable = true;
+
+  hardware.bluetooth = {
+    enable = true;
+    hsphfpd.enable = true;
+    disabledPlugins = [
+      "sap"
+    ];
+  };
+  services.blueman.enable = true;
+
+  # Enable touchpad support (enabled default in most desktopManager).
+  services.xserver.libinput.enable = true;
+
+  hardware.enableAllFirmware = true;
+  services.devmon.enable = true;
+  services.pcscd.enable = true;
+
+  services.udev.packages = with pkgs; [
+    openocd
+    yubikey-personalization
+    libu2f-host
+  ];
+
+  # Define a user account. Don't forget to set a password with ‘passwd’.
+  users.defaultUserShell = pkgs.zsh;
+  users.users.pca006132 = {
+    isNormalUser = true;
+    extraGroups = [ "wheel" "uucp" "audio" "dialout" "networkmanager" ];
+  };
 
   # List packages installed in system profile. To search, run:
   environment.systemPackages = with pkgs; [
@@ -77,9 +218,7 @@ in
     pciutils
     tmux
     minicom
-    fd
     nodejs
-    firefox-bin
     gparted
     thunderbird
     git
@@ -90,106 +229,16 @@ in
     p7zip
     ntfs3g
     udevil
-    # KDE
-    arc-kde-theme
-    # Smart card
     yubico-piv-tool
     pinentry-curses
     pinentry-qt
-    paperkey
-    unstable.zoom-us
+
+    arc-kde-theme
+    gnome.adwaita-icon-theme
+
+    pkgs-unstable.zoom-us
+    pkgs-unstable.firefox-bin
   ];
-
-  programs.wireshark.enable = true;
-
-  environment.shells = [ pkgs.bashInteractive pkgs.zsh ];
-
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
-
-  services.earlyoom.enable = true;
-
-  # Enable sound.
-  sound.enable = true;
-  hardware.pulseaudio = {
-    enable = true;
-    package = pkgs.pulseaudioFull;
-    extraModules = [ pkgs.pulseaudio-modules-bt ];
-    zeroconf = {
-      discovery.enable = true;
-      publish.enable = true;
-    };
-  };
-
-  hardware.bluetooth.enable = true;
-  services.blueman.enable = true;
-
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
-  services.xserver.layout = "us";
-  services.xserver.xkbOptions = "eurosign:e";
-
-  # Enable touchpad support.
-  services.xserver.libinput.enable = true;
-
-  services.xserver = {
-    desktopManager = {
-      plasma5.enable = true;
-    };
-    displayManager = {
-      sddm.enable = true;
-    };
-  };
-
-  hardware.enableAllFirmware = true;
-
-  # Nvidia driver
-  hardware.nvidia.prime.sync.enable = true;
-  hardware.nvidia.prime.sync.allowExternalGpu = true;
-  hardware.nvidia.prime.intelBusId = "PCI:0:2:0";
-  hardware.nvidia.prime.nvidiaBusId = "PCI:1:0:0";
-  services.xserver.videoDrivers = [ "nvidiaLegacy430" "nvidia" ];
-
-  systemd.services.nvidia-control-devices = {
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig.ExecStart = "${pkgs.linuxPackages.nvidia_x11.bin}/bin/nvidia-smi";
-  };
-
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.defaultUserShell = pkgs.zsh;
-  users.users.pca = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" "uucp" "audio" "dialout" "plugdev" "wireshark" ];
-  };
-
-  # udev settings
-  services.udev.packages = [ pkgs.openocd pkgs.yubikey-personalization pkgs.libu2f-host ];
-  services.udev.extraRules = ''
-    # leaf maple
-    SUBSYSTEM=="usb", ATTRS{idVendor}=="1eaf", ATTRS{idProduct}=="0003", MODE="0660", GROUP="plugdev"
-    SUBSYSTEM=="usb", ATTRS{idVendor}=="1eaf", ATTRS{idProduct}=="0004", MODE="0660", GROUP="plugdev"
-    # glasgow
-    SUBSYSTEM=="usb", ATTRS{idVendor}=="20b7", ATTRS{idProduct}=="9db1", MODE="0660", GROUP="plugdev"
-    # hackrf
-    SUBSYSTEM=="usb", ATTRS{idVendor}=="1d50", ATTRS{idProduct}=="6089", MODE="0660", GROUP="plugdev"
-    # bladerf
-    SUBSYSTEM=="usb", ATTRS{idVendor}=="2cf0", ATTRS{idProduct}=="5250", MODE="0660", GROUP="plugdev"
-    # personal measurement device
-    SUBSYSTEM=="usb", ATTRS{idVendor}=="09db", ATTRS{idProduct}=="007a", MODE="0660", GROUP="plugdev"
-    # logic analyzer
-    SUBSYSTEM=="usb", ATTRS{idVendor}=="0925", ATTRS{idProduct}=="3881", MODE="0660", GROUP="plugdev"
-    # Segger JLink
-    SUBSYSTEM=="usb", ATTRS{idVendor}=="1366", ATTRS{idProduct}=="0101", MODE="0660", GROUP="plugdev"
-  '';
-
-  services.pcscd.enable = true;
-  programs.ssh.extraConfig =
-    ''
-      PKCS11Provider "${pkgs.opensc}/lib/opensc-pkcs11.so"
-    '';
-
-  hardware.opengl.enable = true;
-  hardware.opengl.driSupport32Bit = true;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
@@ -197,45 +246,7 @@ in
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "20.09"; # Did you read the comment?
+  system.stateVersion = "21.11"; # Did you read the comment?
 
-  # enable auto-mounting
-  services.devmon.enable = true;
-
-  networking.nameservers = [ "8.8.8.8" ];
-
-  # power management
-  services.tlp = {
-    enable = true;
-    extraConfig = ''
-        START_CHARGE_THRESH_BAT0=75
-        STOP_CHARGE_THRESH_BAT0=80
-
-        CPU_SCALING_GOVERNOR_ON_AC=schedutil
-        CPU_SCALING_GOVERNOR_ON_BAT=schedutil
-
-        # Enable audio power saving for Intel HDA, AC97 devices (timeout in secs).
-        # A value of 0 disables, >=1 enables power saving (recommended: 1).
-        # Default: 0 (AC), 1 (BAT)
-        SOUND_POWER_SAVE_ON_AC=0
-        SOUND_POWER_SAVE_ON_BAT=1
-
-        # Runtime Power Management for PCI(e) bus devices: on=disable, auto=enable.
-        # Default: on (AC), auto (BAT)
-        RUNTIME_PM_ON_AC=on
-        RUNTIME_PM_ON_BAT=auto
-
-        RADEON_DPM_STATE_ON_AC=performance
-        RADEON_DPM_STATE_ON_BAT=auto
-
-        CPU_ENERGY_PERF_POLICY_ON_AC=performance
-        CPU_ENERGY_PERF_POLICY_ON_BAT=balanced_power
-
-        # Battery feature drivers: 0=disable, 1=enable
-        # Default: 1 (all)
-        NATACPI_ENABLE=1
-        TPACPI_ENABLE=1
-        TPSMAPI_ENABLE=1
-    '';
-  };
 }
+
