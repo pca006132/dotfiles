@@ -22,14 +22,17 @@ pkgs-unstable.neovim.override
           neoterm
           lightline-bufferline
           delimitMate
-          # fzfWrapper
-          # fzf-vim
           telescope-nvim
           indent-blankline-nvim
-          nvim-gdb
           lightspeed-nvim
           pkgs.vimPlugins.nvim-treesitter
+          pkgs.vimPlugins.nvim-treesitter-textobjects
+          pkgs.vimPlugins.nvim-treesitter-context
           nvim-dap
+          nvim-dap-ui
+          zen-mode-nvim
+          neoscroll-nvim
+          twilight-nvim
           copilot-vim
           # coc plugins
           coc-nvim
@@ -259,12 +262,6 @@ pkgs-unstable.neovim.override
         highlight SignColumn guibg=bg
         highlight SignColumn ctermbg=bg
         " ======================================================
-        " ====================== Coq =====================
-        " ======================================================
-        " disable vlang, we use coq instead
-        let g:polyglot_disabled = ['v']
-        " ======================================================
-        " ======================================================
         " ================== Lightline config ==================
         " ======================================================
         let g:lightline = {
@@ -379,23 +376,6 @@ pkgs-unstable.neovim.override
         " ======================================================
         nnoremap <silent> <C-n> :NERDTreeFocus<cr>
         " ======================================================
-        " ======================= FZF ==========================
-        nnoremap <silent> <C-f> :FZF<cr>
-        " ======================================================
-        " ======================================================
-        " ===================== nvim-gdb =======================
-        " ======================================================
-        tnoremap <Esc> <C-\><C-n>
-        let g:nvimgdb_config_override = {
-          \ 'key_next': 'n',
-          \ 'key_step': 's',
-          \ 'key_finish': 'f',
-          \ 'key_continue': 'c',
-          \ 'key_until': 'u',
-          \ 'key_breakpoint': 'b',
-          \ 'set_tkeymaps': "NvimGdbNoTKeymaps",
-          \ }
-        " ======================================================
         " ==================== Path for NixOS ==================
         " ======================================================
         let g:coc_node_path = '${pkgs.nodejs}/bin/node' 
@@ -443,6 +423,19 @@ pkgs-unstable.neovim.override
         nnoremap <leader>fb <cmd>Telescope buffers<cr>
         nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
+        " ======================================================
+        " ====================== DAP ===========================
+        " ======================================================
+        nnoremap <silent> <F5> :lua require'dap'.continue()<CR>
+        nnoremap <silent> <F10> :lua require'dap'.step_over()<CR>
+        nnoremap <silent> <F11> :lua require'dap'.step_into()<CR>
+        nnoremap <silent> <F12> :lua require'dap'.step_out()<CR>
+        nnoremap <silent> <leader>b :lua require'dap'.toggle_breakpoint()<CR>
+        nnoremap <silent> <leader>B :lua require'dap'.set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>
+        nnoremap <silent> <leader>lp :lua require'dap'.set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<CR>
+        nnoremap <silent> <leader>dr :lua require'dap'.repl.open()<CR>
+        nnoremap <silent> <leader>dl :lua require'dap'.run_last()<CR>
+
         lua <<EOF
         require'nvim-treesitter.configs'.setup {
           highlight = {
@@ -457,7 +450,101 @@ pkgs-unstable.neovim.override
               node_decremental = "grm",
             },
           },
+          textobjects = {
+            select = {
+              enable = true,
+
+              -- Automatically jump forward to textobj, similar to targets.vim
+              lookahead = true,
+
+              keymaps = {
+                -- You can use the capture groups defined in textobjects.scm
+                ["af"] = "@function.outer",
+                ["if"] = "@function.inner",
+                ["ac"] = "@class.outer",
+                ["ic"] = "@class.inner",
+              },
+            },
+          },
+          move = {
+            enable = true,
+            set_jumps = true, -- whether to set jumps in the jumplist
+            goto_next_start = {
+              ["]m"] = "@function.outer",
+              ["]]"] = "@class.outer",
+            },
+            goto_next_end = {
+              ["]M"] = "@function.outer",
+              ["]["] = "@class.outer",
+            },
+            goto_previous_start = {
+              ["[m"] = "@function.outer",
+              ["[["] = "@class.outer",
+            },
+            goto_previous_end = {
+              ["[M"] = "@function.outer",
+              ["[]"] = "@class.outer",
+            },
+          },
         }
+
+        require'treesitter-context'.setup{
+          enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
+          throttle = true, -- Throttles plugin updates (may improve performance)
+          max_lines = 4, -- How many lines the window should span. Values <= 0 mean no limit.
+          patterns = { -- Match patterns for TS nodes. These get wrapped to match at word boundaries.
+            -- For all filetypes
+            -- Note that setting an entry here replaces all other patterns for this entry.
+            -- By setting the 'default' entry below, you can control which nodes you want to
+            -- appear in the context window.
+            default = {
+                'class',
+                'function',
+                'method',
+                'for',
+                'while',
+                'if',
+                'switch',
+                'case',
+            },
+            rust = {
+                'impl_item',
+                'match_arm'
+            }
+          }
+        }
+
+        local dap = require('dap')
+        handle = io.popen([[rustc --print sysroot]])
+        sysroot = handle:read('*a'):gsub('^(.-)%s*$', '%1')
+
+        script_import = 'command script import ' .. sysroot .. '/lib/rustlib/etc/lldb_lookup.py'
+        commands_file = sysroot .. '/lib/rustlib/etc/lldb_commands'
+
+        dap.adapters.lldb = {
+          type = 'executable',
+          command = 'lldb-vscode',
+          name = "lldb",
+        }
+        dap.configurations.cpp = {
+          {
+            name = 'Launch',
+            type = 'lldb',
+            request = 'launch',
+            program = function()
+              return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+            end,
+            cwd = "''${workspaceFolder}",
+            stopOnEntry = false,
+            args = {},
+            runInTerminal = false,
+          },
+        }
+        dap.configurations.c = dap.configurations.cpp
+        dap.configurations.rust = dap.configurations.cpp
+
+        require('neoscroll').setup()
+        require("zen-mode").setup()
         EOF
       '';
     };

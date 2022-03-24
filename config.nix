@@ -65,6 +65,7 @@ in
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
+    nix-direnv.enableFlakes = true;
     enableZshIntegration = true;
   };
 
@@ -85,6 +86,7 @@ in
         ff = "only";
       };
     };
+    lfs.enable = true;
     userEmail = "john.lck40@gmail.com";
     userName = "pca006132";
     ignores = [ ".envrc" ".direnv/" ".venv" ];
