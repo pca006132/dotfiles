@@ -74,12 +74,19 @@ in
     enable = true;
   };
 
+  programs.kitty = {
+    enable = true;
+    font = {
+      name = "DejaVuSansMono";
+      size = 12;
+    };
+  };
+
   fonts.fontconfig.enable = true;
 
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
-    nix-direnv.enableFlakes = true;
     enableZshIntegration = true;
   };
 
