@@ -23,14 +23,23 @@
     };
   };
 
-  outputs = { home-manager, nixpkgs, nixpkgs-unstable, neovim-nightly-overlay
-    , cmp-copilot-src, alpha-nvim-src, monokai-nvim-src, ... }:
+  outputs =
+    { home-manager
+    , nixpkgs
+    , nixpkgs-unstable
+    , neovim-nightly-overlay
+    , cmp-copilot-src
+    , alpha-nvim-src
+    , monokai-nvim-src
+    , ...
+    }:
     let
       system = "x86_64-linux";
       username = "pca006132";
       pkgs = nixpkgs.legacyPackages.${system};
       pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
-    in {
+    in
+    {
       homeConfigurations.${username} =
         home-manager.lib.homeManagerConfiguration {
           # Specify the path to your home configuration here

@@ -1,5 +1,11 @@
-{ pkgs, pkgs-unstable, neovim-nightly-overlay, cmp-copilot-src, alpha-nvim-src,
-monokai-nvim-src, ... }:
+{ pkgs
+, pkgs-unstable
+, neovim-nightly-overlay
+, cmp-copilot-src
+, alpha-nvim-src
+, monokai-nvim-src
+, ...
+}:
 let
   luaSetup = plugin: name: {
     plugin = plugin;
@@ -41,44 +47,28 @@ in
     sshfs
     neovide
     pkgs-unstable.fzf
-    (
-      texlive.combine {
-        inherit (texlive)
-          scheme-full
-          minted
-          ;
-      }
-    )
+    (texlive.combine { inherit (texlive) scheme-full minted; })
     hyperfine
-    nixfmt
-    (
-      python38.withPackages (
-        ps: with ps; [
-          numpy
-          pygments
-          matplotlib
-          scipy
-          ipython
-          jupyter
-          pytest
-          autopep8
-        ]
-      )
-    )
-    (nerdfonts.override { fonts = ["DejaVuSansMono" "Hack"]; })
+    nixpkgs-fmt
+    (python38.withPackages (ps:
+      with ps; [
+        numpy
+        pygments
+        matplotlib
+        scipy
+        ipython
+        jupyter
+        pytest
+        autopep8
+      ]))
+    (nerdfonts.override { fonts = [ "DejaVuSansMono" "Hack" ]; })
   ];
 
-  nixpkgs.overlays = [
-    neovim-nightly-overlay.overlay
-  ];
+  nixpkgs.overlays = [ neovim-nightly-overlay.overlay ];
 
-  home.sessionVariables = {
-    "EDITOR" = "nvim";
-  };
+  home.sessionVariables = { "EDITOR" = "nvim"; };
 
-  programs.home-manager = {
-    enable = true;
-  };
+  programs.home-manager = { enable = true; };
 
   programs.kitty = {
     enable = true;
@@ -109,9 +99,7 @@ in
         editor = "nvim";
         autocrlf = "input";
       };
-      pull = {
-        ff = "only";
-      };
+      pull = { ff = "only"; };
     };
     lfs.enable = true;
     userEmail = "john.lck40@gmail.com";
@@ -125,9 +113,10 @@ in
 
   programs.gpg = {
     enable = true;
-    publicKeys = [
-      { source = ./public.key; trust = 5; }
-    ];
+    publicKeys = [{
+      source = ./public.key;
+      trust = 5;
+    }];
   };
 
   services.gpg-agent = {
@@ -146,19 +135,15 @@ in
     enableAutosuggestions = true;
     oh-my-zsh = {
       enable = true;
-      plugins = [
-        "git"
-        "z"
-        "vi-mode"
-        "history-substring-search"
-      ];
+      plugins = [ "git" "z" "vi-mode" "history-substring-search" ];
       theme = "avit";
     };
     autocd = true;
     shellAliases = {
       ll = "ls -l";
       v = "nvim";
-      r = "ranger --choosedir=$HOME/.rangerdir; LASTDIR=`cat $HOME/.rangerdir`; cd \"$LASTDIR\"";
+      r = ''
+        ranger --choosedir=$HOME/.rangerdir; LASTDIR=`cat $HOME/.rangerdir`; cd "$LASTDIR"'';
     };
   };
 
@@ -182,86 +167,86 @@ in
     enable = true;
     package = pkgs-unstable.neovim.unwrapped;
     extraConfig = ''
-      source ${builtins.toString ./nvim/basic.vim}
-      source ${builtins.toString ./nvim/keymaps.vim}
-      luafile ${builtins.toString ./nvim/lsp.lua}
-      " fugitive
-      nnoremap <silent> <leader>gg :Git<cr>
-      nnoremap <silent> <leader>gc :Git commit<cr>
-      nnoremap <silent> <leader>gp :Git push<cr>
-      nnoremap <silent> <leader>gd :Git diff<cr>
-      nnoremap <silent> <leader>gf :Git pull<cr>
-      " nvim-gps
-      func! NvimGps() abort
-        return luaeval("require'nvim-gps'.is_available()") ?
-             \ luaeval("require'nvim-gps'.get_location()") : ""
-      endf
-      " lightline
-      let g:lightline = {
-        \ 'active': {
-        \   'left': [ [ 'mode', 'paste', 'nvim-gps'],
-        \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
-        \ },
-        \ 'component_function': {
-        \   'gitbranch': 'fugitive#head',
-        \   'nvim-gps': 'NvimGps'
-        \ },
-        \ 'tabline': {
-        \   'left': [['buffers']],
-        \   'right': [['bufnum']]
-        \ },
-        \ 'component_expand': {
-        \   'buffers': 'lightline#bufferline#buffers',
-        \ },
-        \ 'inactive': {
-        \   'left': [['filename']],
-        \   'right': []
-        \ },
-        \ 'component_type': {'buffers': 'tabsel'},
-        \ 'separator': { 'left': "\ue0b0", 'right': "\ue0b2"},
-        \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3"},
-        \ 'enable': {'statusline': 1, 'tabline': 1}
-        \ }
-    " tex live preview
-    let g:livepreview_cursorhold_recompile = 0
-    let g:livepreview_use_biber = 1
-    " telescope
-    nnoremap <leader>ff <cmd>Telescope find_files<cr>
-    nnoremap <leader>fg <cmd>Telescope live_grep<cr>
-    nnoremap <leader>fb <cmd>Telescope buffers<cr>
-    nnoremap <leader>fh <cmd>Telescope help_tags<cr>
-    " debug adapter
-    nnoremap <silent> <F5> :lua require'dap'.continue()<CR>
-    nnoremap <silent> <F10> :lua require'dap'.step_over()<CR>
-    nnoremap <silent> <F11> :lua require'dap'.step_into()<CR>
-    nnoremap <silent> <F12> :lua require'dap'.step_out()<CR>
-    nnoremap <silent> <leader>b :lua require'dap'.toggle_breakpoint()<CR>
-    nnoremap <silent> <leader>B :lua require'dap'.set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>
-    nnoremap <silent> <leader>lp :lua require'dap'.set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<CR>
-    nnoremap <silent> <leader>dr :lua require'dap'.repl.open()<CR>
-    nnoremap <silent> <leader>dl :lua require'dap'.run_last()<CR>
-    " gitsigns
-    highlight DiffAdd guifg=Green ctermfg=Green
-    highlight DiffDelete guifg=Red ctermfg=Red
-    highlight DiffChange guifg=Yellow ctermfg=Yellow
-    " nvim tree
-    nnoremap <C-n> :NvimTreeToggle<CR>
-    nnoremap <leader>r :NvimTreeRefresh<CR>
-    nnoremap <leader>n :NvimTreeFindFile<CR>
-    " nvim-cmp
-    highlight! CmpItemAbbrDeprecated guibg=NONE gui=strikethrough guifg=#808080
-    highlight! CmpItemAbbrMatch guibg=NONE guifg=#569CD6
-    highlight! CmpItemAbbrMatchFuzzy guibg=NONE guifg=#569CD6
-    highlight! CmpItemKindVariable guibg=NONE guifg=#9CDCFE
-    highlight! CmpItemKindInterface guibg=NONE guifg=#9CDCFE
-    highlight! CmpItemKindText guibg=NONE guifg=#9CDCFE
-    highlight! CmpItemKindFunction guibg=NONE guifg=#C586C0
-    highlight! CmpItemKindMethod guibg=NONE guifg=#C586C0
-    highlight! CmpItemKindKeyword guibg=NONE guifg=#D4D4D4
-    highlight! CmpItemKindProperty guibg=NONE guifg=#D4D4D4
-    highlight! CmpItemKindUnit guibg=NONE guifg=#D4D4D4
-    " neoformat
-    nnoremap <leader>cf :Neoformat<CR>
+        source ${builtins.toString ./nvim/basic.vim}
+        source ${builtins.toString ./nvim/keymaps.vim}
+        luafile ${builtins.toString ./nvim/lsp.lua}
+        " fugitive
+        nnoremap <silent> <leader>gg :Git<cr>
+        nnoremap <silent> <leader>gc :Git commit<cr>
+        nnoremap <silent> <leader>gp :Git push<cr>
+        nnoremap <silent> <leader>gd :Git diff<cr>
+        nnoremap <silent> <leader>gf :Git pull<cr>
+        " nvim-gps
+        func! NvimGps() abort
+          return luaeval("require'nvim-gps'.is_available()") ?
+               \ luaeval("require'nvim-gps'.get_location()") : ""
+        endf
+        " lightline
+        let g:lightline = {
+          \ 'active': {
+          \   'left': [ [ 'mode', 'paste', 'nvim-gps'],
+          \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
+          \ },
+          \ 'component_function': {
+          \   'gitbranch': 'fugitive#head',
+          \   'nvim-gps': 'NvimGps'
+          \ },
+          \ 'tabline': {
+          \   'left': [['buffers']],
+          \   'right': [['bufnum']]
+          \ },
+          \ 'component_expand': {
+          \   'buffers': 'lightline#bufferline#buffers',
+          \ },
+          \ 'inactive': {
+          \   'left': [['filename']],
+          \   'right': []
+          \ },
+          \ 'component_type': {'buffers': 'tabsel'},
+          \ 'separator': { 'left': "\ue0b0", 'right': "\ue0b2"},
+          \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3"},
+          \ 'enable': {'statusline': 1, 'tabline': 1}
+          \ }
+      " tex live preview
+      let g:livepreview_cursorhold_recompile = 0
+      let g:livepreview_use_biber = 1
+      " telescope
+      nnoremap <leader>ff <cmd>Telescope find_files<cr>
+      nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+      nnoremap <leader>fb <cmd>Telescope buffers<cr>
+      nnoremap <leader>fh <cmd>Telescope help_tags<cr>
+      " debug adapter
+      nnoremap <silent> <F5> :lua require'dap'.continue()<CR>
+      nnoremap <silent> <F10> :lua require'dap'.step_over()<CR>
+      nnoremap <silent> <F11> :lua require'dap'.step_into()<CR>
+      nnoremap <silent> <F12> :lua require'dap'.step_out()<CR>
+      nnoremap <silent> <leader>b :lua require'dap'.toggle_breakpoint()<CR>
+      nnoremap <silent> <leader>B :lua require'dap'.set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>
+      nnoremap <silent> <leader>lp :lua require'dap'.set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<CR>
+      nnoremap <silent> <leader>dr :lua require'dap'.repl.open()<CR>
+      nnoremap <silent> <leader>dl :lua require'dap'.run_last()<CR>
+      " gitsigns
+      highlight DiffAdd guifg=Green ctermfg=Green
+      highlight DiffDelete guifg=Red ctermfg=Red
+      highlight DiffChange guifg=Yellow ctermfg=Yellow
+      " nvim tree
+      nnoremap <C-n> :NvimTreeToggle<CR>
+      nnoremap <leader>r :NvimTreeRefresh<CR>
+      nnoremap <leader>n :NvimTreeFindFile<CR>
+      " nvim-cmp
+      highlight! CmpItemAbbrDeprecated guibg=NONE gui=strikethrough guifg=#808080
+      highlight! CmpItemAbbrMatch guibg=NONE guifg=#569CD6
+      highlight! CmpItemAbbrMatchFuzzy guibg=NONE guifg=#569CD6
+      highlight! CmpItemKindVariable guibg=NONE guifg=#9CDCFE
+      highlight! CmpItemKindInterface guibg=NONE guifg=#9CDCFE
+      highlight! CmpItemKindText guibg=NONE guifg=#9CDCFE
+      highlight! CmpItemKindFunction guibg=NONE guifg=#C586C0
+      highlight! CmpItemKindMethod guibg=NONE guifg=#C586C0
+      highlight! CmpItemKindKeyword guibg=NONE guifg=#D4D4D4
+      highlight! CmpItemKindProperty guibg=NONE guifg=#D4D4D4
+      highlight! CmpItemKindUnit guibg=NONE guifg=#D4D4D4
+      " neoformat
+      nnoremap <leader>cf :Neoformat<CR>
     '';
     plugins = with pkgs-unstable.vimPlugins; [
       plenary-nvim
@@ -280,25 +265,25 @@ in
       {
         plugin = monokai-nvim;
         config = ''
-        local monokai = require('monokai')
-        local palette = monokai.pro
-        monokai.setup {
-          palette = palette,
-          custom_hlgroups = {
-            GitSignsAdd = {
-              fg = palette.green,
-              bg = palette.base2
-            },
-            GitSignsDelete = {
-              fg = palette.pink,
-              bg = palette.base2
-            },
-            GitSignsChange = {
-              fg = palette.orange,
-              bg = palette.base2
-            },
+          local monokai = require('monokai')
+          local palette = monokai.pro
+          monokai.setup {
+            palette = palette,
+            custom_hlgroups = {
+              GitSignsAdd = {
+                fg = palette.green,
+                bg = palette.base2
+              },
+              GitSignsDelete = {
+                fg = palette.pink,
+                bg = palette.base2
+              },
+              GitSignsChange = {
+                fg = palette.orange,
+                bg = palette.base2
+              },
+            }
           }
-        }
         '';
         type = "lua";
       }
