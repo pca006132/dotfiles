@@ -1,5 +1,37 @@
 {
   "nodes": {
+    "alpha-nvim-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1647966769,
+        "narHash": "sha256-qOmWEgXUN2yQ9pEF0ra4kYF/EyVtryu7M4ot/HmOcd8=",
+        "owner": "goolord",
+        "repo": "alpha-nvim",
+        "rev": "8a1477d8b99a931530f3cfb70f6805b759bebbf7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "goolord",
+        "repo": "alpha-nvim",
+        "type": "github"
+      }
+    },
+    "cmp-copilot-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1636114685,
+        "narHash": "sha256-07cdIAJbGI8nbxvqO3I2ebP9mW1kzbraPW44WOpQRjk=",
+        "owner": "hrsh7th",
+        "repo": "cmp-copilot",
+        "rev": "104f6784351911d39e11f4edeaf43dc9ecc23cc2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hrsh7th",
+        "repo": "cmp-copilot",
+        "type": "github"
+      }
+    },
     "flake-compat": {
       "flake": false,
       "locked": {
@@ -49,6 +81,22 @@
         "owner": "nix-community",
         "ref": "master",
         "repo": "home-manager",
+        "type": "github"
+      }
+    },
+    "monokai-nvim-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1643477281,
+        "narHash": "sha256-u9nxOOjfsVZ9fIrkSh2jQh1F+On8daJfxkJQvSdrO5w=",
+        "owner": "tanvirtin",
+        "repo": "monokai.nvim",
+        "rev": "bff619d7a911cd8d8dcb5168db9ee6dfcc344934",
+        "type": "github"
+      },
+      "original": {
+        "owner": "tanvirtin",
+        "repo": "monokai.nvim",
         "type": "github"
       }
     },
@@ -159,7 +207,10 @@
     },
     "root": {
       "inputs": {
+        "alpha-nvim-src": "alpha-nvim-src",
+        "cmp-copilot-src": "cmp-copilot-src",
         "home-manager": "home-manager",
+        "monokai-nvim-src": "monokai-nvim-src",
         "neovim-nightly-overlay": "neovim-nightly-overlay",
         "nixpkgs": "nixpkgs_3",
         "nixpkgs-unstable": "nixpkgs-unstable"

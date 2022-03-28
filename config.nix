@@ -1,4 +1,5 @@
-{ pkgs, pkgs-unstable, neovim-nightly-overlay, ... }:
+{ pkgs, pkgs-unstable, neovim-nightly-overlay, cmp-copilot-src, alpha-nvim-src,
+monokai-nvim-src, ... }:
 let
   luaSetup = plugin: name: {
     plugin = plugin;
@@ -7,15 +8,19 @@ let
   };
   cmp-copilot = pkgs.vimUtils.buildVimPluginFrom2Nix {
     pname = "cmp-copilot";
-    version = "2021-11-05";
-    src = pkgs.fetchFromGitHub {
-      owner = "hrsh7th";
-      repo = "cmp-copilot";
-      rev = "104f6784351911d39e11f4edeaf43dc9ecc23cc2";
-      sha256 = "0fa6a3m5hf3f7pdbmkb4dnczvcvr6rr3pshvdwkqy62v08h1vdyk";
-    };
+    version = "0.1.0";
+    src = cmp-copilot-src;
   };
-
+  alpha-nvim = pkgs.vimUtils.buildVimPluginFrom2Nix {
+    pname = "alpha-nvim";
+    version = "0.1.0";
+    src = alpha-nvim-src;
+  };
+  monokai-nvim = pkgs.vimUtils.buildVimPluginFrom2Nix {
+    pname = "monokai-nvim";
+    version = "0.1.0";
+    src = monokai-nvim-src;
+  };
 in
 {
   home.packages = with pkgs; [
@@ -45,6 +50,7 @@ in
       }
     )
     hyperfine
+    nixfmt
     (
       python38.withPackages (
         ps: with ps; [
@@ -185,23 +191,27 @@ in
       nnoremap <silent> <leader>gp :Git push<cr>
       nnoremap <silent> <leader>gd :Git diff<cr>
       nnoremap <silent> <leader>gf :Git pull<cr>
+      " nvim-gps
+      func! NvimGps() abort
+        return luaeval("require'nvim-gps'.is_available()") ?
+             \ luaeval("require'nvim-gps'.get_location()") : ""
+      endf
       " lightline
       let g:lightline = {
         \ 'active': {
-        \   'left': [ [ 'mode', 'paste' ],
-        \             [ 'gitbranch', 'cocstatus', 'readonly', 'filename', 'modified' ] ]
+        \   'left': [ [ 'mode', 'paste', 'nvim-gps'],
+        \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
         \ },
         \ 'component_function': {
-        \   'gitbranch': 'fugitive#head'
+        \   'gitbranch': 'fugitive#head',
+        \   'nvim-gps': 'NvimGps'
         \ },
         \ 'tabline': {
-        \ 'left': [['buffers']],
-        \ 'right': [['bufnum']]
+        \   'left': [['buffers']],
+        \   'right': [['bufnum']]
         \ },
         \ 'component_expand': {
         \   'buffers': 'lightline#bufferline#buffers',
-        \   'cocerror': 'LightLineCocError',
-        \   'cocwarn' : 'LightLineCocWarn',
         \ },
         \ 'inactive': {
         \   'left': [['filename']],
@@ -215,23 +225,6 @@ in
     " tex live preview
     let g:livepreview_cursorhold_recompile = 0
     let g:livepreview_use_biber = 1
-    " molokai
-    let g:molokai_original = 0
-    colo molokai
-    hi MatchParen  guifg=254 guifg=208 gui=bold ctermfg=208 ctermbg=0 cterm=bold
-    hi EndOfBuffer ctermfg=bg guifg=bg
-    hi SignColumn guibg=bg
-    hi SignColumn ctermbg=bg
-    hi Conceal ctermbg=233
-    hi Comment ctermfg=gray
-    " startify
-    let g:startify_session_persistence=1
-    let g:startify_change_to_dir=0
-    let g:startify_fortune_use_unicode=1
-    let g:startify_lists = [
-        \ {'type': 'sessions', 'header': ['Sessions']},
-        \ {'type': 'dir', 'header': ['MRU', getcwd()]}
-        \ ]
     " telescope
     nnoremap <leader>ff <cmd>Telescope find_files<cr>
     nnoremap <leader>fg <cmd>Telescope live_grep<cr>
@@ -248,10 +241,9 @@ in
     nnoremap <silent> <leader>dr :lua require'dap'.repl.open()<CR>
     nnoremap <silent> <leader>dl :lua require'dap'.run_last()<CR>
     " gitsigns
-    hi GitSignsAdd guifg=Green ctermfg=Green
-    hi GitSignsDelete guifg=Red ctermfg=Red
-    hi GitSignsChange guifg=Yellow ctermfg=Yellow
-    hi GitSignsModify guifg=Yellow ctermfg=Yellow
+    highlight DiffAdd guifg=Green ctermfg=Green
+    highlight DiffDelete guifg=Red ctermfg=Red
+    highlight DiffChange guifg=Yellow ctermfg=Yellow
     " nvim tree
     nnoremap <C-n> :NvimTreeToggle<CR>
     nnoremap <leader>r :NvimTreeRefresh<CR>
@@ -268,8 +260,8 @@ in
     highlight! CmpItemKindKeyword guibg=NONE guifg=#D4D4D4
     highlight! CmpItemKindProperty guibg=NONE guifg=#D4D4D4
     highlight! CmpItemKindUnit guibg=NONE guifg=#D4D4D4
-    " lightbulb
-    autocmd CursorHold,CursorHoldI * lua require'nvim-lightbulb'.update_lightbulb()
+    " neoformat
+    nnoremap <leader>cf :Neoformat<CR>
     '';
     plugins = with pkgs-unstable.vimPlugins; [
       plenary-nvim
@@ -277,18 +269,65 @@ in
       (luaSetup nvim-tree-lua "nvim-tree")
       nvim-web-devicons
       vim-fugitive
-      vim-commentary
+      (luaSetup comment-nvim "Comment")
       vim-surround
       lightline-vim
       lightline-bufferline
       vim-polyglot
       vimtex
       vim-tmux-navigator
-      molokai
-      vim-startify
+      neoformat
+      {
+        plugin = monokai-nvim;
+        config = ''
+        local monokai = require('monokai')
+        local palette = monokai.pro
+        monokai.setup {
+          palette = palette,
+          custom_hlgroups = {
+            GitSignsAdd = {
+              fg = palette.green,
+              bg = palette.base2
+            },
+            GitSignsDelete = {
+              fg = palette.pink,
+              bg = palette.base2
+            },
+            GitSignsChange = {
+              fg = palette.orange,
+              bg = palette.base2
+            },
+          }
+        }
+        '';
+        type = "lua";
+      }
+      {
+        plugin = alpha-nvim;
+        config = ''
+          local alpha = require'alpha'
+          local startify = require'alpha.themes.startify'
+          startify.section.top_buttons.val = {
+              startify.button( "e", "  New file" , ":ene <BAR> startinsert <CR>"),
+          }
+          -- disable MRU
+          startify.section.mru_cwd.val[4].val = function()
+              return { startify.mru(0, vim.fn.getcwd()) }
+          end
+          table.remove(startify.config.layout, 5)
+          --
+          startify.section.bottom_buttons.val = {
+              startify.button( "q", "  Quit NVIM" , ":qa<CR>"),
+          }
+          startify.section.footer = {
+              { type = "text", val = "footer" },
+          }
+          alpha.setup(startify.config)
+        '';
+        type = "lua";
+      }
       delimitMate
       telescope-nvim
-      indent-blankline-nvim
       lightspeed-nvim
       nvim-dap
       (luaSetup neoscroll-nvim "neoscroll")
@@ -297,20 +336,14 @@ in
       copilot-vim
       pkgs.vimPlugins.nvim-treesitter-textobjects
       nvim-lspconfig
+      (luaSetup lspsaga-nvim "lspsaga")
       nvim-cmp
       cmp-nvim-lsp
       cmp-path
       cmp-buffer
       cmp-copilot
-      nvim-lightbulb
+      (luaSetup nvim-gps "nvim-gps")
       (luaSetup fidget-nvim "fidget")
-      {
-        plugin = lsp_lines-nvim;
-        config = ''
-          require("lsp_lines").register_lsp_virtual_lines()
-        '';
-        type = "lua";
-      }
       {
         plugin = pkgs.vimPlugins.nvim-treesitter;
         config = ''
