@@ -1,3 +1,28 @@
+-- DAP
+
+local dap = require('dap')
+dap.adapters.lldb = {
+  type = 'executable',
+  command = 'lldb-vscode',
+  name = "lldb",
+}
+dap.configurations.cpp = {
+  {
+    name = 'Launch',
+    type = 'lldb',
+    request = 'launch',
+    program = function()
+      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+    end,
+    cwd = "''${workspaceFolder}",
+    stopOnEntry = false,
+    args = {},
+    runInTerminal = false,
+  },
+}
+dap.configurations.c = dap.configurations.cpp
+dap.configurations.rust = dap.configurations.cpp
+
 -- Diagnostic keymaps
 vim.api.nvim_set_keymap('n', '<leader>e', '<cmd>lua vim.diagnostic.open_float()<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', { noremap = true, silent = true })
@@ -111,7 +136,8 @@ cmp.setup {
     { name = 'copilot' },
     { name = 'nvim_lsp' },
     { name = 'path' },
-    { name = 'buffer' }
+    { name = 'buffer' },
+    { name = 'latex_symbols' }
   },
   formatting = {
     format = function(entry, vim_item)
@@ -121,6 +147,7 @@ cmp.setup {
       vim_item.menu = ({
         buffer = "[Buffer]",
         nvim_lsp = "[LSP]",
+        path = "[Path]",
         latex_symbols = "[LaTeX]",
       })[entry.source.name]
       return vim_item

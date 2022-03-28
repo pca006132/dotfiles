@@ -324,6 +324,7 @@ in
       cmp-path
       cmp-buffer
       cmp-copilot
+      cmp-latex-symbols
       (luaSetup nvim-gps "nvim-gps")
       (luaSetup fidget-nvim "fidget")
       {
@@ -402,14 +403,8 @@ in
         '';
         type = "lua";
       }
-      {
-        plugin = nvim-dap-ui;
-        optional = true;
-      }
-      {
-        plugin = vim-latex-live-preview;
-        optional = true;
-      }
+      nvim-dap-ui
+      vim-latex-live-preview
     ];
   };
 }
