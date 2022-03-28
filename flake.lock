@@ -108,7 +108,24 @@
         "home-manager": "home-manager",
         "monokai-nvim-src": "monokai-nvim-src",
         "nixpkgs": "nixpkgs",
-        "nixpkgs-unstable": "nixpkgs-unstable"
+        "nixpkgs-unstable": "nixpkgs-unstable",
+        "rust-tools-nvim-src": "rust-tools-nvim-src"
+      }
+    },
+    "rust-tools-nvim-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1648260743,
+        "narHash": "sha256-MDzm3Ulkpyt/F4/gUvWfUevWhci/7RD9LZ4yKnM4M2Q=",
+        "owner": "simrat39",
+        "repo": "rust-tools.nvim",
+        "rev": "9f89fe6d9762ef89973bbb698c750dd21b94ec44",
+        "type": "github"
+      },
+      "original": {
+        "owner": "simrat39",
+        "repo": "rust-tools.nvim",
+        "type": "github"
       }
     }
   },

@@ -24,6 +24,11 @@ let
     version = "0.1.0";
     src = inputs.monokai-nvim-src;
   };
+  rust-tools-nvim-latest = pkgs.vimUtils.buildVimPluginFrom2Nix {
+    pname = "rust-tools-nvim";
+    version = "0.1.0";
+    src = inputs.rust-tools-nvim-src;
+  };
 in
 {
   home.packages = with pkgs; [
@@ -163,6 +168,7 @@ in
     package = pkgs-unstable.neovim.unwrapped;
     extraConfig = ''
       lua require('impatient').enable_profile()
+      lua vim.notify = require("notify")
       source ${builtins.toString ./nvim/basic.vim}
       source ${builtins.toString ./nvim/keymaps.vim}
       luafile ${builtins.toString ./nvim/lsp.lua}
@@ -259,6 +265,7 @@ in
       vim-tmux-navigator
       neoformat
       impatient-nvim
+      nvim-notify
       {
         plugin = monokai-nvim;
         config = ''
@@ -325,6 +332,8 @@ in
       cmp-buffer
       cmp-copilot
       cmp-latex-symbols
+      lsp_signature-nvim
+      rust-tools-nvim-latest
       (luaSetup nvim-gps "nvim-gps")
       (luaSetup fidget-nvim "fidget")
       {

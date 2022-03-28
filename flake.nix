@@ -20,6 +20,10 @@
       url = "github:tanvirtin/monokai.nvim";
       flake = false;
     };
+    rust-tools-nvim-src = {
+      url = "github:simrat39/rust-tools.nvim";
+      flake = false;
+    };
   };
 
   outputs =

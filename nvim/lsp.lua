@@ -36,7 +36,6 @@ local on_attach = function(_, bufnr)
   local map = vim.api.nvim_buf_set_keymap
   map(bufnr, 'n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
   map(bufnr, 'n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
-  -- vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
   map(bufnr, "n", "K",  "<cmd>Lspsaga hover_doc<cr>", opts)
   map(bufnr, 'n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
   map(bufnr, 'n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
@@ -44,8 +43,7 @@ local on_attach = function(_, bufnr)
   map(bufnr, 'n', '<leader>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
   map(bufnr, 'n', '<leader>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
   map(bufnr, 'n', '<leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-  -- map(bufnr, 'n', '<leader>cr', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-  map(bufnr, "n", "gr", "<cmd>Lspsaga rename<cr>", opts)
+  map(bufnr, "n", "<leader>cr", "<cmd>Lspsaga rename<cr>", opts)
   map(bufnr, 'n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
   map(bufnr, 'n', '<leader>ca', '<cmd>Lspsaga code_action<CR>', opts)
   map(bufnr, 'x', '<leader>ca', '<cmd>Lspsaga range_code_action<CR>', opts)
@@ -57,7 +55,7 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
 
 -- Enable the following language servers
-local servers = { 'clangd', 'rust_analyzer', 'pyright', 'tsserver', 'metals' }
+local servers = { 'clangd', 'pyright', 'tsserver', 'metals' }
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
     on_attach = on_attach,
@@ -160,3 +158,15 @@ cmp.setup {
 
 vim.g.copilot_assume_mapped = true
 vim.g.copilot_no_tab_map = true
+
+require "lsp_signature".setup({})
+
+require "rust-tools".setup({
+  tools = {
+    hover_with_actions = false
+  },
+  server = {
+    on_attach = on_attach
+  }
+})
+
