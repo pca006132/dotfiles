@@ -2,6 +2,23 @@
 if &compatible
   set nocompatible
 endif
+
+" disable plugins
+let g:loaded_matchparen        = 1
+let g:loaded_matchit           = 1
+let g:loaded_logiPat           = 1
+let g:loaded_rrhelper          = 1
+let g:loaded_tarPlugin         = 1
+let g:loaded_gzip              = 1
+let g:loaded_zipPlugin         = 1
+let g:loaded_2html_plugin      = 1
+let g:loaded_shada_plugin      = 1
+let g:loaded_spellfile_plugin  = 1
+let g:loaded_netrw             = 1
+let g:loaded_netrwPlugin       = 1
+let g:loaded_tutor_mode_plugin = 1
+let g:loaded_remote_plugins    = 1
+
 set guifont=monospace:h11
 filetype on
 filetype plugin on
@@ -28,7 +45,6 @@ set completefunc=emoji#complete
 set completeopt=longest,menu
 set cpoptions-=m        " showmatch will wait 0.5s or until a char is typed
 set expandtab
-set grepprg=rg\ --vimgrep\ $*
 set history=2000
 set hlsearch            " Highlight search results
 set ignorecase          " Search ignoring case

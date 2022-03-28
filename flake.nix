@@ -6,7 +6,6 @@
     home-manager.url = "github:nix-community/home-manager/master";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     cmp-copilot-src = {
@@ -27,12 +26,8 @@
     { home-manager
     , nixpkgs
     , nixpkgs-unstable
-    , neovim-nightly-overlay
-    , cmp-copilot-src
-    , alpha-nvim-src
-    , monokai-nvim-src
     , ...
-    }:
+    }@inputs:
     let
       system = "x86_64-linux";
       username = "pca006132";
@@ -43,10 +38,8 @@
       homeConfigurations.${username} =
         home-manager.lib.homeManagerConfiguration {
           # Specify the path to your home configuration here
-
           configuration = import ./config.nix {
-            inherit pkgs pkgs-unstable neovim-nightly-overlay cmp-copilot-src
-              alpha-nvim-src monokai-nvim-src;
+            inherit pkgs pkgs-unstable inputs;
           };
 
           inherit system username;
