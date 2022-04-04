@@ -6,7 +6,8 @@
     home-manager.url = "github:nix-community/home-manager/master";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
     cmp-copilot-src = {
       url = "github:hrsh7th/cmp-copilot";
@@ -21,7 +22,7 @@
       flake = false;
     };
     rust-tools-nvim-src = {
-      url = "github:simrat39/rust-tools.nvim";
+      url = "path:/home/pca006132/code/lua/rust-tools.nvim";
       flake = false;
     };
   };

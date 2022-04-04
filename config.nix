@@ -36,7 +36,6 @@ in
     dconf
     gcc
     pkg-config
-    git
     tealdeer
     fd
     bat
@@ -79,6 +78,8 @@ in
   };
 
   fonts.fontconfig.enable = true;
+
+  nixpkgs.overlays = [ inputs.neovim-nightly-overlay.overlay ];
 
   programs.direnv = {
     enable = true;
@@ -165,7 +166,6 @@ in
 
   programs.neovim = {
     enable = true;
-    package = pkgs-unstable.neovim.unwrapped;
     extraConfig = ''
       lua require('impatient').enable_profile()
       lua vim.notify = require("notify")
@@ -265,6 +265,8 @@ in
       vim-tmux-navigator
       neoformat
       impatient-nvim
+      vim-vsnip
+      vim-vsnip-integ
       nvim-notify
       {
         plugin = monokai-nvim;
@@ -323,7 +325,7 @@ in
       (luaSetup zen-mode-nvim "zen-mode")
       (luaSetup gitsigns-nvim "gitsigns")
       copilot-vim
-      pkgs.vimPlugins.nvim-treesitter-textobjects
+      nvim-treesitter-textobjects
       nvim-lspconfig
       (luaSetup lspsaga-nvim "lspsaga")
       nvim-cmp
@@ -337,7 +339,7 @@ in
       (luaSetup nvim-gps "nvim-gps")
       (luaSetup fidget-nvim "fidget")
       {
-        plugin = pkgs.vimPlugins.nvim-treesitter;
+        plugin = nvim-treesitter;
         config = ''
           require'nvim-treesitter.configs'.setup {
             highlight = {
@@ -377,37 +379,6 @@ in
                 ["[]"] = "@class.outer",
               },
             },
-          }
-        '';
-        type = "lua";
-      }
-      {
-        plugin = pkgs.vimPlugins.nvim-treesitter-context;
-        config = ''
-          require'treesitter-context'.setup{
-            enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
-            throttle = true, -- Throttles plugin updates (may improve performance)
-            max_lines = 4, -- How many lines the window should span. Values <= 0 mean no limit.
-            patterns = { -- Match patterns for TS nodes. These get wrapped to match at word boundaries.
-              -- For all filetypes
-              -- Note that setting an entry here replaces all other patterns for this entry.
-              -- By setting the 'default' entry below, you can control which nodes you want to
-              -- appear in the context window.
-              default = {
-                  'class',
-                  'function',
-                  'method',
-                  'for',
-                  'while',
-                  'if',
-                  'switch',
-                  'case',
-              },
-              rust = {
-                  'impl_item',
-                  'match_arm'
-              }
-            }
           }
         '';
         type = "lua";
