@@ -22,7 +22,7 @@
       flake = false;
     };
     rust-tools-nvim-src = {
-      url = "path:/home/pca006132/code/lua/rust-tools.nvim";
+      url = "github:simrat39/rust-tools.nvim";
       flake = false;
     };
   };
@@ -36,8 +36,8 @@
     let
       system = "x86_64-linux";
       username = "pca006132";
-      pkgs = nixpkgs.legacyPackages.${system};
-      pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
+      pkgs = import nixpkgs { inherit system; };
+      pkgs-unstable = import nixpkgs-unstable { inherit system; config.allowUnfree = true; };
     in
     {
       homeConfigurations.${username} =

@@ -33,7 +33,6 @@ in
 {
   home.packages = with pkgs; [
     # Misc
-    dconf
     gcc
     pkg-config
     tealdeer
@@ -46,11 +45,33 @@ in
     ranger
     xclip
     sshfs
-    neovide
+    pkgs-unstable.neovide
     pkgs-unstable.fzf
     (texlive.combine { inherit (texlive) scheme-full minted; })
     hyperfine
     nixpkgs-fmt
+    powertop
+    kcachegrind
+    linuxPackages.perf
+    evince
+    pkgs-unstable.osu-lazer
+    cachix
+    chromium
+    f3d
+    flamegraph
+    gdb
+    imagemagick
+    zenith
+    killall
+    nix-du
+    nix-prefetch-git
+    pandoc
+    pdftk
+    super-slicer
+    marktext
+    vimv
+    yt-dlp
+    rsync
     (python38.withPackages (ps:
       with ps; [
         numpy
@@ -61,11 +82,14 @@ in
         jupyter
         pytest
         autopep8
+        sympy
       ]))
+    nodePackages.pyright
     (nerdfonts.override { fonts = [ "DejaVuSansMono" "Hack" ]; })
   ];
 
   home.sessionVariables = { "EDITOR" = "nvim"; };
+  home.sessionPath = [ "$HOME/.npm-packages/bin/" ];
 
   programs.home-manager = { enable = true; };
 
@@ -85,11 +109,6 @@ in
     enable = true;
     nix-direnv.enable = true;
     enableZshIntegration = true;
-  };
-
-  services.pulseeffects = {
-    enable = true;
-    package = pkgs.pulseeffects-pw;
   };
 
   programs.git = {
@@ -321,7 +340,6 @@ in
       telescope-nvim
       lightspeed-nvim
       nvim-dap
-      (luaSetup neoscroll-nvim "neoscroll")
       (luaSetup zen-mode-nvim "zen-mode")
       (luaSetup gitsigns-nvim "gitsigns")
       copilot-vim

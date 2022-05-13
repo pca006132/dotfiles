@@ -37,7 +37,7 @@ vim.lsp.handlers['window/showMessage'] = function(_, result, ctx)
 end
 
 -- Diagnostic keymaps
-vim.api.nvim_set_keymap('n', '<leader>e', '<cmd>Telescope lsp_document_diagnostics<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>e', '<cmd>Telescope diagnostics<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>q', '<cmd>lua vim.diagnostic.setloclist()<CR>', { noremap = true, silent = true })
@@ -88,8 +88,11 @@ local metals_config = require('lspconfig.server_configurations.metals').default_
 metals_config.init_options.statusBarProvider = "on"
 metals_config.handlers = {['metals/status'] = metals_status_handler}
 
+local ccls_config = require('lspconfig.server_configurations.ccls').default_config
+ccls_config.filetypes = { "c", "cpp", "cuda", "objc", "objcpp" }
+
 -- Enable the following language servers
-local servers = { 'clangd', 'pyright', 'tsserver', 'metals' }
+local servers = { 'ccls', 'pyright', 'tsserver', 'metals' }
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
     on_attach = on_attach,
@@ -174,7 +177,6 @@ cmp.setup {
     end,
   },
   sources = {
-    { name = 'copilot' },
     { name = 'nvim_lsp' },
     { name = 'path' },
     { name = 'buffer' },
