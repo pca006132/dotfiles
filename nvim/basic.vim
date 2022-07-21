@@ -4,7 +4,6 @@ if &compatible
 endif
 
 " disable plugins
-let g:loaded_matchparen        = 1
 let g:loaded_matchit           = 1
 let g:loaded_logiPat           = 1
 let g:loaded_rrhelper          = 1

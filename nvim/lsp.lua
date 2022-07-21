@@ -88,11 +88,11 @@ local metals_config = require('lspconfig.server_configurations.metals').default_
 metals_config.init_options.statusBarProvider = "on"
 metals_config.handlers = {['metals/status'] = metals_status_handler}
 
-local ccls_config = require('lspconfig.server_configurations.ccls').default_config
-ccls_config.filetypes = { "c", "cpp", "cuda", "objc", "objcpp" }
+local clangd_config = require('lspconfig.server_configurations.clangd').default_config
+clangd_config.capabilities.offsetEncoding = "utf-8"
 
 -- Enable the following language servers
-local servers = { 'ccls', 'pyright', 'tsserver', 'metals' }
+local servers = { 'clangd', 'pyright', 'tsserver', 'metals', 'texlab' }
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
     on_attach = on_attach,
@@ -130,6 +130,8 @@ local kind_icons = {
   TypeParameter = ""
 }
 
+require('copilot').setup()
+
 local cmp = require 'cmp'
 cmp.setup {
   snippet = {
@@ -159,15 +161,6 @@ cmp.setup {
         fallback()
       end
     end,
-    ["<C-e>"] = function(fallback)
-      cmp.mapping.abort()
-      local copilot_keys = vim.fn["copilot#Accept"]()
-      if copilot_keys ~= "" then
-        vim.api.nvim_feedkeys(copilot_keys, "i", true)
-      else
-        fallback()
-      end
-    end,
     ['<S-Tab>'] = function(fallback)
       if cmp.visible() then
         cmp.select_prev_item()
@@ -178,31 +171,53 @@ cmp.setup {
   },
   sources = {
     { name = 'nvim_lsp' },
+    { name = "copilot" },
     { name = 'path' },
     { name = 'buffer' },
     { name = 'latex_symbols' }
   },
   formatting = {
     format = function(entry, vim_item)
-      -- Kind icons
-      vim_item.kind = string.format('%s %s', kind_icons[vim_item.kind], vim_item.kind)
-      -- Source
-      vim_item.menu = ({
+      local kind = require("lspkind").cmp_format({
+        mode = "symbol_text",
+        maxwidth = 50
+      })(entry, vim_item)
+      local menu = ({
         buffer = "[Buffer]",
+        copilot = "[Copilot]",
         nvim_lsp = "[LSP]",
         path = "[Path]",
         latex_symbols = "[LaTeX]",
       })[entry.source.name]
-      return vim_item
-    end
+      local strings = vim.split(kind.kind, "%s", { trimempty = true })
+      kind.kind = " " .. strings[1] .. " "
+      kind.menu = "    (" .. menu .. ")"
+      return kind
+    end,
   },
   experimental = {
     ghost_text = false -- this feature conflict to the copilot.vim's preview.
-  }
-}
+  },
+  sorting = {
+    priority_weight = 2,
+    comparators = {
+      require("copilot_cmp.comparators").prioritize,
+      require("copilot_cmp.comparators").score,
 
-vim.g.copilot_assume_mapped = true
-vim.g.copilot_no_tab_map = true
+      -- Below is the default comparitor list and order for nvim-cmp
+      cmp.config.compare.offset,
+      -- cmp.config.compare.scopes, --this is commented in nvim-cmp too
+      cmp.config.compare.exact,
+      cmp.config.compare.score,
+      cmp.config.compare.recently_used,
+      cmp.config.compare.locality,
+      cmp.config.compare.kind,
+      cmp.config.compare.sort_text,
+      cmp.config.compare.length,
+      cmp.config.compare.order,
+    },
+  },
+}
 
 require "lsp_signature".setup({})
 

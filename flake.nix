@@ -4,13 +4,21 @@
   inputs = {
     # Specify the source of Home Manager and Nixpkgs
     home-manager.url = "github:nix-community/home-manager/master";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
     home-manager.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
-    cmp-copilot-src = {
-      url = "github:hrsh7th/cmp-copilot";
+    lspkind-src = {
+      url = "github:onsails/lspkind.nvim";
+      flake = false;
+    };
+    copilot-cmp-src = {
+      url = "github:zbirenbaum/copilot-cmp";
+      flake = false;
+    };
+    copilot-lua-src = {
+      url = "github:zbirenbaum/copilot.lua";
       flake = false;
     };
     alpha-nvim-src = {
@@ -23,6 +31,10 @@
     };
     rust-tools-nvim-src = {
       url = "github:simrat39/rust-tools.nvim";
+      flake = false;
+    };
+    tabout-nvim-src = {
+      url = "github:abecodes/tabout.nvim";
       flake = false;
     };
   };
@@ -42,17 +54,19 @@
     {
       homeConfigurations.${username} =
         home-manager.lib.homeManagerConfiguration {
-          # Specify the path to your home configuration here
-          configuration = import ./config.nix {
-            inherit pkgs pkgs-unstable inputs;
-          };
-
-          inherit system username;
-          homeDirectory = "/home/${username}";
-          # Update the state version as needed.
-          # See the changelog here:
-          # https://nix-community.github.io/home-manager/release-notes.html#sec-release-21.05
-          stateVersion = "21.11";
+          pkgs = nixpkgs.legacyPackages.${system};
+          modules = [
+            {
+              home = {
+                inherit username;
+                homeDirectory = "/home/${username}";
+                stateVersion = "22.05";
+              };
+            }
+            (import ./config.nix {
+              inherit pkgs pkgs-unstable inputs;
+            })
+          ];
         };
     };
 }

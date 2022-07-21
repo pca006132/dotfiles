@@ -9,10 +9,20 @@ let
     config = "require('${name}').setup()";
     type = "lua";
   };
-  cmp-copilot = pkgs.vimUtils.buildVimPluginFrom2Nix {
-    pname = "cmp-copilot";
+  lspkind = pkgs.vimUtils.buildVimPluginFrom2Nix {
+    pname = "lspkind";
     version = "0.1.0";
-    src = inputs.cmp-copilot-src;
+    src = inputs.lspkind-src;
+  };
+  copilot-lua = pkgs.vimUtils.buildVimPluginFrom2Nix {
+    pname = "copilot-lua";
+    version = "0.1.0";
+    src = inputs.copilot-lua-src;
+  };
+  copilot-cmp = pkgs.vimUtils.buildVimPluginFrom2Nix {
+    pname = "copilot-cmp";
+    version = "0.1.0";
+    src = inputs.copilot-cmp-src;
   };
   alpha-nvim = pkgs.vimUtils.buildVimPluginFrom2Nix {
     pname = "alpha-nvim";
@@ -29,6 +39,11 @@ let
     version = "0.1.0";
     src = inputs.rust-tools-nvim-src;
   };
+  tabout-nvim = pkgs.vimUtils.buildVimPluginFrom2Nix {
+    pname = "tabout-nvim";
+    version = "0.1.0";
+    src = inputs.tabout-nvim-src;
+  };
 in
 {
   home.packages = with pkgs; [
@@ -37,6 +52,7 @@ in
     pkg-config
     tealdeer
     fd
+    sd
     bat
     aria2
     ripgrep
@@ -45,9 +61,11 @@ in
     ranger
     xclip
     sshfs
-    pkgs-unstable.neovide
+    neovide
     pkgs-unstable.fzf
     (texlive.combine { inherit (texlive) scheme-full minted; })
+    pkgs-unstable.texlab
+    gnomeExtensions.dash-to-dock
     hyperfine
     nixpkgs-fmt
     powertop
@@ -72,7 +90,14 @@ in
     vimv
     yt-dlp
     rsync
-    (python38.withPackages (ps:
+    languagetool
+    vale
+    clang-tools
+    graphviz
+    solaar
+    xournalpp
+    xdot
+    (python3.withPackages (ps:
       with ps; [
         numpy
         pygments
@@ -98,6 +123,11 @@ in
     font = {
       name = "DejaVuSansMono";
       size = 12;
+    };
+    settings = {
+      scrollback_lines = 100000;
+      enable_audio_bell = false;
+      update_check_interval = 0;
     };
   };
 
@@ -209,7 +239,7 @@ in
         \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
         \ },
         \ 'component_function': {
-        \   'gitbranch': 'fugitive#head',
+        \   'gitbranch': 'FugitiveHead',
         \   'nvim-gps': 'NvimGps'
         \ },
         \ 'tabline': {
@@ -269,7 +299,7 @@ in
         " neoformat
         nnoremap <leader>cf :Neoformat<CR>
     '';
-    plugins = with pkgs-unstable.vimPlugins; [
+    plugins = with pkgs.vimPlugins; [
       plenary-nvim
       dressing-nvim
       (luaSetup nvim-tree-lua "nvim-tree")
@@ -336,24 +366,76 @@ in
         '';
         type = "lua";
       }
+      {
+        plugin = vim-markdown;
+        config = ''
+          let g:vim_markdown_math = 1
+        '';
+        type = "viml";
+      }
       delimitMate
       telescope-nvim
       lightspeed-nvim
       nvim-dap
       (luaSetup zen-mode-nvim "zen-mode")
       (luaSetup gitsigns-nvim "gitsigns")
-      copilot-vim
+      copilot-lua
+      copilot-cmp
+      lspkind
       nvim-treesitter-textobjects
+      nvim-ts-rainbow
       nvim-lspconfig
       (luaSetup lspsaga-nvim "lspsaga")
       nvim-cmp
       cmp-nvim-lsp
       cmp-path
       cmp-buffer
-      cmp-copilot
       cmp-latex-symbols
       lsp_signature-nvim
       rust-tools-nvim-latest
+      codi-vim
+      {
+        plugin = neorg;
+        config = ''
+          require('neorg').setup {
+              load = {
+                  ["core.defaults"] = {},
+                  ["core.norg.dirman"] = {
+                      config = {
+                          workspaces = {
+                              work = "~/notes/work",
+                          },
+                      }
+                  },
+                  ["core.gtd.base"] = {
+                      config = {
+                          workspace = "work",
+                      }
+                  },
+              }
+          }
+        '';
+        type = "lua";
+      }
+      tabout-nvim
+      vim-sleuth
+      {
+        plugin = nvim-lint;
+        config = ''
+          require('lint').linters.languagetool.cmd= "languagetool-commandline"
+
+          require('lint').linters_by_ft = {
+            markdown = {'vale', 'languagetool'}
+          }
+
+          vim.api.nvim_create_autocmd({ "BufWritePost" }, {
+            callback = function()
+              require("lint").try_lint()
+            end,
+          })
+        '';
+        type = "lua";
+      }
       (luaSetup nvim-gps "nvim-gps")
       (luaSetup fidget-nvim "fidget")
       {
@@ -362,6 +444,10 @@ in
           require'nvim-treesitter.configs'.setup {
             highlight = {
               enable = true,
+            },
+            rainbow = {
+              enable = true,
+              extended_mode = true,
             },
             textobjects = {
               select = {
@@ -402,7 +488,13 @@ in
         type = "lua";
       }
       nvim-dap-ui
-      vim-latex-live-preview
+      {
+        plugin = vim-latex-live-preview;
+        config = ''
+          let g:livepreview_engine = 'xelatex'
+        '';
+        type = "viml";
+      }
     ];
   };
 }
