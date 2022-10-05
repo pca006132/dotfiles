@@ -1,5 +1,4 @@
 { pkgs
-, pkgs-unstable
 , inputs
 , ...
 }:
@@ -13,16 +12,6 @@ let
     pname = "lspkind";
     version = "0.1.0";
     src = inputs.lspkind-src;
-  };
-  copilot-lua = pkgs.vimUtils.buildVimPluginFrom2Nix {
-    pname = "copilot-lua";
-    version = "0.1.0";
-    src = inputs.copilot-lua-src;
-  };
-  copilot-cmp = pkgs.vimUtils.buildVimPluginFrom2Nix {
-    pname = "copilot-cmp";
-    version = "0.1.0";
-    src = inputs.copilot-cmp-src;
   };
   alpha-nvim = pkgs.vimUtils.buildVimPluginFrom2Nix {
     pname = "alpha-nvim";
@@ -62,9 +51,9 @@ in
     xclip
     sshfs
     neovide
-    pkgs-unstable.fzf
+    fzf
     (texlive.combine { inherit (texlive) scheme-full minted; })
-    pkgs-unstable.texlab
+    texlab
     gnomeExtensions.dash-to-dock
     hyperfine
     nixpkgs-fmt
@@ -72,20 +61,19 @@ in
     kcachegrind
     linuxPackages.perf
     evince
-    pkgs-unstable.osu-lazer
+    osu-lazer
     cachix
     chromium
     f3d
     flamegraph
     gdb
     imagemagick
-    zenith
+    gotop
     killall
     nix-du
     nix-prefetch-git
     pandoc
     pdftk
-    super-slicer
     marktext
     vimv
     yt-dlp
@@ -103,11 +91,9 @@ in
         pygments
         matplotlib
         scipy
-        ipython
-        jupyter
-        pytest
         autopep8
         sympy
+        mutagen
       ]))
     nodePackages.pyright
     (nerdfonts.override { fonts = [ "DejaVuSansMono" "Hack" ]; })
@@ -220,6 +206,7 @@ in
       lua vim.notify = require("notify")
       source ${builtins.toString ./nvim/basic.vim}
       source ${builtins.toString ./nvim/keymaps.vim}
+      source ${builtins.toString ./nvim/highlight.vim}
       luafile ${builtins.toString ./nvim/lsp.lua}
       " fugitive
       nnoremap <silent> <leader>gg :Git<cr>
@@ -351,10 +338,10 @@ in
               startify.button( "e", "  New file" , ":ene <BAR> startinsert <CR>"),
           }
           -- disable MRU
-          startify.section.mru_cwd.val[4].val = function()
-              return { startify.mru(0, vim.fn.getcwd()) }
-          end
-          table.remove(startify.config.layout, 5)
+          -- startify.section.mru_cwd.val[4].val = function()
+          --     return { startify.mru(0, vim.fn.getcwd()) }
+          -- end
+          -- table.remove(startify.config.layout, 5)
           --
           startify.section.bottom_buttons.val = {
               startify.button( "q", "  Quit NVIM" , ":qa<CR>"),
@@ -379,8 +366,6 @@ in
       nvim-dap
       (luaSetup zen-mode-nvim "zen-mode")
       (luaSetup gitsigns-nvim "gitsigns")
-      copilot-lua
-      copilot-cmp
       lspkind
       nvim-treesitter-textobjects
       nvim-ts-rainbow
@@ -394,29 +379,6 @@ in
       lsp_signature-nvim
       rust-tools-nvim-latest
       codi-vim
-      {
-        plugin = neorg;
-        config = ''
-          require('neorg').setup {
-              load = {
-                  ["core.defaults"] = {},
-                  ["core.norg.dirman"] = {
-                      config = {
-                          workspaces = {
-                              work = "~/notes/work",
-                          },
-                      }
-                  },
-                  ["core.gtd.base"] = {
-                      config = {
-                          workspace = "work",
-                      }
-                  },
-              }
-          }
-        '';
-        type = "lua";
-      }
       tabout-nvim
       vim-sleuth
       {

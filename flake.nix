@@ -1,24 +1,15 @@
 {
-  description = "Home Manager configuration of pca006132";
+  # description = "Home Manager configuration of pca006132";
 
   inputs = {
     # Specify the source of Home Manager and Nixpkgs
     home-manager.url = "github:nix-community/home-manager/master";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs-unstable";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     lspkind-src = {
       url = "github:onsails/lspkind.nvim";
-      flake = false;
-    };
-    copilot-cmp-src = {
-      url = "github:zbirenbaum/copilot-cmp";
-      flake = false;
-    };
-    copilot-lua-src = {
-      url = "github:zbirenbaum/copilot.lua";
       flake = false;
     };
     alpha-nvim-src = {
@@ -42,14 +33,12 @@
   outputs =
     { home-manager
     , nixpkgs
-    , nixpkgs-unstable
     , ...
     }@inputs:
     let
       system = "x86_64-linux";
       username = "pca006132";
-      pkgs = import nixpkgs { inherit system; };
-      pkgs-unstable = import nixpkgs-unstable { inherit system; config.allowUnfree = true; };
+      pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
     in
     {
       homeConfigurations.${username} =
@@ -64,7 +53,7 @@
               };
             }
             (import ./config.nix {
-              inherit pkgs pkgs-unstable inputs;
+              inherit pkgs inputs;
             })
           ];
         };

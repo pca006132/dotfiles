@@ -92,7 +92,7 @@ local clangd_config = require('lspconfig.server_configurations.clangd').default_
 clangd_config.capabilities.offsetEncoding = "utf-8"
 
 -- Enable the following language servers
-local servers = { 'clangd', 'pyright', 'tsserver', 'metals', 'texlab' }
+local servers = { 'clangd', 'pyright', 'tsserver', 'metals', 'texlab', 'hls' }
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
     on_attach = on_attach,
@@ -129,8 +129,6 @@ local kind_icons = {
   Operator = "",
   TypeParameter = ""
 }
-
-require('copilot').setup()
 
 local cmp = require 'cmp'
 cmp.setup {
@@ -171,7 +169,6 @@ cmp.setup {
   },
   sources = {
     { name = 'nvim_lsp' },
-    { name = "copilot" },
     { name = 'path' },
     { name = 'buffer' },
     { name = 'latex_symbols' }
@@ -184,7 +181,6 @@ cmp.setup {
       })(entry, vim_item)
       local menu = ({
         buffer = "[Buffer]",
-        copilot = "[Copilot]",
         nvim_lsp = "[LSP]",
         path = "[Path]",
         latex_symbols = "[LaTeX]",
@@ -195,15 +191,9 @@ cmp.setup {
       return kind
     end,
   },
-  experimental = {
-    ghost_text = false -- this feature conflict to the copilot.vim's preview.
-  },
   sorting = {
     priority_weight = 2,
     comparators = {
-      require("copilot_cmp.comparators").prioritize,
-      require("copilot_cmp.comparators").score,
-
       -- Below is the default comparitor list and order for nvim-cmp
       cmp.config.compare.offset,
       -- cmp.config.compare.scopes, --this is commented in nvim-cmp too
