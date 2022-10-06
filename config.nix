@@ -99,7 +99,12 @@ in
     (nerdfonts.override { fonts = [ "DejaVuSansMono" "Hack" ]; })
   ];
 
-  home.sessionVariables = { "EDITOR" = "nvim"; };
+  home.sessionVariables = {
+    "EDITOR" = "nvim";
+    # work around home-manager#3263
+    "SSH_AUTH_SOCK" =
+      "$(${pkgs.gnupg}/bin/gpgconf --list-dirs agent-ssh-socket)";
+  };
   home.sessionPath = [ "$HOME/.npm-packages/bin/" ];
 
   programs.home-manager = { enable = true; };
@@ -401,7 +406,20 @@ in
       (luaSetup nvim-gps "nvim-gps")
       (luaSetup fidget-nvim "fidget")
       {
-        plugin = nvim-treesitter;
+        plugin = nvim-treesitter.withPlugins (plugins: with plugins; [
+          tree-sitter-c
+          tree-sitter-nix
+          tree-sitter-json
+          tree-sitter-haskell
+          tree-sitter-typescript
+          tree-sitter-html
+          tree-sitter-cuda
+          tree-sitter-bash
+          tree-sitter-latex
+          tree-sitter-cmake
+          tree-sitter-python
+          tree-sitter-rust
+        ]);
         config = ''
           require'nvim-treesitter.configs'.setup {
             highlight = {
