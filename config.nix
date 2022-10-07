@@ -99,12 +99,7 @@ in
     (nerdfonts.override { fonts = [ "DejaVuSansMono" "Hack" ]; })
   ];
 
-  home.sessionVariables = {
-    "EDITOR" = "nvim";
-    # work around home-manager#3263
-    "SSH_AUTH_SOCK" =
-      "$(${pkgs.gnupg}/bin/gpgconf --list-dirs agent-ssh-socket)";
-  };
+  home.sessionVariables = { "EDITOR" = "nvim"; };
   home.sessionPath = [ "$HOME/.npm-packages/bin/" ];
 
   programs.home-manager = { enable = true; };
@@ -172,6 +167,9 @@ in
     enable = true;
     initExtra = ''
       source /etc/profile
+      # https://github.com/nix-community/home-manager/issues/2751
+      # somehow these environment variables cannot be loaded
+      unset __HM_SESS_VARS_SOURCED && unset SSH_AUTH_SOCK && source .zshenv
     '';
     enableAutosuggestions = true;
     oh-my-zsh = {

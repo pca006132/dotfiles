@@ -11,6 +11,7 @@ let
     export __VK_LAYER_NV_optimus=NVIDIA_ONLY
     exec "$@"
   '';
+  pkgs-unstable = import <nixpkgs-unstable> { config.allowUnfree = true; };
 in
 {
   imports =
@@ -43,11 +44,12 @@ in
     ];
   };
 
-  boot.kernelParams = [ "i915.enable_psr=0" ];
+  boot.kernelParams = [ "i915.enable_psr=0" "nvidia_drm.modeset=1" ];
   boot.extraModprobeConfig = ''
     options i915 force_probe=46a6
+    options nvidia NVreg_PreserveVideoMemoryAllocations=1
   '';
-  boot.kernelPackages = pkgs.linuxPackages_xanmod;
+  boot.kernelPackages = pkgs-unstable.linuxPackages_xanmod_latest;
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
@@ -68,13 +70,20 @@ in
   services.xserver.enable = true;
   services.xserver.videoDrivers = [ "nvidia" ];
   hardware.nvidia.modesetting.enable = true;
+  hardware.nvidia.nvidiaPersistenced = true;
   hardware.nvidia.prime = {
     offload.enable = true;
     nvidiaBusId = "PCI:1:0:0";
     intelBusId = "PCI:0:2:0";
   };
   hardware.nvidia.powerManagement.enable = true;
-  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable;
+  hardware.nvidia.powerManagement.finegrained = true;
+  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.production;
+  services.xserver.screenSection = ''
+    Option         "metamodes" "nvidia-auto-select +0+0 {ForceFullCompositionPipeline=On}"
+    Option         "AllowIndirectGLXProtocol" "off"
+    Option         "TripleBuffer" "on"
+  '';
 
   # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
@@ -151,6 +160,7 @@ in
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILTMW8zyxAwl7B4Ix9mlA5us60HegzDrZ0bCqTipbmxW root@localhost"
       "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCrC43AF/aHv9NHormDMw18m/iE3luNc4CIwgPgTClly4b9yRyQGhm4mKkKix07fP9SfdyvUPPrYhwoHhf0zGkfFNE26FIG2Bul9UkZVP3ygnIXHD7sKUJP7Ra4UID6Naf3Mr2Dckh7rAiw8WN2QB+oO2tni3PyceEOdu8OoEsmSu8qusJFVhnaoYJyQflgGl3bFUZkhaf1JKQmv9C92sfKQkrfSNb2dNrc3Oe1uP5VokhLhjsOoDWyJ45a7ru6lr4/Co5sF9xX59cOOBU+ktiOakDI8NLI5AO7R0dCKLW55wUnml5boeCV45p1MPXVEznX8IM6kRgOhVx3fnd0TqV5M8xeY0dk7aTWTFSkIz82xHhKFbce5xx+9MFrlvUgHYVpbIUQTq6HS6cLZEeWHDLuUqbRFB4J7UfieiRZfxWw74Tgyq+HlvlNg/cVn0nhouq6+sY6QI9MGbwbEnjkD5KbSUHUCSeLgNc8pb0RxLkAqPGh8QkYrb6Nudl8HjWfIuZFGrRhcGBySt/oaYUDrUg5VNA98FjQL2QfKRVepvpGgUEGW6eZK9IrYz1Ct30Sb65QujUMRuDnWq1CeulAXCZQHc32wOrHRkMEUdhfOgNojZRTGduPayHXoDq7XB249D2VjH/vEuiLfWNLr+rabGyMUPpQaDypeBgOsUTbceKbDw=="
     ];
+    shell = "/home/pca006132/.nix-profile/bin/zsh";
   };
 
   hardware.enableAllFirmware = true;
@@ -164,7 +174,6 @@ in
     libu2f-host
   ];
 
-  users.defaultUserShell = pkgs.zsh;
   environment.shells = [ "/run/current-system/sw/bin/zsh" ];
   # List packages installed in system profile. To search, run:
   environment.systemPackages = with pkgs; [
@@ -198,8 +207,9 @@ in
     gnome.adwaita-icon-theme
     firefox-bin
 
-    glxinfo
+    pkgs-unstable.zoom-us
     nvidia-offload
+    steam
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
