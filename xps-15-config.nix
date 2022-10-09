@@ -84,6 +84,13 @@ in
     Option         "AllowIndirectGLXProtocol" "off"
     Option         "TripleBuffer" "on"
   '';
+  services.xserver.serverLayoutSection = ''
+    Inactive "Device-nvidia[0]"
+    Option "AllowNVIDIAGPUScreens"
+  '';
+  services.xserver.displayManager.setupCommands = ''
+    xrandr --setprovideroutputsource Intel modesetting
+  '';
 
   # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
