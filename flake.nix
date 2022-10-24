@@ -28,6 +28,14 @@
       url = "github:abecodes/tabout.nvim";
       flake = false;
     };
+    knap-nvim-src = {
+      url = "github:frabjous/knap";
+      flake = false;
+    };
+    session-manager-src = {
+      url = "github:Shatur/neovim-session-manager";
+      flake = false;
+    };
   };
 
   outputs =

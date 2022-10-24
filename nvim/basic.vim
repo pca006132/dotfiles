@@ -18,7 +18,7 @@ let g:loaded_netrwPlugin       = 1
 let g:loaded_tutor_mode_plugin = 1
 let g:loaded_remote_plugins    = 1
 
-set guifont=monospace:h11
+set guifont=DejaVuSansMono:h11
 filetype on
 filetype plugin on
 filetype indent on

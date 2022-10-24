@@ -33,6 +33,16 @@ let
     version = "0.1.0";
     src = inputs.tabout-nvim-src;
   };
+  knap-nvim = pkgs.vimUtils.buildVimPluginFrom2Nix {
+    pname = "knap-nvim";
+    version = "0.1.0";
+    src = inputs.knap-nvim-src;
+  };
+  session-manager = pkgs.vimUtils.buildVimPluginFrom2Nix {
+    pname = "session-manager";
+    version = "0.1.0";
+    src = inputs.session-manager-src;
+  };
 in
 {
   home.packages = with pkgs; [
@@ -52,6 +62,15 @@ in
     sshfs
     neovide
     fzf
+    scalafmt
+    metals
+    sbt
+    gcc
+    gnumake
+    librime
+    rime-data
+    sioyek
+
     (texlive.combine { inherit (texlive) scheme-full minted; })
     texlab
     gnomeExtensions.dash-to-dock
@@ -99,8 +118,10 @@ in
     (nerdfonts.override { fonts = [ "DejaVuSansMono" "Hack" ]; })
   ];
 
-  home.sessionVariables = { "EDITOR" = "nvim"; };
-  home.sessionPath = [ "$HOME/.npm-packages/bin/" ];
+  home.sessionVariables = {
+    "EDITOR" = "nvim";
+  };
+  home.sessionPath = [ "$HOME/.npm-packages/bin/" "/home/pca006132/.local/bin" ];
 
   programs.home-manager = { enable = true; };
 
@@ -118,6 +139,12 @@ in
   };
 
   fonts.fontconfig.enable = true;
+
+  i18n.inputMethod = {
+    enabled = "fcitx5";
+    fcitx5.addons = [ pkgs.fcitx5-rime ];
+    uim.toolbar = "gtk-systray";
+  };
 
   nixpkgs.overlays = [ inputs.neovim-nightly-overlay.overlay ];
 
@@ -161,6 +188,10 @@ in
     enableSshSupport = true;
     enableExtraSocket = false;
     sshKeys = [ "996D13DF48B5A21F57298DD1B542F46ABECF3015" ];
+  };
+
+  programs.ssh.extraConfig = {
+    StreamLocalBindUnlink = true;
   };
 
   programs.zsh = {
@@ -308,6 +339,45 @@ in
       vim-vsnip-integ
       nvim-notify
       {
+        plugin = knap-nvim;
+        config = ''
+          local gknapsettings = {
+              texoutputext = "pdf",
+              textopdf = "pdflatex -synctex=1 -halt-on-error -interaction=batchmode %docroot%",
+              textopdfviewerlaunch = "sioyek --inverse-search 'nvim --headless -es --cmd \"lua require('\"'\"'knaphelper'\"'\"').relayjump('\"'\"'%servername%'\"'\"','\"'\"'%1'\"'\"',%2,0)\"' --reuse-instance %outputfile%",
+              textopdfviewerrefresh = "none",
+              textopdfforwardjump = "sioyek --inverse-search 'nvim --headless -es --cmd \"lua require('\"'\"'knaphelper'\"'\"').relayjump('\"'\"'%servername%'\"'\"','\"'\"'%1'\"'\"',%2,0)\"' --reuse-instance --forward-search-file %srcfile% --forward-search-line %line% %outputfile%"
+          }
+          vim.g.knap_settings = gknapsettings
+          local kmap = vim.keymap.set
+          kmap('n','<F7>', function() require("knap").toggle_autopreviewing() end)
+          kmap('i','<F8>', function() require("knap").forward_jump() end)
+          kmap('v','<F8>', function() require("knap").forward_jump() end)
+          kmap('n','<F8>', function() require("knap").forward_jump() end)
+        '';
+        type = "lua";
+      }
+      {
+        plugin = session-manager;
+        config = ''
+          local Path = require('plenary.path')
+          require('session_manager').setup({
+            sessions_dir = Path:new(vim.fn.stdpath('data'), 'sessions'), -- The directory where the session files will be saved.
+            path_replacer = '__', -- The character to which the path separator will be replaced for session files.
+            colon_replacer = '++', -- The character to which the colon symbol will be replaced for session files.
+            autoload_mode = require('session_manager.config').AutoloadMode.CurrentDir, -- Define what to do when Neovim is started without arguments. Possible values: Disabled, CurrentDir, LastSession
+            autosave_last_session = true, -- Automatically save last session on exit and on session switch.
+            autosave_ignore_not_normal = true, -- Plugin will not save a session when no buffers are opened, or all of them aren't writable or listed.
+            autosave_ignore_filetypes = { -- All buffers of these file types will be closed before the session is saved.
+              'gitcommit',
+            },
+            autosave_only_in_session = true, -- Always autosaves session. If true, only autosaves after a session is active.
+            max_path_length = 80,  -- Shorten the display path if length exceeds this threshold. Use 0 if don't want to shorten the path at all.
+          })
+        '';
+        type = "lua";
+      }
+      {
         plugin = monokai-nvim;
         config = ''
           local monokai = require('monokai')
@@ -341,11 +411,7 @@ in
               startify.button( "e", "  New file" , ":ene <BAR> startinsert <CR>"),
           }
           -- disable MRU
-          -- startify.section.mru_cwd.val[4].val = function()
-          --     return { startify.mru(0, vim.fn.getcwd()) }
-          -- end
-          -- table.remove(startify.config.layout, 5)
-          --
+          startify.section.mru.val = { { type = "padding", val = 0 } }
           startify.section.bottom_buttons.val = {
               startify.button( "q", "  Quit NVIM" , ":qa<CR>"),
           }

@@ -69,6 +69,22 @@
         "type": "github"
       }
     },
+    "knap-nvim-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1665018529,
+        "narHash": "sha256-0HjXTXoNGkS551FaQ0FdLbot2VrdiznehJe5DuJiac4=",
+        "owner": "frabjous",
+        "repo": "knap",
+        "rev": "f8a805385023a46cef71cd5baf2bea98a7a4142a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "frabjous",
+        "repo": "knap",
+        "type": "github"
+      }
+    },
     "lspkind-src": {
       "flake": false,
       "locked": {
@@ -181,11 +197,13 @@
       "inputs": {
         "alpha-nvim-src": "alpha-nvim-src",
         "home-manager": "home-manager",
+        "knap-nvim-src": "knap-nvim-src",
         "lspkind-src": "lspkind-src",
         "monokai-nvim-src": "monokai-nvim-src",
         "neovim-nightly-overlay": "neovim-nightly-overlay",
         "nixpkgs": "nixpkgs_2",
         "rust-tools-nvim-src": "rust-tools-nvim-src",
+        "session-manager-src": "session-manager-src",
         "tabout-nvim-src": "tabout-nvim-src"
       }
     },
@@ -202,6 +220,22 @@
       "original": {
         "owner": "simrat39",
         "repo": "rust-tools.nvim",
+        "type": "github"
+      }
+    },
+    "session-manager-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1664443199,
+        "narHash": "sha256-FWVYEL0i4eYWXEd3yl2uM+RJloiUCRxURh+dk+yqa7M=",
+        "owner": "Shatur",
+        "repo": "neovim-session-manager",
+        "rev": "4005dac93f5cd1257792259ef4df6af0e3afc213",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Shatur",
+        "repo": "neovim-session-manager",
         "type": "github"
       }
     },

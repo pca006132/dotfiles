@@ -44,7 +44,7 @@ in
     ];
   };
 
-  boot.kernelParams = [ "i915.enable_psr=0" "nvidia_drm.modeset=1" ];
+  boot.kernelParams = [ "i915.enable_psr=0" "nvidia_drm.modeset=1" "quiet" ];
   boot.extraModprobeConfig = ''
     options i915 force_probe=46a6
     options nvidia NVreg_PreserveVideoMemoryAllocations=1
