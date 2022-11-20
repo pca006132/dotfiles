@@ -27,6 +27,7 @@ in
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+  networking.wireless.userControlled.enable = true;
 
   # Set your time zone.
   time.timeZone = "Asia/Hong_Kong";
@@ -44,19 +45,24 @@ in
     ];
   };
 
-  boot.kernelParams = [ "i915.enable_psr=0" "nvidia_drm.modeset=1" "quiet" ];
+  boot.kernelModules = [ "coretemp" "kvm-intel" "dell-smm-hwmon" "turbostat" ];
+  boot.kernelParams = [
+    "i915.enable_psr=0"
+    "i915.enable_fbc=1"
+    "i915.fastboot=1"
+    "nvidia_drm.modeset=1"
+    "mem_sleep_default=deep"
+    "quiet"
+  ];
   boot.extraModprobeConfig = ''
     options i915 force_probe=46a6
     options nvidia NVreg_PreserveVideoMemoryAllocations=1
   '';
   boot.kernelPackages = pkgs-unstable.linuxPackages_xanmod_latest;
+  hardware.sensor.iio.enable = true;
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
-  i18n.inputMethod = {
-    enabled = "fcitx";
-    fcitx.engines = with pkgs.fcitx-engines; [ rime ];
-  };
 
   fonts.fonts = with pkgs; [
     noto-fonts
@@ -94,8 +100,8 @@ in
 
   # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
+  services.xserver.displayManager.gdm.wayland = false;
   services.xserver.desktopManager.gnome.enable = true;
-  
 
   # Configure keymap in X11
   services.xserver.layout = "us";
@@ -103,6 +109,7 @@ in
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
+  services.printing.drivers = [ pkgs.hplipWithPlugin ];
   services.earlyoom.enable = true;
   services.logind.extraConfig = ''
     RuntimeDirectorySize=50%
@@ -226,15 +233,31 @@ in
   #   enable = true;
   #   enableSSHSupport = true;
   # };
+  programs.bcc.enable = true;
+  programs.mosh.enable = true;
+  boot.kernel.sysctl."kernel.perf_event_paranoid" = -1;
 
   # List services that you want to enable:
+
+  services.fwupd.enable = true;
+  programs.dconf.enable = true;
+  zramSwap.enable = true;
+  systemd.services.display-manager.serviceConfig.MemorySwapMax = 0;
+  systemd.services.display-manager.serviceConfig.MemoryZswapMax = 0;
+  systemd.services.sshd.serviceConfig.MemorySwapMax = 0;
+  systemd.services.sshd.serviceConfig.MemoryZswapMax = 0;
 
   # Enable the OpenSSH daemon.
   services.openssh = {
     enable = true;
     permitRootLogin = "no";
     passwordAuthentication = false;
+    extraConfig = ''
+      StreamLocalBindUnlink yes
+    '';
   };
+
+  hardware.opentabletdriver.enable = true;
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];

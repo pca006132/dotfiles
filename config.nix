@@ -116,6 +116,8 @@ in
       ]))
     nodePackages.pyright
     (nerdfonts.override { fonts = [ "DejaVuSansMono" "Hack" ]; })
+
+    rust-analyzer
   ];
 
   home.sessionVariables = {
@@ -180,6 +182,10 @@ in
       source = ./public.key;
       trust = 5;
     }];
+  };
+
+  services.easyeffects = {
+    enable = true;
   };
 
   services.gpg-agent = {
