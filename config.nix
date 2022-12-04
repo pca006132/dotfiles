@@ -118,12 +118,19 @@ in
     (nerdfonts.override { fonts = [ "DejaVuSansMono" "Hack" ]; })
 
     rust-analyzer
+    unar
   ];
 
   home.sessionVariables = {
     "EDITOR" = "nvim";
   };
   home.sessionPath = [ "$HOME/.npm-packages/bin/" "/home/pca006132/.local/bin" ];
+
+  home.file.".config/environment.d/envvars.conf".text = ''
+    GTK_IM_MODULE=fcitx
+    QT_IM_MODULE=fcitx
+    XMODIFIERS=@im=fcitx
+  '';
 
   programs.home-manager = { enable = true; };
 
