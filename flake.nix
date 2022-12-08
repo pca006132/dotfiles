@@ -51,7 +51,7 @@
     {
       homeConfigurations.${username} =
         home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages.${system};
+          inherit pkgs;
           modules = [
             {
               home = {
@@ -60,9 +60,8 @@
                 stateVersion = "22.05";
               };
             }
-            (import ./config.nix {
-              inherit pkgs inputs;
-            })
+            (import ./config.nix { inherit inputs; })
+            (import ./nvim/config.nix { inherit inputs; })
           ];
         };
     };
