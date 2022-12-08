@@ -80,7 +80,6 @@ in
 
   home.sessionVariables = {
     EDITOR = "nvim";
-    GSM_SKIP_SSH_AGENT_WORKAROUND = "1";
   };
   home.sessionPath = [ "$HOME/.npm-packages/bin/" "$HOME/.local/bin" ];
 
@@ -200,6 +199,12 @@ in
       r = ''
         ranger --choosedir=$HOME/.rangerdir; LASTDIR=`cat $HOME/.rangerdir`; cd "$LASTDIR"'';
     };
+    initExtra = ''
+      if [[ "SSH_AUTH_SOCK" == "/run/user/1000/keyring/ssh" ]]
+      then
+        SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket) 
+      fi
+    '';
   };
 
   programs.tmux = {

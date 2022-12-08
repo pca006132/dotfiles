@@ -12,7 +12,7 @@
         "mem_sleep_default=deep"
         "quiet"
       ];
-      kernelPackages = pkgs.linuxPackages_xanmod_latest;
+      kernelPackages = lib.mkDefault pkgs.linuxPackages_xanmod_latest;
       kernel.sysctl."kernel.perf_event_paranoid" = -1;
     };
     networking = {
