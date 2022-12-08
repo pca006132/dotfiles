@@ -40,7 +40,9 @@ in
   isoImage.makeUsbBootable = true;
   isoImage.volumeID = "NIXOS_ISO";
   isoImage.storeContents = [ installConfiguration.system ];
-  isoImage.includeSystemBuildDependencies = true; # unconfirmed if this is really needed
+  isoImage.includeSystemBuildDependencies = false; # unconfirmed if this is really needed
+  isoImage.squashfsCompression = "zstd -Xcompression-level 6";
+  nix.settings.experimental-features = [ "nix-command" ];
 
   systemd.services.installer = {
     description = "Unattended NixOS installer";
@@ -86,6 +88,7 @@ in
       mount /dev/disk/by-label/boot /mnt/boot
       nixos-generate-config --root /mnt
       mkdir /mnt/etc/nixos/modules
+      cp ${./modules/pca006132.keys} /mnt/etc/nixos/modules/pca006132.keys
       cp ${./modules/defaults.nix} /mnt/etc/nixos/modules/defaults.nix
       cp ${./modules/laptop-powermanagement.nix} /mnt/etc/nixos/modules/laptop-powermanagement.nix
       cp ${./modules/nvidia.nix} /mnt/etc/nixos/modules/nvidia.nix

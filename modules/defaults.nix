@@ -133,10 +133,7 @@
     users.users.pca006132 = {
       isNormalUser = true;
       extraGroups = [ "wheel" "uucp" "audio" "dialout" "networkmanager" "wireshark" ];
-      openssh.authorizedKeys.keys = pkgs.lib.splitString "\n" (builtins.readFile (builtins.fetchurl {
-        url = "https://github.com/pca006132.keys";
-        sha256 = "01kvvqdi0j0dvkc9z3cv6hajvfljv0b7vhxziz9kbddc1xwrkvar";
-      }));
+      openssh.authorizedKeys.keys = pkgs.lib.splitString "\n" (builtins.readFile ./pca006132.keys);
       initialPassword = "123456";
     };
 
