@@ -137,7 +137,6 @@
         url = "https://github.com/pca006132.keys";
         sha256 = "01kvvqdi0j0dvkc9z3cv6hajvfljv0b7vhxziz9kbddc1xwrkvar";
       }));
-      shell = "/home/pca006132/.nix-profile/bin/zsh";
       initialPassword = "123456";
     };
 

@@ -79,7 +79,8 @@ in
   ] ++ development-packages ++ tools ++ desktop-apps;
 
   home.sessionVariables = {
-    "EDITOR" = "nvim";
+    EDITOR = "nvim";
+    GSM_SKIP_SSH_AGENT_WORKAROUND = "1";
   };
   home.sessionPath = [ "$HOME/.npm-packages/bin/" "$HOME/.local/bin" ];
 
@@ -180,7 +181,7 @@ in
     defaultCacheTtlSsh = 60;
     enable = true;
     enableSshSupport = true;
-    enableExtraSocket = false;
+    enableExtraSocket = true;
     sshKeys = [ "996D13DF48B5A21F57298DD1B542F46ABECF3015" ];
   };
 
