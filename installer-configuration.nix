@@ -39,8 +39,8 @@ in
   isoImage.makeEfiBootable = true;
   isoImage.makeUsbBootable = true;
   isoImage.volumeID = "NIXOS_ISO";
-  isoImage.storeContents = [ installBuild.toplevel ];
-  isoImage.includeSystemBuildDependencies = false; # unconfirmed if this is really needed
+  isoImage.storeContents = [ installConfiguration.system ];
+  isoImage.includeSystemBuildDependencies = true; # unconfirmed if this is really needed
 
   systemd.services.installer = {
     description = "Unattended NixOS installer";
@@ -96,8 +96,8 @@ in
       # needed over.
       nix build -f '<nixpkgs/nixos>' system -I "nixos-config=/mnt/etc/nixos/configuration.nix" -o /out
       nix copy --no-check-sigs --to local?root=/mnt /out
-      ${installBuild.nixos-install}/bin/nixos-install --no-root-passwd
-      reboot
+      ${installBuild.nixos-install}/bin/nixos-install
+      # reboot
     '';
   };
 }
