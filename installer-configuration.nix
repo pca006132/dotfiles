@@ -22,12 +22,9 @@ in
   boot.initrd.kernelModules = [ "wl" ];
   boot.kernelModules = [ "kvm-intel" "wl" ];
   boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
+  system.stateVersion = "22.11";
 
-  environment.systemPackages = with pkgs; [
-    git
-    parted
-    cryptsetup
-  ];
+  environment.systemPackages = with pkgs; [ git ];
 
   system.nixos-generate-config.configuration = builtins.readFile installConfigurationPath;
 
@@ -40,8 +37,8 @@ in
   isoImage.makeUsbBootable = true;
   isoImage.volumeID = "NIXOS_ISO";
   isoImage.storeContents = [ installConfiguration.system ];
-  isoImage.includeSystemBuildDependencies = false; # unconfirmed if this is really needed
-  isoImage.squashfsCompression = "zstd -Xcompression-level 6";
+  isoImage.includeSystemBuildDependencies = false;
+  isoImage.squashfsCompression = "zstd -Xcompression-level 10";
   nix.settings.experimental-features = [ "nix-command" ];
 
   systemd.services.installer = {
@@ -73,16 +70,13 @@ in
       # needed to add a few -s (parted) and -F (mkfs.ext4) etc. flags to
       # supress prompts
       parted -s /dev/sda -- mklabel gpt
-      parted -s /dev/sda -- mkpart primary 512MiB -8GiB
-      parted -s /dev/sda -- mkpart primary linux-swap -8GiB 100%
+      parted -s /dev/sda -- mkpart primary 512MiB 100%
       parted -s /dev/sda -- mkpart ESP fat32 1MiB 512MiB
-      parted -s /dev/sda -- set 3 boot on
+      parted -s /dev/sda -- set 2 boot on
       mkfs.ext4 -F -L nixos /dev/sda1
-      mkswap -L swap /dev/sda2
-      swapon /dev/sda2
-      echo "y" | mkfs.fat -F 32 -n boot /dev/sda3
-      # Labels do not appear immediately, so wait a moment
-      sleep 5
+      echo "y" | mkfs.fat -F 32 -n boot /dev/sda2
+      # wait until labels appear
+      until [ -e /dev/disk/by-label/nixos ] && [ -e /dev/disk/by-label/boot ]; do sleep 2; done
       mount /dev/disk/by-label/nixos /mnt
       mkdir -p /mnt/boot
       mount /dev/disk/by-label/boot /mnt/boot
@@ -99,8 +93,8 @@ in
       # needed over.
       nix build -f '<nixpkgs/nixos>' system -I "nixos-config=/mnt/etc/nixos/configuration.nix" -o /out
       nix copy --no-check-sigs --to local?root=/mnt /out
-      ${installBuild.nixos-install}/bin/nixos-install
-      # reboot
+      ${installBuild.nixos-install}/bin/nixos-install --no-root-passwd --no-channel-copy
+      reboot
     '';
   };
 }
