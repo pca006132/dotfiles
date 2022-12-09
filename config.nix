@@ -110,8 +110,8 @@ in
       (bar "LeftCPUs2")
       (bar "Memory")
       (bar "Swap")
-      (bar "DiskIO")
-      (bar "NetworkIO")
+      (text "DiskIO")
+      (text "NetworkIO")
     ]) // (with config.lib.htop; rightMeters [
       (bar "RightCPUs2")
       (text "Tasks")
