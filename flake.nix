@@ -1,12 +1,11 @@
 {
-  # description = "Home Manager configuration of pca006132";
-
   inputs = {
     # Specify the source of Home Manager and Nixpkgs
     home-manager.url = "github:nix-community/home-manager/master";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
     lspkind-src = {
       url = "github:onsails/lspkind.nvim";
@@ -39,30 +38,60 @@
   };
 
   outputs =
-    { home-manager
+    { self
     , nixpkgs
+    , nixpkgs-unstable
+    , home-manager
     , ...
     }@inputs:
     let
       system = "x86_64-linux";
-      username = "pca006132";
-      pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
+      pkgs = nixpkgs.legacyPackages."${system}";
+      build = modules: nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = {
+          pkgs-unstable = import nixpkgs-unstable {
+            inherit (pkgs.stdenv.targetPlatform) system;
+            config.allowUnfree = true;
+          };
+        };
+        modules = [
+          ./modules/nvidia.nix
+          ./modules/laptop-powermanagement.nix
+          ./modules/defaults.nix
+          home-manager.nixosModules.home-manager
+          {
+            home-manager = {
+              useUserPackages = true;
+              users.pca006132 = import ./home.nix;
+              extraSpecialArgs = { inherit inputs; };
+            };
+          }
+        ] ++ modules;
+      };
     in
-    {
-      homeConfigurations.${username} =
-        home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-          modules = [
-            {
-              home = {
-                inherit username;
-                homeDirectory = "/home/${username}";
-                stateVersion = "22.05";
+    rec {
+      nixosConfigurations = {
+        pca-xps15 = build [ ./machines/xps-15.nix ];
+        pca-pc = build [ ./machines/pc.nix ];
+      };
+
+      # qemu test
+      packages."x86_64-linux".default = (nixpkgs.lib.nixosSystem {
+        specialArgs = {
+          inherit self;
+          systemBuild = build [
+            (_: {
+              networking.hostName = "nixos";
+              fileSystems."/" = {
+                device = "/dev/disk/by-label/nixos";
+                fsType = "ext4";
               };
-            }
-            (import ./config.nix { inherit inputs; })
-            (import ./nvim/config.nix { inherit inputs; })
+              system.stateVersion = "22.11";
+            })
           ];
         };
+        modules = [ ./installer-configuration.nix ];
+      }).config.system.build.isoImage;
     };
 }

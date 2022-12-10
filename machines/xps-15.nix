@@ -1,26 +1,25 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
-
-{ config, pkgs, ... }:
-let
-  pkgs-unstable = import <nixpkgs-unstable> { config.allowUnfree = true; };
-in
+{ config, pkgs, pkgs-unstable, modulesPath, ... }:
 {
-  imports =
-    [
-      ./hardware-configuration.nix
-      ./modules/nvidia.nix
-      ./modules/laptop-powermanagement.nix
-      ./modules/defaults.nix
-    ];
+  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
-  fileSystems."/".options = [ "compress=zstd" ];
+  fileSystems."/" = {
+    device = "/dev/disk/by-uuid/a00f2d57-2d57-4528-809c-e9e2d9cb99f5";
+    fsType = "btrfs";
+    options = [ "compress=zstd" ];
+  };
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-uuid/483A-A53B";
+    fsType = "vfat";
+  };
 
   networking.hostName = "pca-xps15";
 
   boot = {
-    kernelModules = [ "kvm-intel" "dell-smm-hwmon" "turbostat" ];
+    initrd = {
+      availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
+      luks.devices."cryptroot".device = "/dev/disk/by-uuid/cd3d1b5e-64f2-489d-bfca-a825d5d22b0c";
+    };
+    kernelModules = [ "kvm-intel" "turbostat" ];
     kernelParams = [
       "i915.enable_psr=0"
       "i915.enable_fbc=1"

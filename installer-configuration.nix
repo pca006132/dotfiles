@@ -1,12 +1,9 @@
-{ installConfigurationPath ? ./default-install.nix }:
-
-{ config, pkgs, lib, modulesPath, ... }:
+# largely copied from
+# https://github.com/tfc/nixos-offline-installer
+{ self, systemBuild, config, pkgs, lib, modulesPath, ... }:
 
 let
-  installConfiguration = import "${pkgs.path}/nixos" {
-    configuration = import installConfigurationPath;
-  };
-  installBuild = installConfiguration.config.system.build;
+  installBuild = systemBuild.config.system.build.toplevel;
 in
 {
   imports = [
@@ -23,10 +20,9 @@ in
   boot.kernelModules = [ "kvm-intel" "wl" ];
   boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
   system.stateVersion = "22.11";
+  nixpkgs.hostPlatform = "x86_64-linux";
 
   environment.systemPackages = with pkgs; [ git ];
-
-  system.nixos-generate-config.configuration = builtins.readFile installConfigurationPath;
 
   systemd.services.sshd.enable = true;
 
@@ -36,10 +32,11 @@ in
   isoImage.makeEfiBootable = true;
   isoImage.makeUsbBootable = true;
   isoImage.volumeID = "NIXOS_ISO";
-  isoImage.storeContents = [ installConfiguration.system ];
+  isoImage.storeContents = [ installBuild ];
   isoImage.includeSystemBuildDependencies = false;
-  isoImage.squashfsCompression = "zstd -Xcompression-level 10";
-  nix.settings.experimental-features = [ "nix-command" ];
+  # actually a lot faster than xz while not being very large
+  isoImage.squashfsCompression = "zstd -Xcompression-level 6";
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   systemd.services.installer = {
     description = "Unattended NixOS installer";
@@ -65,10 +62,6 @@ in
       # If the partitions exist already as-is, parted might error out
       # telling that it can't communicate changes to the kernel...
       wipefs -fa /dev/sda
-      # These are the exact steps from
-      # https://nixos.org/nixos/manual/index.html#sec-installation-summary
-      # needed to add a few -s (parted) and -F (mkfs.ext4) etc. flags to
-      # supress prompts
       parted -s /dev/sda -- mklabel gpt
       parted -s /dev/sda -- mkpart primary 512MiB 100%
       parted -s /dev/sda -- mkpart ESP fat32 1MiB 512MiB
@@ -80,20 +73,16 @@ in
       mount /dev/disk/by-label/nixos /mnt
       mkdir -p /mnt/boot
       mount /dev/disk/by-label/boot /mnt/boot
-      nixos-generate-config --root /mnt
-      mkdir /mnt/etc/nixos/modules
-      cp ${./modules/pca006132.keys} /mnt/etc/nixos/modules/pca006132.keys
-      cp ${./modules/defaults.nix} /mnt/etc/nixos/modules/defaults.nix
-      cp ${./modules/laptop-powermanagement.nix} /mnt/etc/nixos/modules/laptop-powermanagement.nix
-      cp ${./modules/nvidia.nix} /mnt/etc/nixos/modules/nvidia.nix
-      cp ${./default-install.nix} /mnt/etc/nixos/configuration.nix
 
-      # nixos-install will run "nix build --store /mnt ..." which won't be able
-      # to see what we have in the installer nix store, so copy everything
-      # needed over.
-      nix build -f '<nixpkgs/nixos>' system -I "nixos-config=/mnt/etc/nixos/configuration.nix" -o /out
-      nix copy --no-check-sigs --to local?root=/mnt /out
-      ${installBuild.nixos-install}/bin/nixos-install --no-root-passwd --no-channel-copy
+      # currently it only works with predefined hardware-configuration
+      # nixos-generate-config --root /mnt
+      nix copy --no-check-sigs --to local?root=/mnt ${installBuild}
+      system=$(readlink -f ${installBuild})
+      nix-env --store /mnt -p /mnt/nix/var/nix/profiles/system --set "$system"
+      ln -sfn /proc/mounts /mnt/etc/mtab
+      mkdir -m 0755 -p "/mnt/etc"
+      touch "/mnt/etc/NIXOS"
+      NIXOS_INSTALL_BOOTLOADER=1 nixos-enter --root /mnt -- /run/current-system/bin/switch-to-configuration boot
       reboot
     '';
   };

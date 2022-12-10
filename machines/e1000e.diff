@@ -1,0 +1,37 @@
+diff --git a/drivers/net/ethernet/intel/e1000e/nvm.c b/drivers/net/ethernet/intel/e1000e/nvm.c
+index e609f4df8..a1e105bf4 100644
+--- a/drivers/net/ethernet/intel/e1000e/nvm.c
++++ b/drivers/net/ethernet/intel/e1000e/nvm.c
+@@ -549,19 +549,19 @@ s32 e1000e_validate_nvm_checksum_generic(struct e1000_hw *hw)
+ 	u16 checksum = 0;
+ 	u16 i, nvm_data;
+ 
+-	for (i = 0; i < (NVM_CHECKSUM_REG + 1); i++) {
+-		ret_val = e1000_read_nvm(hw, i, 1, &nvm_data);
+-		if (ret_val) {
+-			e_dbg("NVM Read Error\n");
+-			return ret_val;
+-		}
+-		checksum += nvm_data;
+-	}
+-
+-	if (checksum != (u16)NVM_SUM) {
+-		e_dbg("NVM Checksum Invalid\n");
+-		return -E1000_ERR_NVM;
+-	}
++	// for (i = 0; i < (NVM_CHECKSUM_REG + 1); i++) {
++	// 	ret_val = e1000_read_nvm(hw, i, 1, &nvm_data);
++	// 	if (ret_val) {
++	// 		e_dbg("NVM Read Error\n");
++	// 		return ret_val;
++	// 	}
++	// 	checksum += nvm_data;
++	// }
++
++	// if (checksum != (u16)NVM_SUM) {
++	// 	e_dbg("NVM Checksum Invalid\n");
++	// 	return -E1000_ERR_NVM;
++	// }
+ 
+ 	return 0;
+ }

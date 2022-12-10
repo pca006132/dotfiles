@@ -1,5 +1,4 @@
-{ inputs }:
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 let
   luaSetup = plugin: name: {
     plugin = plugin;
@@ -48,10 +47,10 @@ in
     extraConfig = ''
       lua require('impatient').enable_profile()
       lua vim.notify = require("notify")
-      source ${builtins.toString ./basic.vim}
-      source ${builtins.toString ./keymaps.vim}
-      source ${builtins.toString ./highlight.vim}
-      luafile ${builtins.toString ./lsp.lua}
+      source ${./basic.vim}
+      source ${./keymaps.vim}
+      source ${./highlight.vim}
+      luafile ${./lsp.lua}
       " fugitive
       nnoremap <silent> <leader>gg :Git<cr>
       nnoremap <silent> <leader>gc :Git commit<cr>
@@ -263,10 +262,8 @@ in
       {
         plugin = nvim-lint;
         config = ''
-          require('lint').linters.languagetool.cmd= "languagetool-commandline"
-
           require('lint').linters_by_ft = {
-            markdown = {'vale', 'languagetool'}
+            markdown = {'vale'}
           }
 
           vim.api.nvim_create_autocmd({ "BufWritePost" }, {

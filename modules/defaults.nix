@@ -1,7 +1,8 @@
 { config, lib, pkgs, ... }:
 {
-  config = {
+  config = rec {
     nixpkgs.config.allowUnfree = true;
+    nixpkgs.hostPlatform = "x86_64-linux";
     boot = {
       loader = {
         systemd-boot.enable = true;
@@ -54,6 +55,10 @@
       pulseaudio.enable = false;
       enableAllFirmware = true;
       opentabletdriver.enable = true;
+      cpu = {
+        intel.updateMicrocode = true;
+        amd.updateMicrocode = true;
+      };
     };
     # Select internationalisation properties.
     i18n.defaultLocale = "en_US.UTF-8";
@@ -74,7 +79,7 @@
         # Enable the GNOME Desktop Environment.
         displayManager.gdm = {
           enable = true;
-          wayland = true;
+          wayland = lib.mkDefault true;
         };
         desktopManager = {
           gnome.enable = true;
@@ -128,6 +133,7 @@
     programs = {
       bcc.enable = true;
       dconf.enable = true;
+      xwayland.enable = services.xserver.displayManager.gdm.wayland;
     };
 
     users.users.pca006132 = {
@@ -135,9 +141,9 @@
       extraGroups = [ "wheel" "uucp" "audio" "dialout" "networkmanager" "wireshark" ];
       openssh.authorizedKeys.keys = pkgs.lib.splitString "\n" (builtins.readFile ./pca006132.keys);
       initialPassword = "123456";
+      shell = pkgs.zsh;
     };
 
-    environment.shells = [ "/home/pca006132/.nix-profile/bin/zsh" ];
     environment.systemPackages = with pkgs; [ git ];
 
     # performance related settings

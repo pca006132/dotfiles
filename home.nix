@@ -1,6 +1,6 @@
-{ inputs }:
 { pkgs
 , config
+, inputs
 , ...
 }:
 let
@@ -26,7 +26,6 @@ let
     texlab
     (texlive.combine { inherit (texlive) scheme-full minted; })
 
-    languagetool
     vale
 
     nodePackages.pyright
@@ -72,7 +71,10 @@ let
   ];
 in
 {
+  nixpkgs.config.allowUnfree = true;
+  home.stateVersion = "22.11";
   programs.home-manager = { enable = true; };
+  imports = [ ./nvim/config.nix ];
 
   home.packages = with pkgs; [
     osu-lazer
@@ -172,10 +174,6 @@ in
   services.easyeffects = {
     enable = true;
   };
-  # xdg.configFile."easyeffects/output" = {
-  #   recursive = true;
-  #   source = inputs.easyeffects-presets;
-  # };
 
   services.gpg-agent = {
     defaultCacheTtlSsh = 60;
@@ -183,6 +181,14 @@ in
     enableSshSupport = true;
     enableExtraSocket = true;
     sshKeys = [ "996D13DF48B5A21F57298DD1B542F46ABECF3015" ];
+  };
+
+  programs.ssh.matchBlocks = {
+    pca-pc = {
+      hostname = "pca006132.duckdns.org";
+      forwardAgent = true;
+      compression = true;
+    };
   };
 
   programs.zsh = {
