@@ -80,6 +80,7 @@ in
 
   home.sessionVariables = {
     EDITOR = "nvim";
+    LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/run/opengl-driver/lib";
   };
   home.sessionPath = [ "$HOME/.npm-packages/bin/" "$HOME/.local/bin" ];
 
