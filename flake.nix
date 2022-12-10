@@ -69,6 +69,11 @@
           }
         ] ++ modules;
       };
+      transitiveInputs = with builtins; s:
+        let
+          ls = attrValues (if hasAttr "inputs" s then s.inputs else { });
+        in
+        if length ls == 0 then [ ] else ls ++ map transitiveInputs ls;
     in
     rec {
       nixosConfigurations = {
@@ -84,10 +89,16 @@
       };
 
       # qemu test
-      packages."x86_64-linux".default = (nixpkgs.lib.nixosSystem {
+      # seems this is not enough
+      packages."x86_64-linux".default = with builtins; let
+        ins = (filter (s: isAttrs s && hasAttr "outPath" s)) (transitiveInputs self);
+      in
+      (nixpkgs.lib.nixosSystem {
         specialArgs = {
           inherit self;
-          baseSystem = nixosConfigurations.pca-xps15;
+          storeContents = [
+            nixosConfigurations.pca-xps15.config.system.build.toplevel
+          ] ++ ins;
         };
         modules = [ ./installer-configuration.nix ];
       }).config.system.build.isoImage;

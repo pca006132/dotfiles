@@ -1,10 +1,7 @@
 # largely copied from
 # https://github.com/tfc/nixos-offline-installer
-{ self, baseSystem, config, pkgs, lib, modulesPath, ... }:
+{ self, storeContents, config, pkgs, lib, modulesPath, ... }:
 
-let
-  installBuild = baseSystem.config.system.build.toplevel;
-in
 {
   imports = [
     "${modulesPath}/installer/cd-dvd/iso-image.nix"
@@ -32,7 +29,7 @@ in
   isoImage.makeEfiBootable = true;
   isoImage.makeUsbBootable = true;
   isoImage.volumeID = "NIXOS_ISO";
-  isoImage.storeContents = [ installBuild ];
+  isoImage.storeContents = storeContents;
   isoImage.includeSystemBuildDependencies = true;
   # actually a lot faster than xz while not being very large
   isoImage.squashfsCompression = "zstd -Xcompression-level 6";
