@@ -1,9 +1,9 @@
 # largely copied from
 # https://github.com/tfc/nixos-offline-installer
-{ self, systemBuild, config, pkgs, lib, modulesPath, ... }:
+{ self, baseSystem, config, pkgs, lib, modulesPath, ... }:
 
 let
-  installBuild = systemBuild.config.system.build.toplevel;
+  installBuild = baseSystem.config.system.build.toplevel;
 in
 {
   imports = [
@@ -33,7 +33,7 @@ in
   isoImage.makeUsbBootable = true;
   isoImage.volumeID = "NIXOS_ISO";
   isoImage.storeContents = [ installBuild ];
-  isoImage.includeSystemBuildDependencies = false;
+  isoImage.includeSystemBuildDependencies = true;
   # actually a lot faster than xz while not being very large
   isoImage.squashfsCompression = "zstd -Xcompression-level 6";
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -58,7 +58,7 @@ in
       HOME = "/root";
     };
     script = ''
-      set -euxo pipefail
+      # set -euxo pipefail
       # If the partitions exist already as-is, parted might error out
       # telling that it can't communicate changes to the kernel...
       wipefs -fa /dev/sda
@@ -73,16 +73,12 @@ in
       mount /dev/disk/by-label/nixos /mnt
       mkdir -p /mnt/boot
       mount /dev/disk/by-label/boot /mnt/boot
+      mkdir -p /mnt/etc/nixos
+      cp -r ${self}/* /mnt/etc/nixos
+      nixos-generate-config --root /mnt
 
-      # currently it only works with predefined hardware-configuration
-      # nixos-generate-config --root /mnt
-      nix copy --no-check-sigs --to local?root=/mnt ${installBuild}
-      system=$(readlink -f ${installBuild})
-      nix-env --store /mnt -p /mnt/nix/var/nix/profiles/system --set "$system"
-      ln -sfn /proc/mounts /mnt/etc/mtab
-      mkdir -m 0755 -p "/mnt/etc"
-      touch "/mnt/etc/NIXOS"
-      NIXOS_INSTALL_BOOTLOADER=1 nixos-enter --root /mnt -- /run/current-system/bin/switch-to-configuration boot
+      nix build /mnt/etc/nixos#nixosConfigurations.barebone.config.system.build.toplevel --offline -o /out
+      nixos-install -v --system /out --no-root-passwd --no-channel-copy
       reboot
     '';
   };

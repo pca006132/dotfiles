@@ -74,22 +74,20 @@
       nixosConfigurations = {
         pca-xps15 = build [ ./machines/xps-15.nix ];
         pca-pc = build [ ./machines/pc.nix ];
+        barebone = build [
+          (_: {
+            networking.hostName = "pca-vm";
+            imports = [ ./hardware-configuration.nix ];
+            system.stateVersion = "22.11";
+          })
+        ];
       };
 
       # qemu test
       packages."x86_64-linux".default = (nixpkgs.lib.nixosSystem {
         specialArgs = {
           inherit self;
-          systemBuild = build [
-            (_: {
-              networking.hostName = "nixos";
-              fileSystems."/" = {
-                device = "/dev/disk/by-label/nixos";
-                fsType = "ext4";
-              };
-              system.stateVersion = "22.11";
-            })
-          ];
+          baseSystem = nixosConfigurations.pca-xps15;
         };
         modules = [ ./installer-configuration.nix ];
       }).config.system.build.isoImage;
