@@ -47,28 +47,28 @@ with lib; {
         options nvidia NVreg_PreserveVideoMemoryAllocations=1
       '';
     };
-    services.xserver = mkIf cfg.enablePrimeOffload (mkIf config.services.xserver.enable {
+    services.xserver = mkIf config.services.xserver.enable {
       videoDrivers = [ "nvidia" ];
-      screenSection = ''
+      screenSection = mkIf cfg.enablePrimeOffload ''
         Option         "metamodes" "nvidia-auto-select +0+0 {ForceFullCompositionPipeline=On}"
         Option         "AllowIndirectGLXProtocol" "off"
         Option         "TripleBuffer" "on"
       '';
-      serverLayoutSection = ''
+      serverLayoutSection = mkIf cfg.enablePrimeOffload ''
         Inactive "Device-nvidia[0]"
         Option "AllowNVIDIAGPUScreens"
       '';
-      displayManager.setupCommands = ''
+      displayManager.setupCommands = mkIf cfg.enablePrimeOffload ''
         xrandr --setprovideroutputsource Intel modesetting
       '';
-    });
+    };
     hardware = {
       nvidia = {
         modesetting.enable = true;
         nvidiaPersistenced = true;
         powerManagement = {
           enable = true;
-          finegrained = true;
+          finegrained = cfg.enablePrimeOffload;
         };
         prime = mkIf cfg.enablePrimeOffload {
           offload.enable = true;
