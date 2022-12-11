@@ -87,11 +87,25 @@
       nixosConfigurations = {
         pca-xps15 = build [ ./machines/xps-15.nix ];
         pca-pc = build [ ./machines/pc.nix ];
+        template = build [({pkgs, ...}: {
+          networking.hostName = "template";
+          # some random fs setting to make it build
+          fileSystems."/" = {
+            device = "/dev/disk/by-label/root";
+            fsType = "btrfs";
+          };
+          system.stateVersion = "22.11";
+        })];
         barebone = build [
           (_: {
             networking.hostName = "pca-vm";
             imports = [ ./hardware-configuration.nix ];
             system.stateVersion = "22.11";
+            # disable microcode update, or we will need internet
+            hardware.cpu = {
+              intel.updateMicrocode = false;
+              amd.updateMicrocode = false;
+            };
           })
         ];
       };
@@ -104,7 +118,7 @@
       (nixpkgs.lib.nixosSystem {
         specialArgs = {
           inherit self;
-          buildDerivation = nixosConfigurations.pca-xps15.config.system.build.toplevel;
+          buildDerivation = nixosConfigurations.template.config.system.build.toplevel;
           flakeInputs = ins;
         };
         modules = [ ./installer-configuration.nix ];

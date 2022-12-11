@@ -62,9 +62,12 @@
       # telling that it can't communicate changes to the kernel...
       wipefs -fa /dev/sda
       parted -s /dev/sda -- mklabel gpt
-      parted -s /dev/sda -- mkpart primary 512MiB 100%
-      parted -s /dev/sda -- mkpart ESP fat32 1MiB 512MiB
+      parted -s /dev/sda -- mkpart primary 1GiB -16GiB
+      parted -s /dev/sda -- mkpart ESP fat32 1MiB 1GiB
+      parted -s /dev/sda -- mkpart primary linux-swap -16GiB 100%
       parted -s /dev/sda -- set 2 boot on
+      mkswap -L swap /dev/sda3
+      swapon /dev/sda3
       mkfs.ext4 -F -L nixos /dev/sda1
       echo "y" | mkfs.fat -F 32 -n boot /dev/sda2
       # wait until labels appear

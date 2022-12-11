@@ -56,8 +56,8 @@
       enableAllFirmware = true;
       opentabletdriver.enable = true;
       cpu = {
-        intel.updateMicrocode = true;
-        amd.updateMicrocode = true;
+        intel.updateMicrocode = lib.mkDefault true;
+        amd.updateMicrocode = lib.mkDefault true;
       };
     };
     # Select internationalisation properties.
