@@ -67,13 +67,21 @@
               extraSpecialArgs = { inherit inputs; };
             };
           }
+          ({ ... }: {
+            environment.etc."nix/channels/nixpkgs".source = inputs.nixpkgs.outPath;
+            environment.etc."nix/channels/nixpkgs-unstable".source = inputs.nixpkgs-unstable.outPath;
+            nix.nixPath = [
+              "nixpkgs=/etc/nix/channels/nixpkgs"
+              "nixpkgs-unstable=/etc/nix/channels/nixpkgs-unstable"
+            ];
+          })
         ] ++ modules;
       };
       transitiveInputs = with builtins; s:
         let
           ls = attrValues (if hasAttr "inputs" s then s.inputs else { });
         in
-        if length ls == 0 then [ ] else ls ++ map transitiveInputs ls;
+        if length ls == 0 then [ ] else ls ++ concatLists (map transitiveInputs ls);
     in
     rec {
       nixosConfigurations = {
@@ -91,14 +99,13 @@
       # qemu test
       # seems this is not enough
       packages."x86_64-linux".default = with builtins; let
-        ins = (filter (s: isAttrs s && hasAttr "outPath" s)) (transitiveInputs self);
+        ins = (filter (s: isAttrs s)) (transitiveInputs self);
       in
       (nixpkgs.lib.nixosSystem {
         specialArgs = {
           inherit self;
-          storeContents = [
-            nixosConfigurations.pca-xps15.config.system.build.toplevel
-          ] ++ ins;
+          buildDerivation = nixosConfigurations.pca-xps15.config.system.build.toplevel;
+          flakeInputs = ins;
         };
         modules = [ ./installer-configuration.nix ];
       }).config.system.build.isoImage;

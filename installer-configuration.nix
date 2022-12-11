@@ -1,6 +1,6 @@
 # largely copied from
 # https://github.com/tfc/nixos-offline-installer
-{ self, storeContents, config, pkgs, lib, modulesPath, ... }:
+{ self, buildDerivation, flakeInputs, config, pkgs, lib, modulesPath, ... }:
 
 {
   imports = [
@@ -29,10 +29,12 @@
   isoImage.makeEfiBootable = true;
   isoImage.makeUsbBootable = true;
   isoImage.volumeID = "NIXOS_ISO";
-  isoImage.storeContents = storeContents;
+  isoImage.storeContents = [
+    buildDerivation
+  ] ++ flakeInputs;
   isoImage.includeSystemBuildDependencies = true;
   # actually a lot faster than xz while not being very large
-  isoImage.squashfsCompression = "zstd -Xcompression-level 6";
+  isoImage.squashfsCompression = "zstd -Xcompression-level 1";
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   systemd.services.installer = {
