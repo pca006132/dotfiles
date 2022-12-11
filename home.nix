@@ -9,7 +9,6 @@ let
     clang-tools
     cmake
     gdb
-    kcachegrind
     pkg-config
     flamegraph
     linuxPackages.perf
@@ -65,8 +64,12 @@ let
     rime-data
     firefox-bin
     zoom-us
+    gnome.gnome-tweaks
     gnome.adwaita-icon-theme
     gnomeExtensions.dash-to-dock
+    qemu_kvm
+    nvtop
+    kcachegrind
     (nerdfonts.override { fonts = [ "DejaVuSansMono" "Hack" ]; })
   ];
 in

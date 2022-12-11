@@ -79,7 +79,8 @@
         # Enable the GNOME Desktop Environment.
         displayManager.gdm = {
           enable = true;
-          wayland = lib.mkDefault true;
+          # a lot of things are broken in wayland...
+          wayland = false;
         };
         desktopManager = {
           gnome.enable = true;
