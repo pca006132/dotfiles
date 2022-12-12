@@ -149,10 +149,5 @@
 
     # performance related settings
     zramSwap.enable = true;
-    systemd.services.sshd.serviceConfig = {
-      MemorySwapMax = 0;
-      MemoryZswapMax = 0;
-      Nice = -15;
-    };
   };
 }

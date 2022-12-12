@@ -24,11 +24,22 @@
       "i915.enable_psr=0"
       "i915.enable_fbc=1"
       "i915.fastboot=1"
+      # for testing
+      "nohz_full=19"
+      "isolcpus=19"
     ];
     extraModprobeConfig = ''
       options i915 force_probe=46a6
     '';
     kernelPackages = pkgs-unstable.linuxPackages_xanmod_latest;
+    kernel.sysctl = {
+      # Disable proactive compaction because it introduces jitter
+      "vm.compaction_proactiveness" = 0;
+      "vm.swappiness" = 10;
+      # Reduce the maximum page lock acquisition latency while retaining adequate throughput
+      "vm.page_lock_unfairness" = 1;
+      "vm.vfs_cache_pressure" = 50;
+    };
   };
 
   nvidia-quirks = {

@@ -137,6 +137,7 @@ in
     GTK_IM_MODULE=fcitx
     QT_IM_MODULE=fcitx
     XMODIFIERS=@im=fcitx
+    MOZ_USE_XINPUT2=1
   '';
 
   nixpkgs.overlays = [ inputs.neovim-nightly-overlay.overlay ];
