@@ -187,11 +187,14 @@ in
     sshKeys = [ "996D13DF48B5A21F57298DD1B542F46ABECF3015" ];
   };
 
-  programs.ssh.matchBlocks = {
-    pca-pc = {
-      hostname = "pca006132.duckdns.org";
-      forwardAgent = true;
-      compression = true;
+  programs.ssh = {
+    enable = true;
+    matchBlocks = {
+      pca-pc = {
+        hostname = "pca006132.duckdns.org";
+        forwardAgent = true;
+        compression = true;
+      };
     };
   };
 
