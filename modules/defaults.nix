@@ -127,9 +127,16 @@
         passwordAuthentication = false;
       };
 
+      thermald.enable = true;
+      fstrim.enable = true;
+      hdapsd.enable = true;
+
       # firmware update
       fwupd.enable = true;
     };
+
+    # wait online is really slow and not really needed
+    systemd.services.NetworkManager-wait-online.enable = false;
 
     programs = {
       bcc.enable = true;
