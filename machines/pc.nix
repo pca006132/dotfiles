@@ -55,5 +55,35 @@
 
   nvidia-quirks = { enable = true; };
 
+  systemd.services = {
+    duckdns = {
+      startAt = "*-*-* *:0/5:00";
+      wantedBy = [ "sshd.service" ];
+      after = [ "network.target" ];
+      description = "Update duckdns IP";
+      path = with pkgs; [curl coreutils];
+      serviceConfig = {
+        User = "pca006132";
+        ExecStart = (pkgs.writeShellScript "duckdns-update.sh" ''
+          echo url="https://www.duckdns.org/update?domains=pca006132&token=$(cat $TOKENPATH)&ip=" | curl -k -K -
+        '');
+        LoadCredentialEncrypted = "duckdns-token:/home/pca006132/secrets/duckdns-token";
+        Environment = "TOKENPATH=%d/duckdns-token";
+        StandardOutput = "journal";
+      };
+    };
+  };
+
+  security.acme = rec {
+    acceptTerms = true;
+    defaults.email = "cklamaq@cse.ust.hk";
+    certs."pca006132.duckdns.org" = {
+      domain = "pca006132.duckdns.org";
+      # sadly cannot use LoadCredentialEncrypted here
+      credentialsFile = "/home/pca006132/secrets/lego-secrets";
+      dnsProvider = "duckdns";
+    };
+  };
+
   system.stateVersion = "22.11";
 }
