@@ -29,11 +29,13 @@
   networking.hostName = "pca-pc";
 
   boot = {
-    initrd.luks.devices = {
-      "cryptroot".device = "/dev/disk/by-uuid/2b41c705-7971-4f06-97fc-1604efe5586e";
-      "crypthome".device = "/dev/disk/by-uuid/ee7c1d38-43e2-4b75-83d7-f32aa668e8d9";
+    initrd = {
+      luks.devices = {
+        "cryptroot".device = "/dev/disk/by-uuid/2b41c705-7971-4f06-97fc-1604efe5586e";
+        "crypthome".device = "/dev/disk/by-uuid/ee7c1d38-43e2-4b75-83d7-f32aa668e8d9";
+      };
+      availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "sd_mod" ];
     };
-    availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "sd_mod" ];
     kernelModules = [ "kvm-intel" "turbostat" ];
     kernelPatches = [{
       name = "e1000e-bypass-checksum";
@@ -52,8 +54,36 @@
   };
 
   nvidia-quirks = { enable = true; };
-  # wayland with nvidia driver doesn't support night light
-  services.xserver.displayManager.gdm.wayland = false;
+
+  systemd.services = {
+    duckdns = {
+      startAt = "*-*-* *:0/5:00";
+      wantedBy = [ "sshd.service" ];
+      after = [ "network.target" ];
+      description = "Update duckdns IP";
+      path = with pkgs; [curl coreutils];
+      serviceConfig = {
+        User = "pca006132";
+        ExecStart = (pkgs.writeShellScript "duckdns-update.sh" ''
+          echo url="https://www.duckdns.org/update?domains=pca006132&token=$(cat $TOKENPATH)&ip=" | curl -k -K -
+        '');
+        LoadCredentialEncrypted = "duckdns-token:/home/pca006132/secrets/duckdns-token";
+        Environment = "TOKENPATH=%d/duckdns-token";
+        StandardOutput = "journal";
+      };
+    };
+  };
+
+  security.acme = rec {
+    acceptTerms = true;
+    defaults.email = "cklamaq@cse.ust.hk";
+    certs."pca006132.duckdns.org" = {
+      domain = "pca006132.duckdns.org";
+      # sadly cannot use LoadCredentialEncrypted here
+      credentialsFile = "/home/pca006132/secrets/lego-secrets";
+      dnsProvider = "duckdns";
+    };
+  };
 
   system.stateVersion = "22.11";
 }
