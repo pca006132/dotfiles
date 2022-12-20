@@ -15,6 +15,7 @@
       ];
       kernelPackages = lib.mkDefault pkgs.linuxPackages_xanmod_latest;
       kernel.sysctl."kernel.perf_event_paranoid" = -1;
+      supportedFilesystems = [ "ntfs" "exfat" ];
     };
     networking = {
       networkmanager.enable = true;
