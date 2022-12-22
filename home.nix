@@ -28,6 +28,16 @@ let
     vale
 
     nodePackages.pyright
+    nodePackages.typescript
+    (symlinkJoin {
+      name = "typescript-language-server";
+      paths = [ nodePackages.typescript-language-server ];
+      buildInputs = [ makeWrapper ];
+      postBuild = ''
+        wrapProgram $out/bin/typescript-language-server \
+          --add-flags --tsserver-path=${nodePackages.typescript}/lib/node_modules/typescript/lib/
+      '';
+    })
     (python3.withPackages (ps:
       with ps; [
         numpy
