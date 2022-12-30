@@ -69,6 +69,7 @@ let
     yt-dlp
     rsync
     unar
+    zip
   ];
   desktop-apps = with pkgs; [
     rime-data
@@ -90,7 +91,13 @@ in
   imports = [ ./nvim/config.nix ];
 
   home.packages = with pkgs; [
-    osu-lazer
+    (callPackage ./osu.nix {})
+    lutris
+    wineWowPackages.stagingFull
+    winetricks
+    kicad
+    super-slicer-latest
+    cura
   ] ++ development-packages ++ tools ++ desktop-apps;
 
   home.sessionVariables = {

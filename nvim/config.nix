@@ -132,7 +132,17 @@ in
     plugins = with pkgs.vimPlugins; [
       plenary-nvim
       dressing-nvim
-      (luaSetup nvim-tree-lua "nvim-tree")
+      {
+        plugin = nvim-tree-lua;
+        config = ''
+        require("nvim-tree").setup({
+          renderer = {
+            group_empty = true
+          }
+        })
+        '';
+        type = "lua";
+      }
       nvim-web-devicons
       vim-fugitive
       (luaSetup comment-nvim "Comment")
@@ -259,21 +269,6 @@ in
       codi-vim
       tabout-nvim
       vim-sleuth
-      {
-        plugin = nvim-lint;
-        config = ''
-          require('lint').linters_by_ft = {
-            markdown = {'vale'}
-          }
-
-          vim.api.nvim_create_autocmd({ "BufWritePost" }, {
-            callback = function()
-              require("lint").try_lint()
-            end,
-          })
-        '';
-        type = "lua";
-      }
       (luaSetup nvim-gps "nvim-gps")
       (luaSetup fidget-nvim "fidget")
       {
