@@ -92,12 +92,12 @@ in
 
   home.packages = with pkgs; [
     (callPackage ./osu.nix {})
+    (callPackage ./cura.nix {})
     lutris
     wineWowPackages.stagingFull
     winetricks
     kicad
     super-slicer-latest
-    cura
   ] ++ development-packages ++ tools ++ desktop-apps;
 
   home.sessionVariables = {
