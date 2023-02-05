@@ -91,14 +91,34 @@ in
   imports = [ ./nvim/config.nix ];
 
   home.packages = with pkgs; [
-    (callPackage ./osu.nix {})
-    (callPackage ./cura.nix {})
+    (callPackage ./osu.nix { })
+    (callPackage ./cura.nix { })
+    (callPackage ./super-slicer.nix { })
     lutris
     wineWowPackages.stagingFull
     winetricks
     kicad
-    super-slicer-latest
+    freecad
   ] ++ development-packages ++ tools ++ desktop-apps;
+
+  xdg.desktopEntries = {
+    cura = rec {
+      name = "Cura Slicer";
+      exec = "cura-5.3";
+      icon = "cura-5.3";
+      comment = "Cura 5.3 Preview";
+      genericName = "3D printer tool";
+      categories = [ "Development" ];
+    };
+    super-slicer = rec {
+      name = "Super Slicer";
+      exec = "super-slicer";
+      icon = "super-slicer";
+      comment = "SuperSlicer Arachne Preview";
+      genericName = "3D printer tool";
+      categories = [ "Development" ];
+    };
+  };
 
   home.sessionVariables = {
     EDITOR = "nvim";
@@ -157,7 +177,23 @@ in
     MOZ_USE_XINPUT2=1
   '';
 
-  nixpkgs.overlays = [ inputs.neovim-nightly-overlay.overlay ];
+  nixpkgs.overlays = [
+    inputs.neovim-nightly-overlay.overlay
+    (self: super: rec {
+      neovim-unwrapped = super.neovim-unwrapped.overrideAttrs (oa: {
+        patches = builtins.filter
+          (p:
+            let
+              patch =
+                if builtins.typeOf p == "set"
+                then baseNameOf p.name
+                else baseNameOf p;
+            in
+            patch != "neovim-build-make-generated-source-files-reproducible.patch")
+          oa.patches;
+      });
+    })
+  ];
 
   programs.direnv = {
     enable = true;

@@ -4,8 +4,8 @@
     home-manager.url = "github:nix-community/home-manager/master";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
     home-manager.inputs.nixpkgs.follows = "nixpkgs-unstable";
+    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
 
     lspkind-src = {
       url = "github:onsails/lspkind.nvim";
