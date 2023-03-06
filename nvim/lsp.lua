@@ -91,6 +91,10 @@ metals_config.handlers = {['metals/status'] = metals_status_handler}
 local clangd_config = require('lspconfig.server_configurations.clangd').default_config
 clangd_config.capabilities.offsetEncoding = "utf-8"
 
+lspconfig['grammarly'].setup {
+  filetypes = { 'markdown', 'tex' }
+}
+
 -- Enable the following language servers
 local servers = { 'clangd', 'pyright', 'tsserver', 'metals', 'texlab', 'hls' }
 for _, lsp in ipairs(servers) do

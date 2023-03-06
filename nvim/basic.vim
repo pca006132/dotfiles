@@ -89,6 +89,12 @@ if has('conceal')
 endif
 
 " ========================= Utilities ======================
+" Reformat lines (getting the spacing correct) {{{
+fun! TeX_fmt(start, end)
+    silent execute a:start.','.a:end.'s/[,.!?]\zs /\r/g'
+endfun
+
+
 " Delete trailing white space on save, useful for some filetypes ;)
 fun! CleanExtraSpaces()
     let save_cursor = getpos(".")
@@ -126,6 +132,9 @@ endfunction
 if has("autocmd")
     autocmd BufWritePre *.js,*.py,*.sh,*.ts,*.mk,*.rs,*.c,*.cpp :call CleanExtraSpaces()
     autocmd FileType make setlocal noexpandtab
+    autocmd FileType tex setlocal formatexpr=TeX_fmt(v:lnum,v:lnum+v:count-1)
+    autocmd FileType tex setlocal formatoptions+=b
+    autocmd FileType tex setlocal textwidth=0
 endif
 " Return to last edit position when opening files (You want this!)
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif

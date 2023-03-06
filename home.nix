@@ -27,8 +27,10 @@ let
 
     vale
 
+    powertop
     nodePackages.pyright
     nodePackages.typescript
+    nodePackages_latest.grammarly-languageserver
     (symlinkJoin {
       name = "typescript-language-server";
       paths = [ nodePackages.typescript-language-server ];
@@ -93,7 +95,7 @@ in
   home.packages = with pkgs; [
     (callPackage ./osu.nix { })
     (callPackage ./cura.nix { })
-    (callPackage ./super-slicer.nix { })
+    (callPackage ./prusa-slicer.nix { })
     lutris
     wineWowPackages.stagingFull
     winetricks
@@ -110,11 +112,11 @@ in
       genericName = "3D printer tool";
       categories = [ "Development" ];
     };
-    super-slicer = rec {
-      name = "Super Slicer";
-      exec = "super-slicer";
-      icon = "super-slicer";
-      comment = "SuperSlicer Arachne Preview";
+    prusa-slicer = rec {
+      name = "Prusa Slicer";
+      exec = "prusa-slicer";
+      icon = "prusa-slicer";
+      comment = "Prusa Slicer";
       genericName = "3D printer tool";
       categories = [ "Development" ];
     };

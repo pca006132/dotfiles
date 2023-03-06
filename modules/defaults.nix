@@ -20,8 +20,8 @@
     networking = {
       networkmanager.enable = true;
       wireless.userControlled.enable = true;
-      # firewall.allowedTCPPorts = [ ];
-      # firewall.allowedUDPPorts = [ ];
+      firewall.allowedTCPPorts = [ 3389 ];
+      firewall.allowedUDPPorts = [ 3389 ];
     };
     time = {
       timeZone = "Asia/Hong_Kong";
@@ -43,7 +43,6 @@
       sensor.iio.enable = true;
       bluetooth = {
         enable = true;
-        hsphfpd.enable = true;
         disabledPlugins = [
           "sap"
         ];
@@ -75,6 +74,8 @@
     };
 
     services = {
+      flatpak.enable = true;
+      gnome.gnome-remote-desktop.enable = true;
       xserver = {
         enable = true;
         # Enable the GNOME Desktop Environment.

@@ -162,7 +162,7 @@ in
         config = ''
           local gknapsettings = {
               texoutputext = "pdf",
-              textopdf = "pdflatex -synctex=1 -halt-on-error -interaction=batchmode %docroot%",
+              textopdf = "xelatex -synctex=1 -halt-on-error -interaction=batchmode %docroot%",
               textopdfviewerlaunch = "sioyek --inverse-search 'nvim --headless -es --cmd \"lua require('\"'\"'knaphelper'\"'\"').relayjump('\"'\"'%servername%'\"'\"','\"'\"'%1'\"'\"',%2,0)\"' --reuse-instance %outputfile%",
               textopdfviewerrefresh = "none",
               textopdfforwardjump = "sioyek --inverse-search 'nvim --headless -es --cmd \"lua require('\"'\"'knaphelper'\"'\"').relayjump('\"'\"'%servername%'\"'\"','\"'\"'%1'\"'\"',%2,0)\"' --reuse-instance --forward-search-file %srcfile% --forward-search-line %line% %outputfile%"
@@ -256,7 +256,6 @@ in
       (luaSetup gitsigns-nvim "gitsigns")
       lspkind
       nvim-treesitter-textobjects
-      nvim-ts-rainbow
       nvim-lspconfig
       (luaSetup lspsaga-nvim "lspsaga")
       nvim-cmp
@@ -290,10 +289,6 @@ in
           require'nvim-treesitter.configs'.setup {
             highlight = {
               enable = true,
-            },
-            rainbow = {
-              enable = true,
-              extended_mode = true,
             },
             textobjects = {
               select = {
