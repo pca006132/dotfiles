@@ -72,6 +72,7 @@ let
     rsync
     unar
     zip
+    xournalpp
   ];
   desktop-apps = with pkgs; [
     rime-data
@@ -82,6 +83,7 @@ let
     gnomeExtensions.dash-to-dock
     qemu_kvm
     nvtop
+    intel-gpu-tools
     kcachegrind
     (nerdfonts.override { fonts = [ "DejaVuSansMono" "Hack" ]; })
   ];
@@ -96,6 +98,8 @@ in
     (callPackage ./osu.nix { })
     (callPackage ./cura.nix { })
     (callPackage ./prusa-slicer.nix { })
+    (callPackage ./super-slicer.nix { })
+    (callPackage ./openscad.nix { })
     lutris
     wineWowPackages.stagingFull
     winetricks
@@ -118,6 +122,22 @@ in
       icon = "prusa-slicer";
       comment = "Prusa Slicer";
       genericName = "3D printer tool";
+      categories = [ "Development" ];
+    };
+    super-slicer = rec {
+      name = "Super Slicer";
+      exec = "super-slicer";
+      icon = "super-slicer";
+      comment = "Super Slicer";
+      genericName = "3D printer tool";
+      categories = [ "Development" ];
+    };
+    openscad = rec {
+      name = "OpenSCAD";
+      exec = "openscad";
+      icon = "openscad";
+      comment = "openscad";
+      genericName = "3D modeling tool";
       categories = [ "Development" ];
     };
   };

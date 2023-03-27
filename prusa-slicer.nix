@@ -5,8 +5,8 @@ in
 pkgs.appimageTools.wrapType2 {
   name = name;
   src = builtins.fetchurl {
-    url = "https://github.com/prusa3d/PrusaSlicer/releases/download/version_2.6.0-alpha3/PrusaSlicer-2.6.0-alpha3+linux-x64-GTK3-202302031527.AppImage";
-    sha256 = "1b9dmxsv0yl7xgmllrlqn9540n69pqabj5qvkmn0nih9snxg0v8j";
+    url = "https://github.com/prusa3d/PrusaSlicer/releases/download/version_2.6.0-alpha5/PrusaSlicer-2.6.0-alpha5+linux-x64-GTK2-202303061452.AppImage";
+    sha256 = "14xfig3xxbj0km499fcb5xb0p2y06p0v2lx4r6wx8i4v2gzh3g5i";
   };
 }
 
