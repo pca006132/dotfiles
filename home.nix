@@ -40,6 +40,7 @@ let
           --add-flags --tsserver-path=${nodePackages.typescript}/lib/node_modules/typescript/lib/
       '';
     })
+    adoptopenjdk-openj9-bin-16
     (python3.withPackages (ps:
       with ps; [
         numpy
@@ -57,7 +58,13 @@ let
     ripgrep
     ranger
     xclip
-    neovide
+    (neovide.overrideAttrs (old: rec {
+      src = inputs.neovide-src;
+      cargoDeps = old.cargoDeps.overrideAttrs (_: {
+        inherit src;
+        outputHash = "sha256-1BkEx2emvGdA8agoBgeEyoz1Z9G3SB0M8ORTNat+PqU=";
+      });
+    }))
     fzf
     sioyek
     imagemagick

@@ -58,19 +58,18 @@ in
       nnoremap <silent> <leader>gd :Git diff<cr>
       nnoremap <silent> <leader>gf :Git pull<cr>
       " nvim-gps
-      func! NvimGps() abort
-        return luaeval("require'nvim-gps'.is_available()") ?
-             \ luaeval("require'nvim-gps'.get_location()") : ""
-      endf
+      " func! NvimGps() abort
+      "   return luaeval("require'nvim-gps'.is_available()") ?
+      "        \ luaeval("require'nvim-gps'.get_location()") : ""
+      " endf
       " lightline
       let g:lightline = {
         \ 'active': {
-        \   'left': [ [ 'mode', 'paste', 'nvim-gps'],
+        \   'left': [ [ 'mode', 'paste'],
         \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
         \ },
         \ 'component_function': {
-        \   'gitbranch': 'FugitiveHead',
-        \   'nvim-gps': 'NvimGps'
+        \   'gitbranch': 'FugitiveHead'
         \ },
         \ 'tabline': {
         \   'left': [['buffers']],
@@ -268,7 +267,7 @@ in
       codi-vim
       tabout-nvim
       vim-sleuth
-      (luaSetup nvim-gps "nvim-gps")
+      # (luaSetup nvim-gps "nvim-gps")
       (luaSetup fidget-nvim "fidget")
       {
         plugin = nvim-treesitter.withPlugins (plugins: with plugins; [

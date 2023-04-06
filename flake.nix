@@ -35,6 +35,10 @@
       url = "github:Shatur/neovim-session-manager";
       flake = false;
     };
+    neovide-src = {
+      url = "github:neovide/neovide";
+      flake = false;
+    };
   };
 
   outputs =
