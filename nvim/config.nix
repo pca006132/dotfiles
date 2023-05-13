@@ -40,6 +40,21 @@ let
     version = "0.1.0";
     src = inputs.session-manager-src;
   };
+  copilot-lua = pkgs.vimUtils.buildVimPluginFrom2Nix {
+    pname = "copilot-lua";
+    version = "git";
+    src = inputs.copilot-lua-src;
+  };
+  copilot-cmp = pkgs.vimUtils.buildVimPluginFrom2Nix {
+    pname = "copilot-cmp";
+    version = "git";
+    src = inputs.copilot-cmp-src;
+  };
+  nvim-metals = pkgs.vimUtils.buildVimPluginFrom2Nix {
+    pname = "nvim-metals";
+    version = "git";
+    src = inputs.nvim-metals-src;
+  };
 in
 {
   programs.neovim = {
@@ -142,6 +157,19 @@ in
         '';
         type = "lua";
       }
+      {
+        plugin = copilot-lua;
+        config = ''
+          require("copilot").setup({
+            suggestion = { enabled = false },
+            panel = { enabled = false },
+          })
+        '';
+        type = "lua";
+      }
+      copilot-cmp
+      # (luaSetup copilot-cmp "copilot_cmp")
+      nvim-metals
       nvim-web-devicons
       vim-fugitive
       (luaSetup comment-nvim "Comment")

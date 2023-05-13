@@ -61,7 +61,13 @@
       };
     };
     # Select internationalisation properties.
-    i18n.defaultLocale = "en_US.UTF-8";
+    i18n = {
+      defaultLocale = "en_US.UTF-8";
+      extraLocaleSettings = {
+        LC_TIME = "en_HK.UTF-8";
+        LC_MEASUREMENT = "en_HK.UTF-8";
+      };
+    };
 
     fonts = {
       fonts = with pkgs; [
@@ -78,14 +84,18 @@
       gnome.gnome-remote-desktop.enable = true;
       xserver = {
         enable = true;
-        # Enable the GNOME Desktop Environment.
-        displayManager.gdm = {
-          enable = true;
-          # a lot of things are broken in wayland...
-          wayland = false;
+        displayManager = {
+          autoLogin = {
+            enable = true;
+            user = "pca006132";
+          };
+          defaultSession = "plasmawayland";
+          # sddm is somehow buggy...
+          lightdm.enable = true;
         };
         desktopManager = {
-          gnome.enable = true;
+          gnome.enable = false;
+          plasma5.enable = true;
           xterm.enable = false;
         };
         layout = "us";
@@ -117,11 +127,16 @@
 
       # yubikey and other hardware
       pcscd.enable = true;
-      udev.packages = with pkgs; [
-        openocd
-        yubikey-personalization
-        libu2f-host
-      ];
+      udev = {
+        packages = with pkgs; [
+          openocd
+          yubikey-personalization
+          libu2f-host
+        ];
+        extraHwdb = ''
+          ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="df11", MODE="664", GROUP="plugdev", TAG+="uaccess"
+        '';
+      };
 
       openssh = {
         enable = true;
@@ -143,18 +158,28 @@
     programs = {
       bcc.enable = true;
       dconf.enable = true;
-      xwayland.enable = services.xserver.displayManager.gdm.wayland;
+      xwayland.enable = true;
     };
 
     users.users.pca006132 = {
       isNormalUser = true;
-      extraGroups = [ "wheel" "uucp" "audio" "dialout" "networkmanager" "wireshark" ];
+      extraGroups = [
+        "wheel"
+        "uucp"
+        "audio"
+        "dialout"
+        "networkmanager"
+        "wireshark"
+        "plugdev"
+      ];
       openssh.authorizedKeys.keys = pkgs.lib.splitString "\n" (builtins.readFile ./pca006132.keys);
       initialPassword = "123456";
       shell = pkgs.zsh;
     };
 
     environment.systemPackages = with pkgs; [ git ];
+
+    qt5.platformTheme = "kde";
 
     # performance related settings
     zramSwap.enable = true;

@@ -96,7 +96,7 @@ lspconfig['grammarly'].setup {
 }
 
 -- Enable the following language servers
-local servers = { 'clangd', 'pyright', 'tsserver', 'metals', 'texlab', 'hls' }
+local servers = { 'clangd', 'pyright', 'tsserver', 'texlab', 'hls' }
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
     on_attach = on_attach,
@@ -133,6 +133,12 @@ local kind_icons = {
   Operator = "",
   TypeParameter = ""
 }
+
+require("copilot_cmp").setup({
+  formatters = {
+    insert_text = require("copilot_cmp.format").remove_existing
+  },
+})
 
 local cmp = require 'cmp'
 cmp.setup {
@@ -172,6 +178,7 @@ cmp.setup {
     end,
   },
   sources = {
+    { name = "copilot" },
     { name = 'nvim_lsp' },
     { name = 'path' },
     { name = 'buffer' },
@@ -188,6 +195,7 @@ cmp.setup {
         nvim_lsp = "[LSP]",
         path = "[Path]",
         latex_symbols = "[LaTeX]",
+        copilot = ""
       })[entry.source.name]
       local strings = vim.split(kind.kind, "%s", { trimempty = true })
       kind.kind = " " .. strings[1] .. " "
@@ -213,6 +221,35 @@ cmp.setup {
   },
 }
 
+local map = vim.keymap.set
+map("n", "<leader>dc", function()
+  require("dap").continue()
+end)
+
+map("n", "<leader>dr", function()
+  require("dap").repl.toggle()
+end)
+
+map("n", "<leader>dK", function()
+  require("dap.ui.widgets").hover()
+end)
+
+map("n", "<leader>dt", function()
+  require("dap").toggle_breakpoint()
+end)
+
+map("n", "<leader>dso", function()
+  require("dap").step_over()
+end)
+
+map("n", "<leader>dsi", function()
+  require("dap").step_into()
+end)
+
+map("n", "<leader>dl", function()
+  require("dap").run_last()
+end)
+
 require "lsp_signature".setup({})
 
 require "rust-tools".setup({
@@ -224,3 +261,45 @@ require "rust-tools".setup({
   }
 })
 
+dap.configurations.scala = {
+  {
+    type = "scala",
+    request = "launch",
+    name = "RunOrTest",
+    metals = {
+      runType = "runOrTestFile",
+      --args = { "firstArg", "secondArg", "thirdArg" }, -- here just as an example
+    },
+  },
+  {
+    type = "scala",
+    request = "launch",
+    name = "Test Target",
+    metals = {
+      runType = "testTarget",
+    },
+  },
+}
+
+metals_config.settings = {
+  showImplicitArguments = true
+}
+metals_config.root_patterns = {"build.sbt", "build.sc", "build.gradle", "pom.xml", ".scala-build", "bleep.yaml", ".git"}
+metals_config.capabilities = require("cmp_nvim_lsp").default_capabilities
+metals_config.on_attach = function(client, bufnr)
+  require("metals").setup_dap()
+  on_attach(client, bufnr)
+end
+
+-- Autocmd that will actually be in charging of starting the whole thing
+local nvim_metals_group = vim.api.nvim_create_augroup("nvim-metals", { clear = true })
+vim.api.nvim_create_autocmd("FileType", {
+  -- NOTE: You may or may not want java included here. You will need it if you
+  -- want basic Java support but it may also conflict if you are using
+  -- something like nvim-jdtls which also works on a java filetype autocmd.
+  pattern = { "scala", "sbt", "java" },
+  callback = function()
+    require("metals").initialize_or_attach(metals_config)
+  end,
+  group = nvim_metals_group,
+})

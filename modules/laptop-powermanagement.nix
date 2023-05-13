@@ -22,13 +22,13 @@ in with lib; {
           SOUND_POWER_SAVE_ON_BAT = 1;
 
           CPU_SCALING_GOVERNOR_ON_AC = "performance";
-          CPU_SCALING_GOVERNOR_ON_BAT = "schedutil";
+          CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
 
           RADEON_DPM_STATE_ON_AC = "performance";
           RADEON_DPM_STATE_ON_BAT = "auto";
 
           CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
-          CPU_ENERGY_PERF_POLICY_ON_BAT = "schedutil";
+          CPU_ENERGY_PERF_POLICY_ON_BAT = "powersave";
 
           NATACPI_ENABLE = 1;
           TPACPI_ENABLE = 1;

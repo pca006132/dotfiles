@@ -1,10 +1,10 @@
 {
   inputs = {
     # Specify the source of Home Manager and Nixpkgs
-    home-manager.url = "github:nix-community/home-manager/master";
+    home-manager.url = "github:nix-community/home-manager/release-22.11";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs-unstable";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
 
     lspkind-src = {
@@ -37,6 +37,22 @@
     };
     neovide-src = {
       url = "github:neovide/neovide";
+      flake = false;
+    };
+    copilot-lua-src = {
+      url = "github:zbirenbaum/copilot.lua";
+      flake = false;
+    };
+    copilot-cmp-src = {
+      url = "github:zbirenbaum/copilot-cmp";
+      flake = false;
+    };
+    nvim-metals-src = {
+      url = "github:scalameta/nvim-metals";
+      flake = false;
+    };
+    gnvim-src = {
+      url = "github:vhakulinen/gnvim";
       flake = false;
     };
   };
