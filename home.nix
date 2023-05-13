@@ -289,6 +289,7 @@ in
     enableSshSupport = true;
     enableExtraSocket = true;
     sshKeys = [ "996D13DF48B5A21F57298DD1B542F46ABECF3015" ];
+    pinentryFlavor = "curses";
   };
 
   programs.ssh = {

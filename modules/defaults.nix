@@ -91,7 +91,7 @@
           };
           defaultSession = "plasmawayland";
           # sddm is somehow buggy...
-          lightdm.enable = true;
+          gdm.enable = true;
         };
         desktopManager = {
           gnome.enable = false;
