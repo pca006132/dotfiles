@@ -217,17 +217,6 @@ in
 
   fonts.fontconfig.enable = true;
 
-  i18n.inputMethod = {
-    enabled = "fcitx5";
-    fcitx5.addons = [ pkgs.fcitx5-rime ];
-  };
-  home.file.".config/environment.d/envvars.conf".text = ''
-    GTK_IM_MODULE=fcitx
-    QT_IM_MODULE=fcitx
-    XMODIFIERS=@im=fcitx
-    MOZ_USE_XINPUT2=1
-  '';
-
   nixpkgs.overlays = [
     inputs.neovim-nightly-overlay.overlay
     (self: super: rec {

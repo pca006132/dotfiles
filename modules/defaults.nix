@@ -67,6 +67,18 @@
         LC_TIME = "en_HK.UTF-8";
         LC_MEASUREMENT = "en_HK.UTF-8";
       };
+      inputMethod = {
+        enabled = "fcitx5";
+        fcitx5.addons = with pkgs; [ fcitx5-rime fcitx5-gtk libsForQt5.fcitx5-qt];
+      };
+    };
+
+    environment.sessionVariables = with lib; {
+      NIX_PROFILES =
+        "${concatStringsSep " " (reverseList config.environment.profiles)}";
+      GTK_IM_MODULE = "fcitx";
+      QT_IM_MODULE = "fcitx";
+      XMODIFIERS = "@im=fcitx";
     };
 
     fonts = {
@@ -80,6 +92,7 @@
     };
 
     services = {
+      dbus.enable = true;
       flatpak.enable = true;
       gnome.gnome-remote-desktop.enable = true;
       xserver = {
@@ -118,6 +131,7 @@
         jack.enable = true;
         alsa.enable = true;
         alsa.support32Bit = true;
+        wireplumber.enable = true;
       };
       ofono.enable = true;
       blueman.enable = true;
