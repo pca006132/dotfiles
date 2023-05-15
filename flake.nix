@@ -1,10 +1,12 @@
 {
   inputs = {
     # Specify the source of Home Manager and Nixpkgs
-    home-manager.url = "github:nix-community/home-manager/release-22.11";
+    home-manager = {
+      url = "github:nix-community/home-manager/release-22.11";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
     neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
 
     lspkind-src = {
@@ -35,10 +37,6 @@
       url = "github:Shatur/neovim-session-manager";
       flake = false;
     };
-    neovide-src = {
-      url = "github:neovide/neovide";
-      flake = false;
-    };
     copilot-lua-src = {
       url = "github:zbirenbaum/copilot.lua";
       flake = false;
@@ -49,10 +47,6 @@
     };
     nvim-metals-src = {
       url = "github:scalameta/nvim-metals";
-      flake = false;
-    };
-    gnvim-src = {
-      url = "github:vhakulinen/gnvim";
       flake = false;
     };
   };
@@ -109,15 +103,17 @@
       nixosConfigurations = {
         pca-xps15 = build [ ./machines/xps-15.nix ];
         pca-pc = build [ ./machines/pc.nix ];
-        template = build [({pkgs, ...}: {
-          networking.hostName = "template";
-          # some random fs setting to make it build
-          fileSystems."/" = {
-            device = "/dev/disk/by-label/root";
-            fsType = "btrfs";
-          };
-          system.stateVersion = "22.11";
-        })];
+        template = build [
+          ({ pkgs, ... }: {
+            networking.hostName = "template";
+            # some random fs setting to make it build
+            fileSystems."/" = {
+              device = "/dev/disk/by-label/root";
+              fsType = "btrfs";
+            };
+            system.stateVersion = "22.11";
+          })
+        ];
         barebone = build [
           (_: {
             networking.hostName = "pca-vm";

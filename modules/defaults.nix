@@ -172,7 +172,6 @@
     programs = {
       bcc.enable = true;
       dconf.enable = true;
-      xwayland.enable = true;
     };
 
     users.users.pca006132 = {
