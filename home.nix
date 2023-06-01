@@ -62,13 +62,18 @@ let
     ripgrep
     ranger
     xclip
-    # (neovide.overrideAttrs (old: rec {
-    #   src = inputs.neovide-src;
-    #   cargoDeps = old.cargoDeps.overrideAttrs (_: {
-    #     inherit src;
-    #     outputHash = "sha256-FTRsJx5NozMm99ZeLo8E8QhPNhr8wEER5tGnLuRk9BQ=";
-    #   });
-    # }))
+    (neovide.overrideAttrs (old: rec {
+      src = inputs.neovide-src;
+      cargoDeps = pkgs.rustPlatform.importCargoLock {
+        lockFile = src + "/Cargo.lock";
+        outputHashes = {
+          "winit-0.28.6" =
+            "sha256-6YK4hmogBZ3Nchrz8aE865UyvOIa5Ul969T4R0GG8xA=";
+          "xkbcommon-dl-0.1.0" =
+            "sha256-ojokJF7ivN8JpXo+JAfX3kUOeXneNek7pzIy8D1n4oU=";
+        };
+      };
+    }))
     fzf
     sioyek
     imagemagick
