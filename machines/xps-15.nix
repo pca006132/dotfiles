@@ -24,9 +24,9 @@
       "i915.enable_psr=0"
       "i915.enable_fbc=1"
       "i915.fastboot=1"
-      # for testing
-      "nohz_full=19"
-      "isolcpus=19"
+      # uncomment if we need cores for testing...
+      # "nohz_full=19"
+      # "isolcpus=19"
     ];
     extraModprobeConfig = ''
       options i915 force_probe=46a6

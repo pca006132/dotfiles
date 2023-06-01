@@ -62,13 +62,13 @@ let
     ripgrep
     ranger
     xclip
-    (neovide.overrideAttrs (old: rec {
-      src = inputs.neovide-src;
-      cargoDeps = old.cargoDeps.overrideAttrs (_: {
-        inherit src;
-        outputHash = "sha256-FTRsJx5NozMm99ZeLo8E8QhPNhr8wEER5tGnLuRk9BQ=";
-      });
-    }))
+    # (neovide.overrideAttrs (old: rec {
+    #   src = inputs.neovide-src;
+    #   cargoDeps = old.cargoDeps.overrideAttrs (_: {
+    #     inherit src;
+    #     outputHash = "sha256-FTRsJx5NozMm99ZeLo8E8QhPNhr8wEER5tGnLuRk9BQ=";
+    #   });
+    # }))
     fzf
     sioyek
     imagemagick

@@ -154,8 +154,10 @@
 
       openssh = {
         enable = true;
-        permitRootLogin = "no";
-        passwordAuthentication = false;
+        settings = {
+          PermitRootLogin = "no";
+          PasswordAuthentication = false;
+        };
       };
 
       thermald.enable = true;
@@ -172,6 +174,7 @@
     programs = {
       bcc.enable = true;
       dconf.enable = true;
+      zsh.enable = true;
     };
 
     users.users.pca006132 = {
@@ -192,7 +195,7 @@
 
     environment.systemPackages = with pkgs; [ git ];
 
-    qt5.platformTheme = "kde";
+    qt.platformTheme = "kde";
 
     # performance related settings
     zramSwap.enable = true;
