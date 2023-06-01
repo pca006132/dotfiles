@@ -49,6 +49,10 @@
       url = "github:scalameta/nvim-metals";
       flake = false;
     };
+    neovide-src = {
+      url = "github:neovide/neovide/new-keyboard-v3";
+      flake = false;
+    };
   };
 
   outputs =

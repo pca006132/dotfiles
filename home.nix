@@ -62,29 +62,13 @@ let
     ripgrep
     ranger
     xclip
-    # (neovide.overrideAttrs (old: rec {
-    #   src = inputs.neovide-src;
-    #   cargoDeps = old.cargoDeps.overrideAttrs (_: {
-    #     inherit src;
-    #     outputHash = "sha256-1BkEx2emvGdA8agoBgeEyoz1Z9G3SB0M8ORTNat+PqU=";
-    #   });
-    # }))
-    # (gnvim-unwrapped.overrideAttrs (old: rec {
-    #   src = inputs.gnvim-src;
-    #   cargoDeps = old.cargoDeps.overrideAttrs (_: {
-    #     inherit src;
-    #     outputHash = "sha256-vwgVUfsk87t9izXXKi+EB05yId1OoM16Cc5xNfw6tnM=";
-    #   });
-    #   nativeBuildInputs = with pkgs; old.nativeBuildInputs ++ [
-    #     glib
-    #     pkg-config
-    #   ];
-    #   buildInputs = with pkgs; old.buildInputs ++ [
-    #     gtk4
-    #     cairo
-    #   ];
-    #   doCheck = false;
-    # }))
+    (neovide.overrideAttrs (old: rec {
+      src = inputs.neovide-src;
+      cargoDeps = old.cargoDeps.overrideAttrs (_: {
+        inherit src;
+        outputHash = "sha256-FTRsJx5NozMm99ZeLo8E8QhPNhr8wEER5tGnLuRk9BQ=";
+      });
+    }))
     fzf
     sioyek
     imagemagick
