@@ -40,6 +40,7 @@ let
           --add-flags --tsserver-path=${nodePackages.typescript}/lib/node_modules/typescript/lib/
       '';
     })
+    nil
     adoptopenjdk-openj9-bin-16
     (python3.withPackages (ps:
       with ps; [
@@ -110,7 +111,7 @@ in
   nixpkgs.config.allowUnfree = true;
   home.stateVersion = "22.11";
   programs.home-manager = { enable = true; };
-  imports = [ ./nvim/config.nix ];
+  # imports = [ ./nvim/config.nix ];
 
   home.packages = with pkgs; [
     (callPackage ./osu.nix { })
@@ -319,4 +320,6 @@ in
     shortcut = "a";
     terminal = "xterm";
   };
+
+  programs.neovim = inputs.my-nvim.nvim;
 }

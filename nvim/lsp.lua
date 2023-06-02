@@ -96,7 +96,7 @@ lspconfig['grammarly'].setup {
 }
 
 -- Enable the following language servers
-local servers = { 'clangd', 'pyright', 'tsserver', 'texlab', 'hls' }
+local servers = { 'clangd', 'pyright', 'tsserver', 'texlab', 'hls', 'nil_ls' }
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
     on_attach = on_attach,

@@ -1,4 +1,4 @@
-{ config, pkgs, pkgs-unstable, modulesPath, ... }:
+{ config, pkgs, modulesPath, ... }:
 {
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
@@ -31,7 +31,6 @@
     extraModprobeConfig = ''
       options i915 force_probe=46a6
     '';
-    kernelPackages = pkgs-unstable.linuxPackages_xanmod_latest;
     kernel.sysctl = {
       # Disable proactive compaction because it introduces jitter
       "vm.compaction_proactiveness" = 0;
