@@ -103,7 +103,6 @@ let
     nvtop
     intel-gpu-tools
     kcachegrind
-    (nerdfonts.override { fonts = [ "DejaVuSansMono" "Hack" ]; })
     steam
   ];
 in
@@ -111,7 +110,6 @@ in
   nixpkgs.config.allowUnfree = true;
   home.stateVersion = "22.11";
   programs.home-manager = { enable = true; };
-  # imports = [ ./nvim/config.nix ];
 
   home.packages = with pkgs; [
     (callPackage ./osu.nix { })
@@ -119,11 +117,6 @@ in
     (callPackage ./prusa-slicer.nix { })
     (callPackage ./super-slicer.nix { })
     (callPackage ./openscad.nix { })
-    lutris
-    wineWowPackages.stagingFull
-    winetricks
-    kicad
-    freecad
   ] ++ development-packages ++ tools ++ desktop-apps;
 
   xdg.desktopEntries = {
@@ -209,7 +202,7 @@ in
 
   nixpkgs.overlays = [
     inputs.neovim-nightly-overlay.overlay
-    (self: super: rec {
+    (self: super: {
       neovim-unwrapped = super.neovim-unwrapped.overrideAttrs (oa: {
         patches = builtins.filter
           (p:

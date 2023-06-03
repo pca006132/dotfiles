@@ -11,7 +11,7 @@
       flake = false;
     };
     my-nvim = {
-      url = "./nvim";
+      url = "path:./nvim";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     neovim-nightly-overlay = {
@@ -29,7 +29,6 @@
     }@inputs:
     let
       system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages."${system}";
       build = modules: nixpkgs.lib.nixosSystem {
         inherit system;
         modules = [

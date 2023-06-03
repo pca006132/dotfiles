@@ -69,7 +69,7 @@
       };
       inputMethod = {
         enabled = "fcitx5";
-        fcitx5.addons = with pkgs; [ fcitx5-rime fcitx5-gtk libsForQt5.fcitx5-qt];
+        fcitx5.addons = with pkgs; [ fcitx5-rime fcitx5-gtk libsForQt5.fcitx5-qt ];
       };
     };
 
@@ -84,11 +84,29 @@
     fonts = {
       fonts = with pkgs; [
         noto-fonts
-        noto-fonts-cjk
+        noto-fonts-cjk-sans
+        noto-fonts-cjk-serif
         noto-fonts-emoji
         noto-fonts-extra
+        (nerdfonts.override { fonts = [ "DejaVuSansMono" ]; })
       ];
-      fontconfig.hinting.enable = true;
+      fontconfig = {
+        hinting.enable = true;
+        defaultFonts = {
+          serif = [
+            "Noto Serif"
+            "Noto Serif CJK HK"
+          ];
+          sansSerif = [
+            "Noto Sans"
+            "Noto Sans CJK HK"
+          ];
+          monospace = [
+            "DejaVuSansMono"
+            "Noto Sans Mono CJK HK"
+          ];
+        };
+      };
     };
 
     services = {

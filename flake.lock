@@ -343,11 +343,11 @@
       "locked": {
         "lastModified": 1,
         "narHash": "sha256-peTQTkvWWrcJOjMc3t5SchoGu55yU/3eUznKPQ49tAc=",
-        "path": "/nix/store/f0mzmwas6zav9ijz6a99p40pf2nmvhgb-source/nvim",
+        "path": "./nvim",
         "type": "path"
       },
       "original": {
-        "path": "/nix/store/f0mzmwas6zav9ijz6a99p40pf2nmvhgb-source/nvim",
+        "path": "./nvim",
         "type": "path"
       }
     },
