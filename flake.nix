@@ -35,6 +35,7 @@
           ./modules/nvidia.nix
           ./modules/laptop-powermanagement.nix
           ./modules/defaults.nix
+          ./modules/v2ray.nix
           home-manager.nixosModules.home-manager
           {
             home-manager = {

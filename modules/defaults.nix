@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }:
 {
-  config = rec {
+  config = {
     nixpkgs.config.allowUnfree = true;
     nixpkgs.hostPlatform = "x86_64-linux";
     boot = {
@@ -20,8 +20,8 @@
     networking = {
       networkmanager.enable = true;
       wireless.userControlled.enable = true;
-      firewall.allowedTCPPorts = [ 3389 ];
-      firewall.allowedUDPPorts = [ 3389 ];
+      firewall.allowedTCPPorts = [ 22 8888 60000 ];
+      firewall.allowedUDPPorts = [ 22 8888 60000 ];
     };
     time = {
       timeZone = "Asia/Hong_Kong";
@@ -193,6 +193,7 @@
       bcc.enable = true;
       dconf.enable = true;
       zsh.enable = true;
+      mosh.enable = true;
     };
 
     users.users.pca006132 = {

@@ -113,22 +113,13 @@ in
 
   home.packages = with pkgs; [
     (callPackage ./osu.nix { })
-    (callPackage ./cura.nix { })
     (callPackage ./prusa-slicer.nix { })
     (callPackage ./super-slicer.nix { })
     (callPackage ./openscad.nix { })
   ] ++ development-packages ++ tools ++ desktop-apps;
 
   xdg.desktopEntries = {
-    cura = rec {
-      name = "Cura Slicer";
-      exec = "cura-5.3";
-      icon = "cura-5.3";
-      comment = "Cura 5.3 Preview";
-      genericName = "3D printer tool";
-      categories = [ "Development" ];
-    };
-    prusa-slicer = rec {
+    prusa-slicer = {
       name = "Prusa Slicer";
       exec = "prusa-slicer";
       icon = "prusa-slicer";
@@ -136,7 +127,7 @@ in
       genericName = "3D printer tool";
       categories = [ "Development" ];
     };
-    super-slicer = rec {
+    super-slicer = {
       name = "Super Slicer";
       exec = "super-slicer";
       icon = "super-slicer";
@@ -144,7 +135,7 @@ in
       genericName = "3D printer tool";
       categories = [ "Development" ];
     };
-    openscad = rec {
+    openscad = {
       name = "OpenSCAD";
       exec = "openscad";
       icon = "openscad";
@@ -261,7 +252,7 @@ in
     enableSshSupport = true;
     enableExtraSocket = true;
     sshKeys = [ "996D13DF48B5A21F57298DD1B542F46ABECF3015" ];
-    pinentryFlavor = "curses";
+    pinentryFlavor = "gnome3";
   };
 
   programs.ssh = {
