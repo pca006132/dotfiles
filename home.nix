@@ -104,6 +104,7 @@ let
     intel-gpu-tools
     kcachegrind
     steam
+    pinentry-gnome
   ];
 in
 {

@@ -135,6 +135,7 @@ if has("autocmd")
     autocmd FileType tex setlocal formatexpr=TeX_fmt(v:lnum,v:lnum+v:count-1)
     autocmd FileType tex setlocal formatoptions+=b
     autocmd FileType tex setlocal textwidth=0
+    autocmd FileType clojure,scheme,lisp,racket,hy,fennel,janet,carp,wast,yuck,dune let b:loaded_delimitMate=1
 endif
 " Return to last edit position when opening files (You want this!)
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif

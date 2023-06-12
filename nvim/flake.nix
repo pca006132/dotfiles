@@ -193,6 +193,7 @@
           impatient-nvim
           vim-vsnip
           vim-vsnip-integ
+          parinfer-rust
           nvim-notify
           {
             plugin = knap-nvim;
