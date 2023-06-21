@@ -35,7 +35,6 @@
           ./modules/nvidia.nix
           ./modules/laptop-powermanagement.nix
           ./modules/defaults.nix
-          ./modules/v2ray.nix
           home-manager.nixosModules.home-manager
           {
             home-manager = {
@@ -58,7 +57,7 @@
     {
       nixosConfigurations = {
         pca-xps15 = build [ ./machines/xps-15.nix ];
-        pca-pc = build [ ./machines/pc.nix ];
+        pca-pc = build [ ./machines/pc.nix ./modules/v2ray.nix ];
       };
     };
 }

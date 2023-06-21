@@ -196,6 +196,11 @@
       mosh.enable = true;
     };
 
+    users.groups = {
+      plugdev = {
+        members = [ "pca006132" ];
+      };
+    };
     users.users.pca006132 = {
       isNormalUser = true;
       extraGroups = [
