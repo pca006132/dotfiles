@@ -116,7 +116,6 @@ in
     (callPackage ./osu.nix { })
     (callPackage ./prusa-slicer.nix { })
     (callPackage ./super-slicer.nix { })
-    (callPackage ./openscad.nix { })
   ] ++ development-packages ++ tools ++ desktop-apps;
 
   xdg.desktopEntries = {
@@ -134,14 +133,6 @@ in
       icon = "super-slicer";
       comment = "Super Slicer";
       genericName = "3D printer tool";
-      categories = [ "Development" ];
-    };
-    openscad = {
-      name = "OpenSCAD";
-      exec = "openscad";
-      icon = "openscad";
-      comment = "openscad";
-      genericName = "3D modeling tool";
       categories = [ "Development" ];
     };
   };

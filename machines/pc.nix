@@ -1,4 +1,4 @@
-{ config, pkgs, pkgs-unstable, modulesPath, ... }:
+{ config, pkgs, modulesPath, ... }:
 {
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
@@ -83,6 +83,12 @@
       credentialsFile = "/home/pca006132/secrets/lego-secrets";
       dnsProvider = "duckdns";
     };
+  };
+
+  services.nix-serve = {
+    enable = true;
+    openFirewall = true;
+    secretKeyFile = "/home/pca006132/secrets/nix-store";
   };
 
   system.stateVersion = "22.11";
