@@ -30,10 +30,31 @@ vim.lsp.handlers['window/showMessage'] = function(_, result, ctx)
   vim.notify(result.message, lvl, {
     title = 'LSP | ' .. client.name,
     timeout = 10000,
-    keep = function()
-      return lvl == 'ERROR' or lvl == 'WARN'
-    end,
   })
+end
+
+vim.cmd [[autocmd! ColorScheme * highlight NormalFloat guibg=#1f2335]]
+vim.cmd [[autocmd! ColorScheme * highlight FloatBorder guifg=white guibg=#1f2335]]
+
+local border = {
+      {"🭽", "FloatBorder"},
+      {"▔", "FloatBorder"},
+      {"🭾", "FloatBorder"},
+      {"▕", "FloatBorder"},
+      {"🭿", "FloatBorder"},
+      {"▁", "FloatBorder"},
+      {"🭼", "FloatBorder"},
+      {"▏", "FloatBorder"},
+}
+
+-- LSP settings (for overriding per client)
+vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {border = border})
+vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {border = border })
+
+local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
+for type, icon in pairs(signs) do
+  local hl = "DiagnosticSign" .. type
+  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
 end
 
 -- Diagnostic keymaps
@@ -49,7 +70,7 @@ local on_attach = function(_, bufnr)
   local map = vim.api.nvim_buf_set_keymap
   map(bufnr, 'n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
   map(bufnr, 'n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
-  map(bufnr, "n", "K",  "<cmd>Lspsaga hover_doc<cr>", opts)
+  map(bufnr, "n", "K",  '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
   map(bufnr, 'n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
   map(bufnr, 'n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
   map(bufnr, 'n', '<leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
@@ -91,12 +112,14 @@ metals_config.handlers = {['metals/status'] = metals_status_handler}
 local clangd_config = require('lspconfig.server_configurations.clangd').default_config
 clangd_config.capabilities.offsetEncoding = "utf-8"
 
-lspconfig['grammarly'].setup {
-  filetypes = { 'markdown', 'tex' }
-}
+local grammarly_config = require('lspconfig.server_configurations.grammarly').default_config
+grammarly_config.filetypes = { 'markdown', 'tex' }
+
+local nil_config = require('lspconfig.server_configurations.nil_ls').default_config
+nil_config.settings = {['nil'] = {nix = {flake = {autoArchive = true}}}}
 
 -- Enable the following language servers
-local servers = { 'clangd', 'pyright', 'tsserver', 'texlab', 'hls', 'nil_ls' }
+local servers = { 'clangd', 'pyright', 'tsserver', 'texlab', 'hls', 'grammarly', 'nil_ls' }
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
     on_attach = on_attach,

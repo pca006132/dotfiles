@@ -24,7 +24,7 @@
       firewall.allowedUDPPorts = [ 22 8888 60000 ];
     };
     time = {
-      timeZone = "Asia/Hong_Kong";
+      # timeZone = "Asia/Hong_Kong";
       hardwareClockInLocalTime = true;
     };
 
@@ -110,6 +110,7 @@
     };
 
     services = {
+      automatic-timezoned.enable = true;
       dbus.enable = true;
       flatpak.enable = true;
       gnome.gnome-remote-desktop.enable = true;

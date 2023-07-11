@@ -7,7 +7,7 @@
     };
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
     neovide-src = {
-      url = "github:neovide/neovide/new-keyboard-v3";
+      url = "github:neovide/neovide";
       flake = false;
     };
     my-nvim = {

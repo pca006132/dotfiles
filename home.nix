@@ -67,12 +67,6 @@ let
       src = inputs.neovide-src;
       cargoDeps = pkgs.rustPlatform.importCargoLock {
         lockFile = src + "/Cargo.lock";
-        outputHashes = {
-          "winit-0.28.6" =
-            "sha256-6YK4hmogBZ3Nchrz8aE865UyvOIa5Ul969T4R0GG8xA=";
-          "xkbcommon-dl-0.1.0" =
-            "sha256-ojokJF7ivN8JpXo+JAfX3kUOeXneNek7pzIy8D1n4oU=";
-        };
       };
     }))
     fzf
@@ -110,6 +104,7 @@ let
 in
 {
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.allowBroken = true;
   home.stateVersion = "22.11";
   programs.home-manager = { enable = true; };
 

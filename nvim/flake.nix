@@ -41,6 +41,14 @@
       url = "github:scalameta/nvim-metals";
       flake = false;
     };
+    nvim-treesitter-latest-src = {
+      url = "github:nvim-treesitter/nvim-treesitter";
+      flake = false;
+    };
+    nvim-treesitter-textobjects-src = {
+      url = "github:nvim-treesitter/nvim-treesitter-textobjects";
+      flake = false;
+    };
   };
   outputs = { nixpkgs, ... } @ inputs:
     let
@@ -154,6 +162,7 @@
             nnoremap <leader>cf :Neoformat<CR>
         '';
         plugins = with pkgs.vimPlugins; with plugins; [
+          Coqtail
           plenary-nvim
           dressing-nvim
           {
@@ -181,7 +190,6 @@
             type = "lua";
           }
           copilot-cmp
-          # (luaSetup copilot-cmp "copilot_cmp")
           nvim-metals
           nvim-web-devicons
           vim-fugitive
@@ -311,20 +319,24 @@
           vim-sleuth
           (luaSetup fidget-nvim "fidget")
           {
-            plugin = nvim-treesitter.withPlugins (plugins: with plugins; [
-              tree-sitter-c
-              tree-sitter-nix
-              tree-sitter-json
-              tree-sitter-haskell
-              tree-sitter-typescript
-              tree-sitter-html
-              tree-sitter-cuda
-              tree-sitter-bash
-              tree-sitter-latex
-              tree-sitter-cmake
-              tree-sitter-python
-              tree-sitter-rust
-            ]);
+            plugin = (nvim-treesitter.withPlugins
+              (plugins: with plugins; [
+                tree-sitter-c
+                tree-sitter-nix
+                tree-sitter-json
+                tree-sitter-haskell
+                tree-sitter-typescript
+                tree-sitter-html
+                tree-sitter-cuda
+                tree-sitter-bash
+                tree-sitter-latex
+                tree-sitter-cmake
+                tree-sitter-python
+                tree-sitter-rust
+              ])).overrideAttrs
+              (_: _: {
+                src = inputs.nvim-treesitter-latest-src;
+              });
             config = ''
               require'nvim-treesitter.configs'.setup {
                 highlight = {
