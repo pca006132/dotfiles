@@ -65,7 +65,7 @@ vim.api.nvim_set_keymap('n', '<leader>q', '<cmd>lua vim.diagnostic.setloclist()<
 
 -- LSP settings
 local lspconfig = require 'lspconfig'
-local on_attach = function(_, bufnr)
+local on_attach = function(client, bufnr)
   local opts = { noremap = true, silent = true }
   local map = vim.api.nvim_buf_set_keymap
   map(bufnr, 'n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
@@ -81,6 +81,11 @@ local on_attach = function(_, bufnr)
   map(bufnr, 'n', '<leader>ca', '<cmd>Lspsaga code_action<CR>', opts)
   map(bufnr, 'x', '<leader>ca', '<cmd>Lspsaga range_code_action<CR>', opts)
   map(bufnr, 'n', '<leader>so', [[<cmd>lua require('telescope.builtin').lsp_document_symbols()<CR>]], opts)
+
+  -- Enable inlay hints if the client supports it.
+  if client.server_capabilities.inlayHintProvider then
+    vim.lsp.inlay_hint(bufnr, true)
+  end
 end
 
 -- nvim-cmp supports additional completion capabilities

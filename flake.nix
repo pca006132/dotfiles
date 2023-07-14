@@ -6,6 +6,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     neovide-src = {
       url = "github:neovide/neovide";
       flake = false;
@@ -46,8 +47,10 @@
           ({ ... }: {
             config = {
               environment.etc."nix/channels/nixpkgs".source = inputs.nixpkgs.outPath;
+              environment.etc."nix/channels/nixpkgs-unstable".source = inputs.nixpkgs-unstable.outPath;
               nix.nixPath = [
                 "nixpkgs=/etc/nix/channels/nixpkgs"
+                "nixpkgs-unstable=/etc/nix/channels/nixpkgs-unstable"
               ];
             };
           })
