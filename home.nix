@@ -104,7 +104,6 @@ let
 in
 {
   nixpkgs.config.allowUnfree = true;
-  nixpkgs.config.allowBroken = true;
   home.stateVersion = "22.11";
   programs.home-manager = { enable = true; };
 
