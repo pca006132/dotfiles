@@ -100,6 +100,7 @@ let
     steam
     pinentry-qt
     vlc
+    segger-ozone
   ];
 in
 {
@@ -210,6 +211,8 @@ in
         autocrlf = "input";
       };
       pull = { ff = "only"; };
+      push = { autoSetupRemote = true; };
+      submodule.fetchJobs = 8;
     };
     lfs.enable = true;
     userEmail = "john.lck40@gmail.com";

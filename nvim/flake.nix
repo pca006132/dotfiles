@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     lspkind-src = {
       url = "github:onsails/lspkind.nvim";
       flake = false;
@@ -39,14 +39,6 @@
     };
     nvim-metals-src = {
       url = "github:scalameta/nvim-metals";
-      flake = false;
-    };
-    nvim-treesitter-latest-src = {
-      url = "github:nvim-treesitter/nvim-treesitter";
-      flake = false;
-    };
-    nvim-treesitter-textobjects-src = {
-      url = "github:nvim-treesitter/nvim-treesitter-textobjects";
       flake = false;
     };
   };
@@ -321,22 +313,18 @@
           {
             plugin = (nvim-treesitter.withPlugins
               (plugins: with plugins; [
-                tree-sitter-c
-                tree-sitter-nix
-                tree-sitter-json
-                tree-sitter-haskell
-                tree-sitter-typescript
-                tree-sitter-html
-                tree-sitter-cuda
-                tree-sitter-bash
-                tree-sitter-latex
-                tree-sitter-cmake
-                tree-sitter-python
-                tree-sitter-rust
-              ])).overrideAttrs
-              (_: _: {
-                src = inputs.nvim-treesitter-latest-src;
-              });
+                c
+                cpp
+                nix
+                json
+                haskell
+                typescript
+                html
+                bash
+                latex
+                python
+                rust
+              ]));
             config = ''
               require'nvim-treesitter.configs'.setup {
                 highlight = {

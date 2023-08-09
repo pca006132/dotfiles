@@ -13,7 +13,7 @@
     };
     my-nvim = {
       url = "path:./nvim";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     neovim-nightly-overlay = {
       url = "github:nix-community/neovim-nightly-overlay";
@@ -33,6 +33,9 @@
       build = modules: nixpkgs.lib.nixosSystem {
         inherit system;
         modules = [
+          ({...}: {
+            _module.args.inputs = inputs;
+          })
           ./modules/nvidia.nix
           ./modules/laptop-powermanagement.nix
           ./modules/defaults.nix

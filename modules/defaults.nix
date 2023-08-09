@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, inputs, ... }:
 {
   config = {
     nixpkgs.config.allowUnfree = true;
@@ -198,9 +198,8 @@
     };
 
     users.groups = {
-      plugdev = {
-        members = [ "pca006132" ];
-      };
+      plugdev.members = [ "pca006132" ];
+      vboxusers.members = [ "pca006132" ];
     };
     users.users.pca006132 = {
       isNormalUser = true;
@@ -212,6 +211,7 @@
         "networkmanager"
         "wireshark"
         "plugdev"
+        "vboxusers"
       ];
       openssh.authorizedKeys.keys = pkgs.lib.splitString "\n" (builtins.readFile ./pca006132.keys);
       initialPassword = "123456";
@@ -221,6 +221,19 @@
     environment.systemPackages = with pkgs; [ git ];
 
     qt.platformTheme = "kde";
+
+    virtualisation = {
+      podman = {
+        enable = true;
+        dockerCompat = true;
+        enableNvidia = true;
+      };
+      waydroid.enable = true;
+      virtualbox.host = {
+        enable = true;
+        package = inputs.nixpkgs-unstable.legacyPackages."x86_64-linux".virtualbox;
+      };
+    };
 
     # performance related settings
     zramSwap.enable = true;
