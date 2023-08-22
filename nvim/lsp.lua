@@ -162,12 +162,6 @@ local kind_icons = {
   TypeParameter = ""
 }
 
-require("copilot_cmp").setup({
-  formatters = {
-    insert_text = require("copilot_cmp.format").remove_existing
-  },
-})
-
 local cmp = require 'cmp'
 cmp.setup {
   snippet = {
@@ -206,7 +200,6 @@ cmp.setup {
     end,
   },
   sources = {
-    { name = "copilot" },
     { name = 'nvim_lsp' },
     { name = 'path' },
     { name = 'buffer' },
@@ -223,7 +216,6 @@ cmp.setup {
         nvim_lsp = "[LSP]",
         path = "[Path]",
         latex_symbols = "[LaTeX]",
-        copilot = ""
       })[entry.source.name]
       local strings = vim.split(kind.kind, "%s", { trimempty = true })
       kind.kind = " " .. strings[1] .. " "

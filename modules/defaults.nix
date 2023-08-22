@@ -191,7 +191,6 @@
     systemd.services.NetworkManager-wait-online.enable = false;
 
     programs = {
-      bcc.enable = true;
       dconf.enable = true;
       zsh.enable = true;
       mosh.enable = true;
@@ -227,11 +226,6 @@
         enable = true;
         dockerCompat = true;
         enableNvidia = true;
-      };
-      waydroid.enable = true;
-      virtualbox.host = {
-        enable = true;
-        package = inputs.nixpkgs-unstable.legacyPackages."x86_64-linux".virtualbox;
       };
     };
 

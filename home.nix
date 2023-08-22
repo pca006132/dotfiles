@@ -4,6 +4,7 @@
 , ...
 }:
 let
+  system = "x86_64-linux";
   development-packages = with pkgs; [
     gnumake
     clang-tools

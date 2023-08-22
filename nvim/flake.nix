@@ -29,14 +29,14 @@
       url = "github:Shatur/neovim-session-manager";
       flake = false;
     };
-    copilot-lua-src = {
-      url = "github:zbirenbaum/copilot.lua";
-      flake = false;
-    };
-    copilot-cmp-src = {
-      url = "github:zbirenbaum/copilot-cmp";
-      flake = false;
-    };
+    # copilot-lua-src = {
+    #   url = "github:zbirenbaum/copilot.lua";
+    #   flake = false;
+    # };
+    # copilot-cmp-src = {
+    #   url = "github:zbirenbaum/copilot-cmp";
+    #   flake = false;
+    # };
     nvim-metals-src = {
       url = "github:scalameta/nvim-metals";
       flake = false;
@@ -171,21 +171,22 @@
             '';
             type = "lua";
           }
-          {
-            plugin = copilot-lua;
-            config = ''
-              require("copilot").setup({
-                suggestion = { enabled = false },
-                panel = { enabled = false },
-              })
-            '';
-            type = "lua";
-          }
-          copilot-cmp
+          # {
+          #   plugin = copilot-lua;
+          #   config = ''
+          #     require("copilot").setup({
+          #       suggestion = { enabled = false },
+          #       panel = { enabled = false },
+          #     })
+          #   '';
+          #   type = "lua";
+          # }
+          # copilot-cmp
           nvim-metals
           nvim-web-devicons
           vim-fugitive
           (luaSetup comment-nvim "Comment")
+          (luaSetup octo-nvim "octo")
           vim-surround
           lightline-vim
           lightline-bufferline
