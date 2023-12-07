@@ -2,15 +2,11 @@
   inputs = {
     # Specify the source of Home Manager and Nixpkgs
     home-manager = {
-      url = "github:nix-community/home-manager/release-23.05";
+      url = "github:nix-community/home-manager/release-23.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    neovide-src = {
-      url = "github:neovide/neovide";
-      flake = false;
-    };
     my-nvim = {
       url = "path:./nvim";
       inputs.nixpkgs.follows = "nixpkgs-unstable";

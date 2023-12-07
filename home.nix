@@ -4,7 +4,6 @@
 , ...
 }:
 let
-  system = "x86_64-linux";
   development-packages = with pkgs; [
     gnumake
     clang-tools
@@ -48,11 +47,11 @@ let
         numpy
         matplotlib
         scipy
-        autopep8
         pandas
         requests
         grequests
         setuptools
+        black
       ]))
   ];
   tools = with pkgs; [
@@ -64,12 +63,6 @@ let
     ripgrep
     ranger
     xclip
-    (neovide.overrideAttrs (old: rec {
-      src = inputs.neovide-src;
-      cargoDeps = pkgs.rustPlatform.importCargoLock {
-        lockFile = src + "/Cargo.lock";
-      };
-    }))
     fzf
     sioyek
     imagemagick
@@ -86,22 +79,16 @@ let
     zip
     xournalpp
     wl-clipboard
-  ];
+    tree
+  ] ++ inputs.my-nvim.nvim-stuff;
   desktop-apps = with pkgs; [
     rime-data
     firefox-bin
-    zoom-us
-    gnome.gnome-tweaks
-    gnome.adwaita-icon-theme
-    gnomeExtensions.dash-to-dock
-    qemu_kvm
     nvtop
     intel-gpu-tools
-    kcachegrind
-    steam
     pinentry-qt
     vlc
-    segger-ozone
+    thunderbird
   ];
 in
 {

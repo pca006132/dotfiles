@@ -29,14 +29,6 @@
       url = "github:Shatur/neovim-session-manager";
       flake = false;
     };
-    # copilot-lua-src = {
-    #   url = "github:zbirenbaum/copilot.lua";
-    #   flake = false;
-    # };
-    # copilot-cmp-src = {
-    #   url = "github:zbirenbaum/copilot-cmp";
-    #   flake = false;
-    # };
     nvim-metals-src = {
       url = "github:scalameta/nvim-metals";
       flake = false;
@@ -51,7 +43,7 @@
         config = "require('${name}').setup()";
         type = "lua";
       };
-      getPlugin = name: pkgs.vimUtils.buildVimPluginFrom2Nix {
+      getPlugin = name: pkgs.vimUtils.buildVimPlugin {
         pname = name;
         version = "0.1.0";
         src = inputs."${name}-src";
@@ -152,6 +144,7 @@
             highlight! CmpItemKindUnit guibg=NONE guifg=#D4D4D4
             " neoformat
             nnoremap <leader>cf :Neoformat<CR>
+            let g:neoformat_enabled_python = ['black']
         '';
         plugins = with pkgs.vimPlugins; with plugins; [
           Coqtail
@@ -171,17 +164,6 @@
             '';
             type = "lua";
           }
-          # {
-          #   plugin = copilot-lua;
-          #   config = ''
-          #     require("copilot").setup({
-          #       suggestion = { enabled = false },
-          #       panel = { enabled = false },
-          #     })
-          #   '';
-          #   type = "lua";
-          # }
-          # copilot-cmp
           nvim-metals
           nvim-web-devicons
           vim-fugitive
@@ -204,10 +186,7 @@
             config = ''
               local gknapsettings = {
                   texoutputext = "pdf",
-                  textopdf = "xelatex -synctex=1 -halt-on-error -interaction=batchmode %docroot%",
-                  textopdfviewerlaunch = "sioyek --inverse-search 'nvim --headless -es --cmd \"lua require('\"'\"'knaphelper'\"'\"').relayjump('\"'\"'%servername%'\"'\"','\"'\"'%1'\"'\"',%2,0)\"' --reuse-instance %outputfile%",
-                  textopdfviewerrefresh = "none",
-                  textopdfforwardjump = "sioyek --inverse-search 'nvim --headless -es --cmd \"lua require('\"'\"'knaphelper'\"'\"').relayjump('\"'\"'%servername%'\"'\"','\"'\"'%1'\"'\"',%2,0)\"' --reuse-instance --forward-search-file %srcfile% --forward-search-line %line% %outputfile%"
+                  textopdf = "latexmk -pdf -pdflatex='xelatex -synctex=1 -halt-on-error -interaction=batchmode' %docroot%",
               }
               vim.g.knap_settings = gknapsettings
               local kmap = vim.keymap.set
@@ -310,6 +289,7 @@
           codi-vim
           tabout-nvim
           vim-sleuth
+          typst-vim
           (luaSetup fidget-nvim "fidget")
           {
             plugin = (nvim-treesitter.withPlugins
@@ -379,5 +359,11 @@
           }
         ];
       };
+      nvim-stuff = with pkgs; [
+        typst
+        typstfmt
+        typst-lsp
+        neovide
+      ];
     };
 }

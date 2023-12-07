@@ -65,7 +65,7 @@ with lib; {
     hardware = {
       nvidia = {
         modesetting.enable = true;
-        nvidiaPersistenced = true;
+        nvidiaPersistenced = false;
         powerManagement = {
           enable = true;
           finegrained = cfg.enablePrimeOffload;

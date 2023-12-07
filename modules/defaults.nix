@@ -1,4 +1,4 @@
-{ config, lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, ... }:
 {
   config = {
     nixpkgs.config.allowUnfree = true;
@@ -13,7 +13,7 @@
         "mem_sleep_default=deep"
         "quiet"
       ];
-      kernelPackages = lib.mkDefault pkgs.linuxPackages_xanmod_latest;
+      kernelPackages = lib.mkDefault pkgs.linuxPackages_xanmod_stable;
       kernel.sysctl."kernel.perf_event_paranoid" = -1;
       supportedFilesystems = [ "ntfs" "exfat" ];
     };
@@ -76,9 +76,6 @@
     environment.sessionVariables = with lib; {
       NIX_PROFILES =
         "${concatStringsSep " " (reverseList config.environment.profiles)}";
-      GTK_IM_MODULE = "fcitx";
-      QT_IM_MODULE = "fcitx";
-      XMODIFIERS = "@im=fcitx";
     };
 
     fonts = {
@@ -185,6 +182,8 @@
 
       # firmware update
       fwupd.enable = true;
+
+      btrfs.autoScrub.enable = true;
     };
 
     # wait online is really slow and not really needed
@@ -194,6 +193,7 @@
       dconf.enable = true;
       zsh.enable = true;
       mosh.enable = true;
+      xwayland.enable = true;
     };
 
     users.groups = {
@@ -217,7 +217,10 @@
       shell = pkgs.zsh;
     };
 
-    environment.systemPackages = with pkgs; [ git ];
+    environment.systemPackages = with pkgs; [
+      git
+      libsForQt5.qt5.qtwayland
+    ];
 
     qt.platformTheme = "kde";
 
@@ -226,6 +229,10 @@
         enable = true;
         dockerCompat = true;
         enableNvidia = true;
+      };
+      virtualbox.host = {
+        enable = true;
+        enableExtensionPack = true;
       };
     };
 
