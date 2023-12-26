@@ -36,9 +36,10 @@ if has('vim_starting')
     set encoding=UTF-8
     scriptencoding UTF-8
 endif
-set autoindent shiftwidth=4
+set autoindent shiftwidth=2
 set backspace=indent,eol,start
-set cindent shiftwidth=4
+set cindent shiftwidth=2
+set shiftwidth=2
 set cmdheight=2         " Height of the command line
 set completefunc=emoji#complete
 set completeopt=longest,menu

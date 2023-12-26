@@ -31,15 +31,7 @@ let
     nodePackages.pyright
     nodePackages.typescript
     nodePackages_latest.grammarly-languageserver
-    (symlinkJoin {
-      name = "typescript-language-server";
-      paths = [ nodePackages.typescript-language-server ];
-      buildInputs = [ makeWrapper ];
-      postBuild = ''
-        wrapProgram $out/bin/typescript-language-server \
-          --add-flags --tsserver-path=${nodePackages.typescript}/lib/node_modules/typescript/lib/
-      '';
-    })
+    nodePackages_latest.typescript-language-server
     nil
     adoptopenjdk-openj9-bin-16
     (python3.withPackages (ps:
@@ -80,6 +72,7 @@ let
     xournalpp
     wl-clipboard
     tree
+    shntool flac
   ] ++ inputs.my-nvim.nvim-stuff;
   desktop-apps = with pkgs; [
     rime-data

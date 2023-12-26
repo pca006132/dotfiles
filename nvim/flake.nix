@@ -33,6 +33,10 @@
       url = "github:scalameta/nvim-metals";
       flake = false;
     };
+    vim-syntax-extra-src = {
+      url = "github:justinmk/vim-syntax-extra";
+      flake = false;
+    };
   };
   outputs = { nixpkgs, ... } @ inputs:
     let
@@ -145,6 +149,8 @@
             " neoformat
             nnoremap <leader>cf :Neoformat<CR>
             let g:neoformat_enabled_python = ['black']
+            " easy-align
+            xmap ga <Plug>(EasyAlign)
         '';
         plugins = with pkgs.vimPlugins; with plugins; [
           Coqtail
@@ -164,7 +170,9 @@
             '';
             type = "lua";
           }
+          vim-easy-align
           nvim-metals
+          vim-syntax-extra
           nvim-web-devicons
           vim-fugitive
           (luaSetup comment-nvim "Comment")
@@ -362,7 +370,7 @@
       nvim-stuff = with pkgs; [
         typst
         typstfmt
-        typst-lsp
+        # typst-lsp
         neovide
       ];
     };
