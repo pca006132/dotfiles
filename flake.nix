@@ -7,6 +7,7 @@
     };
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nix-alien.url = "github:thiagokokada/nix-alien";
     my-nvim = {
       url = "path:./nvim";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -15,6 +16,10 @@
       url = "github:nix-community/neovim-nightly-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    osu-src = {
+      url = "file+https://github.com/ppy/osu/releases/download/2024.131.0/osu.AppImage";
+      flake = false;
+    };
   };
 
   outputs =
@@ -22,16 +27,15 @@
     , nixpkgs
     , home-manager
     , my-nvim
+    , nix-alien
     , ...
     }@inputs:
     let
       system = "x86_64-linux";
       build = modules: nixpkgs.lib.nixosSystem {
         inherit system;
+        specialArgs = { inherit self inputs; };
         modules = [
-          ({...}: {
-            _module.args.inputs = inputs;
-          })
           ./modules/nvidia.nix
           ./modules/laptop-powermanagement.nix
           ./modules/defaults.nix

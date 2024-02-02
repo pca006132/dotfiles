@@ -54,7 +54,6 @@ let
     aria2
     ripgrep
     ranger
-    xclip
     fzf
     sioyek
     imagemagick
@@ -63,7 +62,6 @@ let
     pdftk
     nix-du
     nix-prefetch-git
-    xdot
     graphviz
     yt-dlp
     rsync
@@ -72,7 +70,13 @@ let
     xournalpp
     wl-clipboard
     tree
-    shntool flac
+    shntool
+    flac
+    nix-alien
+    quickemu
+    quickgui
+    spice-gtk
+    gh
   ] ++ inputs.my-nvim.nvim-stuff;
   desktop-apps = with pkgs; [
     rime-data
@@ -90,7 +94,7 @@ in
   programs.home-manager = { enable = true; };
 
   home.packages = with pkgs; [
-    (callPackage ./osu.nix { })
+    (callPackage ./osu.nix { osu-src = inputs.osu-src; })
     (callPackage ./prusa-slicer.nix { })
     (callPackage ./super-slicer.nix { })
   ] ++ development-packages ++ tools ++ desktop-apps;
@@ -162,6 +166,7 @@ in
 
   nixpkgs.overlays = [
     inputs.neovim-nightly-overlay.overlay
+    inputs.nix-alien.overlays.default
     (self: super: {
       neovim-unwrapped = super.neovim-unwrapped.overrideAttrs (oa: {
         patches = builtins.filter
@@ -190,6 +195,7 @@ in
       core = {
         editor = "nvim";
         autocrlf = "input";
+        preloadIndex = true;
       };
       pull = { ff = "only"; };
       push = { autoSetupRemote = true; };

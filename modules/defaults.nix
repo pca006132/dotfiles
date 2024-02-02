@@ -73,13 +73,9 @@
       };
     };
 
-    environment.sessionVariables = with lib; {
-      NIX_PROFILES =
-        "${concatStringsSep " " (reverseList config.environment.profiles)}";
-    };
 
     fonts = {
-      fonts = with pkgs; [
+      packages = with pkgs; [
         noto-fonts
         noto-fonts-cjk-sans
         noto-fonts-cjk-serif
@@ -137,7 +133,12 @@
         drivers = [ pkgs.hplipWithPlugin ];
       };
       # systemd early oom killer
-      earlyoom.enable = true;
+      earlyoom = {
+        enable = true;
+        extraArgs = [
+          "--prefer '(^|/)(java|chromium|firefox|clang|gcc|g++|rustc|openscad)'"
+        ];
+      };
       # nicer terminal
       kmscon.enable = true;
       # sound with pipewire
@@ -184,6 +185,7 @@
       fwupd.enable = true;
 
       btrfs.autoScrub.enable = true;
+      irqbalance.enable = true;
     };
 
     # wait online is really slow and not really needed
@@ -217,10 +219,16 @@
       shell = pkgs.zsh;
     };
 
-    environment.systemPackages = with pkgs; [
-      git
-      libsForQt5.qt5.qtwayland
-    ];
+    environment = {
+      systemPackages = with pkgs; [
+        git
+        libsForQt5.qt5.qtwayland
+      ];
+      sessionVariables = with lib; {
+        NIX_PROFILES =
+          "${concatStringsSep " " (reverseList config.environment.profiles)}";
+      };
+    };
 
     qt.platformTheme = "kde";
 
