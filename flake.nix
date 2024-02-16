@@ -16,9 +16,9 @@
       url = "github:nix-community/neovim-nightly-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    osu-src = {
-      url = "file+https://github.com/ppy/osu/releases/download/2024.131.0/osu.AppImage";
-      flake = false;
+    nix-gaming = {
+      url = "github:fufexan/nix-gaming";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 

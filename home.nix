@@ -8,7 +8,6 @@ let
     gnumake
     clang-tools
     cmake
-    gdb
     pkg-config
     flamegraph
     linuxPackages.perf
@@ -23,7 +22,11 @@ let
     nixpkgs-fmt
 
     texlab
-    (texlive.combine { inherit (texlive) scheme-full minted; })
+    (texlive.combine {
+      inherit (texlive) scheme-medium minted import thmtools
+        environ semantic placeins cprotect bigfoot collection-pictures csquotes
+        biblatex biber;
+    })
 
     vale
 
@@ -86,6 +89,8 @@ let
     pinentry-qt
     vlc
     thunderbird
+    inputs.nix-gaming.packages.${pkgs.hostPlatform.system}.osu-lazer-bin
+    zoom-us
   ];
 in
 {
@@ -94,9 +99,8 @@ in
   programs.home-manager = { enable = true; };
 
   home.packages = with pkgs; [
-    (callPackage ./osu.nix { osu-src = inputs.osu-src; })
     (callPackage ./prusa-slicer.nix { })
-    (callPackage ./super-slicer.nix { })
+    # (callPackage ./super-slicer.nix { })
   ] ++ development-packages ++ tools ++ desktop-apps;
 
   xdg.desktopEntries = {
@@ -108,14 +112,14 @@ in
       genericName = "3D printer tool";
       categories = [ "Development" ];
     };
-    super-slicer = {
-      name = "Super Slicer";
-      exec = "super-slicer";
-      icon = "super-slicer";
-      comment = "Super Slicer";
-      genericName = "3D printer tool";
-      categories = [ "Development" ];
-    };
+    # super-slicer = {
+    #   name = "Super Slicer";
+    #   exec = "super-slicer";
+    #   icon = "super-slicer";
+    #   comment = "Super Slicer";
+    #   genericName = "3D printer tool";
+    #   categories = [ "Development" ];
+    # };
   };
 
   home.sessionVariables = {

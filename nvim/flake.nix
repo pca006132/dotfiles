@@ -78,11 +78,6 @@
           nnoremap <silent> <leader>gp :Git push<cr>
           nnoremap <silent> <leader>gd :Git diff<cr>
           nnoremap <silent> <leader>gf :Git pull<cr>
-          " nvim-gps
-          " func! NvimGps() abort
-          "   return luaeval("require'nvim-gps'.is_available()") ?
-          "        \ luaeval("require'nvim-gps'.get_location()") : ""
-          " endf
           " lightline
           let g:lightline = {
             \ 'active': {
@@ -176,7 +171,6 @@
           nvim-web-devicons
           vim-fugitive
           (luaSetup comment-nvim "Comment")
-          (luaSetup octo-nvim "octo")
           vim-surround
           lightline-vim
           lightline-bufferline
@@ -286,7 +280,7 @@
           lspkind
           nvim-treesitter-textobjects
           nvim-lspconfig
-          (luaSetup lspsaga-nvim "lspsaga")
+          lspsaga-nvim
           nvim-cmp
           cmp-nvim-lsp
           cmp-path
@@ -370,8 +364,9 @@
       nvim-stuff = with pkgs; [
         typst
         typstfmt
-        # typst-lsp
+        typst-lsp
         neovide
+        gdb
       ];
     };
 }

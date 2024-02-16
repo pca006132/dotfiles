@@ -23,6 +23,12 @@ dap.configurations.cpp = {
 dap.configurations.c = dap.configurations.cpp
 dap.configurations.rust = dap.configurations.cpp
 
+require('lspsaga').setup({
+  symbol_in_winbar = {
+    enable = false,
+  },
+})
+
 -- setup
 vim.lsp.handlers['window/showMessage'] = function(_, result, ctx)
   local client = vim.lsp.get_client_by_id(ctx.client_id)
@@ -242,33 +248,21 @@ cmp.setup {
 }
 
 local map = vim.keymap.set
-map("n", "<leader>dc", function()
-  require("dap").continue()
-end)
+local dap, dapui = require("dap"), require("dapui")
 
-map("n", "<leader>dr", function()
-  require("dap").repl.toggle()
-end)
-
-map("n", "<leader>dK", function()
-  require("dap.ui.widgets").hover()
-end)
-
-map("n", "<leader>dt", function()
-  require("dap").toggle_breakpoint()
-end)
-
-map("n", "<leader>dso", function()
-  require("dap").step_over()
-end)
-
-map("n", "<leader>dsi", function()
-  require("dap").step_into()
-end)
-
-map("n", "<leader>dl", function()
-  require("dap").run_last()
-end)
+dapui.setup()
+dap.listeners.before.attach.dapui_config = function()
+  dapui.open()
+end
+dap.listeners.before.launch.dapui_config = function()
+  dapui.open()
+end
+dap.listeners.before.event_terminated.dapui_config = function()
+  dapui.close()
+end
+dap.listeners.before.event_exited.dapui_config = function()
+  dapui.close()
+end
 
 require "lsp_signature".setup({})
 
@@ -281,6 +275,25 @@ require "rust-tools".setup({
   }
 })
 
+dap.adapters.gdb = {
+  type = "executable",
+  command = "gdb",
+  args = { "-i", "dap" }
+}
+dap.configurations.c = {
+  {
+    name = "Launch",
+    type = "gdb",
+    request = "launch",
+    program = function()
+      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+    end,
+    cwd = "${workspaceFolder}",
+    stopAtBeginningOfMainSubprogram = false,
+  },
+}
+dap.configurations.cpp = dap.configurations.c
+dap.configurations.rust = dap.configurations.c
 dap.configurations.scala = {
   {
     type = "scala",
