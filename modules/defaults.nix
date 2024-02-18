@@ -17,7 +17,10 @@
         "quiet"
       ];
       kernelPackages = lib.mkDefault pkgs.linuxPackages_xanmod_stable;
-      kernel.sysctl."kernel.perf_event_paranoid" = -1;
+      kernel.sysctl = {
+        "kernel.perf_event_paranoid" = -1;
+        "kernel.kptr_restrict" = 0; # enable perf from reading kernel ptrs
+      };
       supportedFilesystems = [ "ntfs" "exfat" ];
     };
     networking = {
@@ -235,6 +238,7 @@
       sessionVariables = with lib; {
         NIX_PROFILES =
           "${concatStringsSep " " (reverseList config.environment.profiles)}";
+        VMLINUX = "${pkgs.linuxPackages_xanmod_stable.kernel.dev}/vmlinux";
       };
     };
 

@@ -6,37 +6,31 @@
 let
   development-packages = with pkgs; [
     gnumake
-    clang-tools
+    clang-tools_16 # default clang is 16
     cmake
     pkg-config
     flamegraph
     linuxPackages.perf
     hyperfine
-
     gcc
     nodejs
     metals
     sbt
     scalafmt
-
     nixpkgs-fmt
-
     texlab
     (texlive.combine {
       inherit (texlive) scheme-medium minted import thmtools
         environ semantic placeins cprotect bigfoot collection-pictures csquotes
         biblatex biber;
     })
-
     vale
-
     powertop
     nodePackages.pyright
     nodePackages.typescript
     nodePackages_latest.grammarly-languageserver
     nodePackages_latest.typescript-language-server
     nil
-    adoptopenjdk-openj9-bin-16
     (python3.withPackages (ps:
       with ps; [
         numpy
@@ -48,6 +42,7 @@ let
         setuptools
         black
       ]))
+    rs-git-fsmonitor
   ];
   tools = with pkgs; [
     tealdeer
@@ -200,6 +195,7 @@ in
         editor = "nvim";
         autocrlf = "input";
         preloadIndex = true;
+        fsmonitor = "rs-git-fsmonitor";
       };
       pull = { ff = "only"; };
       push = { autoSetupRemote = true; };

@@ -19,9 +19,7 @@
   system.stateVersion = "22.11";
   nixpkgs.hostPlatform = "x86_64-linux";
 
-  boot.kernelParams = [ "nohz_full=2-3" "isolcpus=2-3" ];
-
-  environment.systemPackages = with pkgs; [ git gcc linuxPackages.perf gdb htop ];
+  environment.systemPackages = with pkgs; [ git gcc linuxPackages.perf gdb htop ssh tmux];
 
   systemd.services.sshd.enable = true;
 
