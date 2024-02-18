@@ -70,7 +70,7 @@
       nvim = {
         enable = true;
         extraConfig = ''
-          lua require('impatient').enable_profile()
+          lua vim.loader.enable()
           lua vim.notify = require("notify")
           source ${./basic.vim}
           source ${./keymaps.vim}
@@ -182,7 +182,6 @@
           vimtex
           vim-tmux-navigator
           neoformat
-          impatient-nvim
           vim-vsnip
           vim-vsnip-integ
           parinfer-rust
