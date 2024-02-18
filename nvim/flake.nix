@@ -402,13 +402,6 @@
             type = "lua";
           }
           nvim-dap-ui
-          {
-            plugin = vim-latex-live-preview;
-            config = ''
-              let g:livepreview_engine = 'xelatex'
-            '';
-            type = "viml";
-          }
         ];
       };
       nvim-stuff = with pkgs; [
