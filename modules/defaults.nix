@@ -87,6 +87,9 @@
         noto-fonts-cjk-serif
         noto-fonts-emoji
         noto-fonts-extra
+        libertine
+        comic-relief
+        stix-two
         (nerdfonts.override { fonts = [ "DejaVuSansMono" ]; })
       ];
       fontconfig = {

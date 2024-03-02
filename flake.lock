@@ -269,7 +269,7 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-jeqmsXgItzfajT27mpRrUwyYE5S5q3lR2IQbnMEWAs8=",
+        "narHash": "sha256-18xedRXiMGTSSzsdtVTSFupVEtoOCFrt6JtEUNATLos=",
         "path": "./nvim",
         "type": "path"
       },
@@ -375,11 +375,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1708218633,
-        "narHash": "sha256-AnrzULxImoTB+NU/Yz5YuJg/YC/yj7Aludj16LNe6bQ=",
+        "lastModified": 1709045095,
+        "narHash": "sha256-6PeSdkt9Ey2k6yrRBpTFgS3RxTjyhRHZlR8hhy38xfQ=",
         "owner": "fufexan",
         "repo": "nix-gaming",
-        "rev": "c33dc03f3f6f12f859a506e82d7df129233bfe99",
+        "rev": "75625623631c294604b48035db5d95fe8ff08ef3",
         "type": "github"
       },
       "original": {

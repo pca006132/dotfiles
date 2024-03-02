@@ -22,7 +22,8 @@ let
     (texlive.combine {
       inherit (texlive) scheme-medium minted import thmtools
         environ semantic placeins cprotect bigfoot collection-pictures csquotes
-        biblatex biber;
+        biblatex biber enumitem collection-fontsextra beamertheme-arguelles
+        mathalpha opencolor tcolorbox;
     })
     vale
     powertop
@@ -75,6 +76,7 @@ let
     quickgui
     spice-gtk
     gh
+    inotify-tools
   ] ++ inputs.my-nvim.nvim-stuff;
   desktop-apps = with pkgs; [
     rime-data
