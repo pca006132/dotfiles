@@ -123,14 +123,11 @@ metals_config.handlers = {['metals/status'] = metals_status_handler}
 local clangd_config = require('lspconfig.server_configurations.clangd').default_config
 clangd_config.capabilities.offsetEncoding = "utf-8"
 
-local grammarly_config = require('lspconfig.server_configurations.grammarly').default_config
-grammarly_config.filetypes = { 'markdown', 'tex' }
-
 local nil_config = require('lspconfig.server_configurations.nil_ls').default_config
 nil_config.settings = {['nil'] = {nix = {flake = {autoArchive = true}}}}
 
 -- Enable the following language servers
-local servers = { 'clangd', 'pyright', 'tsserver', 'texlab', 'hls', 'grammarly', 'nil_ls', 'typst_lsp' }
+local servers = { 'clangd', 'pyright', 'tsserver', 'texlab', 'hls', 'nil_ls', 'typst_lsp' }
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
     on_attach = on_attach,
@@ -336,3 +333,27 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
   group = nvim_metals_group,
 })
+
+require("zk").setup({
+  lsp = {
+    config = {
+      on_attach = on_attach
+    }
+  }
+})
+local opts = { noremap=true, silent=false }
+-- Create a new note after asking for its title.
+vim.api.nvim_set_keymap("n", "<leader>zn", "<Cmd>ZkNew { title = vim.fn.input('Title: '), dir = 'notes' }<CR>", opts)
+-- Create a new daily journal
+vim.api.nvim_set_keymap("n", "<leader>zd", "<Cmd>ZkNew { dir = 'journal/daily' }<CR>", opts)
+-- Open notes.
+vim.api.nvim_set_keymap("n", "<leader>zo", "<Cmd>ZkNotes { sort = { 'modified' } }<CR>", opts)
+-- Open notes associated with the selected tags.
+vim.api.nvim_set_keymap("n", "<leader>zt", "<Cmd>ZkTags<CR>", opts)
+-- Search for the notes matching a given query.
+vim.api.nvim_set_keymap("n", "<leader>zf", "<Cmd>ZkNotes { sort = { 'modified' }, match = { vim.fn.input('Search: ') } }<CR>", opts)
+-- Open a list of backlinks
+vim.api.nvim_set_keymap("n", "<leader>zb", "<Cmd>ZkBacklinks<CR>", opts)
+-- Search for the notes matching the current visual selection.
+vim.api.nvim_set_keymap("v", "<leader>zf", ":'<,'>ZkMatch<CR>", opts)
+

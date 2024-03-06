@@ -1,8 +1,5 @@
-{ config, lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, ... }:
 {
-  imports = [
-    inputs.nix-gaming.nixosModules.pipewireLowLatency
-  ];
   config = {
     nixpkgs.config.allowUnfree = true;
     nixpkgs.hostPlatform = "x86_64-linux";
@@ -158,11 +155,6 @@
         alsa.enable = true;
         alsa.support32Bit = true;
         wireplumber.enable = true;
-
-        lowLatency = {
-          enable = true;
-          rate = 48000;
-        };
       };
       ofono.enable = true;
       blueman.enable = true;

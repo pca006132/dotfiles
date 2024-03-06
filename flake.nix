@@ -20,6 +20,7 @@
       url = "github:fufexan/nix-gaming";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    emanote.url = "github:srid/emanote";
   };
 
   outputs =

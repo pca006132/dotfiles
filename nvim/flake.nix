@@ -186,6 +186,7 @@
           vim-vsnip-integ
           parinfer-rust
           nvim-notify
+          zk-nvim
           {
             plugin = knap-nvim;
             config = ''
@@ -357,11 +358,13 @@
                 latex
                 python
                 rust
+                markdown
               ]));
             config = ''
               require'nvim-treesitter.configs'.setup {
                 highlight = {
                   enable = true,
+                  additional_vim_regex_highlighting = { "markdown" }
                 },
                 textobjects = {
                   select = {

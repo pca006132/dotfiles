@@ -29,7 +29,6 @@ let
     powertop
     nodePackages.pyright
     nodePackages.typescript
-    nodePackages_latest.grammarly-languageserver
     nodePackages_latest.typescript-language-server
     nil
     (python3.withPackages (ps:
@@ -77,6 +76,9 @@ let
     spice-gtk
     gh
     inotify-tools
+    tikzit
+    zk
+    inputs.emanote.packages.x86_64-linux.emanote
   ] ++ inputs.my-nvim.nvim-stuff;
   desktop-apps = with pkgs; [
     rime-data
@@ -122,6 +124,7 @@ in
   home.sessionVariables = {
     EDITOR = "nvim";
     LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/run/opengl-driver/lib";
+    ZK_NOTEBOOK_DIR = "$HOME/notebook";
   };
   home.sessionPath = [ "$HOME/.npm-packages/bin/" "$HOME/.local/bin" ];
 
