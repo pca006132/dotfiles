@@ -9,14 +9,6 @@
       url = "github:goolord/alpha-nvim";
       flake = false;
     };
-    monokai-nvim-src = {
-      url = "github:tanvirtin/monokai.nvim";
-      flake = false;
-    };
-    rust-tools-nvim-src = {
-      url = "github:simrat39/rust-tools.nvim";
-      flake = false;
-    };
     tabout-nvim-src = {
       url = "github:abecodes/tabout.nvim";
       flake = false;
@@ -35,10 +27,6 @@
     };
     vim-syntax-extra-src = {
       url = "github:justinmk/vim-syntax-extra";
-      flake = false;
-    };
-    gitsigns-nvim-src = {
-      url = "github:lewis6991/gitsigns.nvim/c18b7ca0b5b50596722f3a1572eb9b8eb520c0f1";
       flake = false;
     };
   };
@@ -125,10 +113,6 @@
             nnoremap <silent> <leader>lp :lua require'dap'.set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<CR>
             nnoremap <silent> <leader>dr :lua require'dap'.repl.open()<CR>
             nnoremap <silent> <leader>dl :lua require'dap'.run_last()<CR>
-            " gitsigns
-            highlight DiffAdd guifg=Green ctermfg=Green
-            highlight DiffDelete guifg=Red ctermfg=Red
-            highlight DiffChange guifg=Yellow ctermfg=Yellow
             " nvim tree
             nnoremap <C-n> :NvimTreeToggle<CR>
             nnoremap <leader>r :NvimTreeRefresh<CR>
@@ -169,6 +153,14 @@
             '';
             type = "lua";
           }
+          {
+            plugin = catppuccin-nvim;
+            config = ''
+              vim.cmd[[colorscheme catppuccin-mocha]]
+            '';
+            type = "lua";
+          }
+          vim-gitgutter
           vim-easy-align
           nvim-metals
           vim-syntax-extra
@@ -224,31 +216,6 @@
             type = "lua";
           }
           {
-            plugin = monokai-nvim;
-            config = ''
-              local monokai = require('monokai')
-              local palette = monokai.pro
-              monokai.setup {
-                palette = palette,
-                custom_hlgroups = {
-                  GitSignsAdd = {
-                    fg = palette.green,
-                    bg = palette.base2
-                  },
-                  GitSignsDelete = {
-                    fg = palette.pink,
-                    bg = palette.base2
-                  },
-                  GitSignsChange = {
-                    fg = palette.orange,
-                    bg = palette.base2
-                  },
-                }
-              }
-            '';
-            type = "lua";
-          }
-          {
             plugin = alpha-nvim;
             config = ''
               local alpha = require'alpha'
@@ -279,55 +246,6 @@
           telescope-nvim
           lightspeed-nvim
           nvim-dap
-          (luaSetup zen-mode-nvim "zen-mode")
-          {
-            plugin = gitsigns-nvim;
-            config = ''
-            require('gitsigns').setup{
-              on_attach = function(bufnr)
-                local gs = package.loaded.gitsigns
-
-                local function map(mode, l, r, opts)
-                  opts = opts or {}
-                  opts.buffer = bufnr
-                  vim.keymap.set(mode, l, r, opts)
-                end
-
-                -- Navigation
-                map('n', ']c', function()
-                  if vim.wo.diff then return ']c' end
-                  vim.schedule(function() gs.next_hunk() end)
-                  return '<Ignore>'
-                end, {expr=true})
-
-                map('n', '[c', function()
-                  if vim.wo.diff then return '[c' end
-                  vim.schedule(function() gs.prev_hunk() end)
-                  return '<Ignore>'
-                end, {expr=true})
-
-                -- Actions
-                map('n', '<leader>hs', gs.stage_hunk)
-                map('n', '<leader>hr', gs.reset_hunk)
-                map('v', '<leader>hs', function() gs.stage_hunk {vim.fn.line('.'), vim.fn.line('v')} end)
-                map('v', '<leader>hr', function() gs.reset_hunk {vim.fn.line('.'), vim.fn.line('v')} end)
-                map('n', '<leader>hS', gs.stage_buffer)
-                map('n', '<leader>hu', gs.undo_stage_hunk)
-                map('n', '<leader>hR', gs.reset_buffer)
-                map('n', '<leader>hp', gs.preview_hunk)
-                map('n', '<leader>hb', function() gs.blame_line{full=true} end)
-                map('n', '<leader>tb', gs.toggle_current_line_blame)
-                map('n', '<leader>hd', gs.diffthis)
-                map('n', '<leader>hD', function() gs.diffthis('~') end)
-                map('n', '<leader>td', gs.toggle_deleted)
-
-                -- Text object
-                map({'o', 'x'}, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
-              end
-            }
-            '';
-            type = "lua";
-          }
           lspkind
           nvim-treesitter-textobjects
           nvim-lspconfig
@@ -338,7 +256,6 @@
           cmp-buffer
           cmp-latex-symbols
           lsp_signature-nvim
-          rust-tools-nvim
           codi-vim
           tabout-nvim
           vim-sleuth

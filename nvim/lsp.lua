@@ -90,7 +90,7 @@ local on_attach = function(client, bufnr)
 
   -- Enable inlay hints if the client supports it.
   if client.server_capabilities.inlayHintProvider then
-    vim.lsp.inlay_hint[bufnr] = true
+    vim.lsp.inlay_hint.enable(bufnr, true)
   end
 end
 
@@ -127,7 +127,7 @@ local nil_config = require('lspconfig.server_configurations.nil_ls').default_con
 nil_config.settings = {['nil'] = {nix = {flake = {autoArchive = true}}}}
 
 -- Enable the following language servers
-local servers = { 'clangd', 'pyright', 'tsserver', 'texlab', 'hls', 'nil_ls', 'typst_lsp' }
+local servers = { 'clangd', 'pyright', 'tsserver', 'texlab', 'hls', 'nil_ls', 'typst_lsp', 'rust_analyzer' }
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
     on_attach = on_attach,
@@ -262,15 +262,6 @@ dap.listeners.before.event_exited.dapui_config = function()
 end
 
 require "lsp_signature".setup({})
-
-require "rust-tools".setup({
-  tools = {
-    hover_with_actions = false
-  },
-  server = {
-    on_attach = on_attach
-  }
-})
 
 dap.adapters.gdb = {
   type = "executable",

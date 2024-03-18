@@ -20,10 +20,7 @@ let
     nixpkgs-fmt
     texlab
     (texlive.combine {
-      inherit (texlive) scheme-medium minted import thmtools
-        environ semantic placeins cprotect bigfoot collection-pictures csquotes
-        biblatex biber enumitem collection-fontsextra beamertheme-arguelles
-        mathalpha opencolor tcolorbox;
+      inherit (texlive) scheme-full minted beamertheme-arguelles;
     })
     vale
     powertop
@@ -79,6 +76,8 @@ let
     tikzit
     zk
     inputs.emanote.packages.x86_64-linux.emanote
+    zotero
+    languagetool
   ] ++ inputs.my-nvim.nvim-stuff;
   desktop-apps = with pkgs; [
     rime-data
@@ -125,6 +124,7 @@ in
     EDITOR = "nvim";
     LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/run/opengl-driver/lib";
     ZK_NOTEBOOK_DIR = "$HOME/notebook";
+    BIBINPUTS = "$HOME/texmf/bibtex/bib"; # Zotero bib path
   };
   home.sessionPath = [ "$HOME/.npm-packages/bin/" "$HOME/.local/bin" ];
 
