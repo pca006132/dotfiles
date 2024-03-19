@@ -569,6 +569,22 @@
         "type": "github"
       }
     },
+    "librime-lua": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1709901000,
+        "narHash": "sha256-kU3pceqQoIM4pypPg2nLLnnyrgQSUEWZW9VLmmPJltU=",
+        "owner": "hchunhui",
+        "repo": "librime-lua",
+        "rev": "20ddea907e0b0c9c60d1dcb6b102bee38697cb5c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hchunhui",
+        "repo": "librime-lua",
+        "type": "github"
+      }
+    },
     "lspkind-src": {
       "flake": false,
       "locked": {
@@ -600,7 +616,7 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-tkOhcOe7Jh/EXhiVLt5NOul3qP+5OpyMJ9XZ9QwbFN0=",
+        "narHash": "sha256-QtELSkhuUL2RH2ue9u3YzVtP/nhiBAIcFCQdB1I0Zgw=",
         "path": "./nvim",
         "type": "path"
       },
@@ -809,11 +825,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1710097495,
-        "narHash": "sha256-B7Ea7q7hU7SE8wOPJ9oXEBjvB89yl2csaLjf5v/7jr8=",
+        "lastModified": 1710765496,
+        "narHash": "sha256-p7ryWEeQfMwTB6E0wIUd5V2cFTgq+DRRBz2hYGnJZyA=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "d40e866b1f98698d454dad8f592fe7616ff705a4",
+        "rev": "e367f7a1fb93137af22a3908f00b9a35e2d286a7",
         "type": "github"
       },
       "original": {
@@ -857,11 +873,11 @@
     },
     "nixpkgs_4": {
       "locked": {
-        "lastModified": 1710021367,
-        "narHash": "sha256-FuMVdWqXMT38u1lcySYyv93A7B8wU0EGzUr4t4jQu8g=",
+        "lastModified": 1710695816,
+        "narHash": "sha256-3Eh7fhEID17pv9ZxrPwCLfqXnYP006RKzSs0JptsN84=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "b94a96839afcc56de3551aa7472b8d9a3e77e05d",
+        "rev": "614b4613980a522ba49f0d194531beddbb7220d3",
         "type": "github"
       },
       "original": {
@@ -887,16 +903,34 @@
         "type": "github"
       }
     },
+    "rime-ice": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1710778420,
+        "narHash": "sha256-FqlDSWHfvJFGeWru443vcLl0N+SzvL4zqgXEhCT7ZBk=",
+        "owner": "iDvel",
+        "repo": "rime-ice",
+        "rev": "cb19fd4b14931009dab69b0d7d30512cbebc5074",
+        "type": "github"
+      },
+      "original": {
+        "owner": "iDvel",
+        "repo": "rime-ice",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "emanote": "emanote",
         "home-manager": "home-manager",
+        "librime-lua": "librime-lua",
         "my-nvim": "my-nvim",
         "neovim-nightly-overlay": "neovim-nightly-overlay",
         "nix-alien": "nix-alien",
         "nix-gaming": "nix-gaming",
         "nixpkgs": "nixpkgs_4",
-        "nixpkgs-unstable": "nixpkgs-unstable"
+        "nixpkgs-unstable": "nixpkgs-unstable",
+        "rime-ice": "rime-ice"
       }
     },
     "session-manager-src": {

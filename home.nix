@@ -98,7 +98,6 @@ in
 
   home.packages = with pkgs; [
     (callPackage ./prusa-slicer.nix { })
-    # (callPackage ./super-slicer.nix { })
   ] ++ development-packages ++ tools ++ desktop-apps;
 
   xdg.desktopEntries = {
@@ -110,14 +109,17 @@ in
       genericName = "3D printer tool";
       categories = [ "Development" ];
     };
-    # super-slicer = {
-    #   name = "Super Slicer";
-    #   exec = "super-slicer";
-    #   icon = "super-slicer";
-    #   comment = "Super Slicer";
-    #   genericName = "3D printer tool";
-    #   categories = [ "Development" ];
-    # };
+  };
+
+  xdg.dataFile."fcitx5/rime" = {
+    recursive = true;
+    source = inputs.rime-ice;
+  };
+  xdg.dataFile."fcitx5/rime/rime_ice.custom.yaml" = {
+    text = ''
+      patch:
+        translator.always_show_comments: false
+    '';
   };
 
   home.sessionVariables = {

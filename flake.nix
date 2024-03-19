@@ -21,6 +21,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     emanote.url = "github:srid/emanote";
+    rime-ice = {
+      url = "github:iDvel/rime-ice";
+      flake = false;
+    };
+    librime-lua = {
+      url = "github:hchunhui/librime-lua";
+      flake = false;
+    };
   };
 
   outputs =

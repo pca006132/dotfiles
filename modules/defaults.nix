@@ -1,6 +1,25 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, inputs, ... }:
 {
   config = {
+    nixpkgs.overlays = [
+      (final: prev: {
+        # override plugins does not work... for some reason
+        librime = prev.librime.override {
+          plugins = [
+            (pkgs.stdenv.mkDerivation {
+              name = "librime-lua";
+              version = "0.1.0";
+              src = inputs.librime-lua;
+              propagatedBuildInputs = with pkgs; [ lua ];
+              installPhase = ''
+                mkdir -p $out
+                cp -r * $out
+              '';
+            })
+          ];
+        };
+      })
+    ];
     nixpkgs.config.allowUnfree = true;
     nixpkgs.hostPlatform = "x86_64-linux";
     boot = {
@@ -91,6 +110,7 @@
       ];
       fontconfig = {
         hinting.enable = true;
+        subpixel.rgba = "rgb";
         defaultFonts = {
           serif = [
             "Noto Serif"

@@ -16,23 +16,6 @@
         "type": "github"
       }
     },
-    "gitsigns-nvim-src": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1684477958,
-        "narHash": "sha256-XPOaQfPMCKPXpzt0JZUlHQj4TyrkDkhgieAnZIFW8Nk=",
-        "owner": "lewis6991",
-        "repo": "gitsigns.nvim",
-        "rev": "c18b7ca0b5b50596722f3a1572eb9b8eb520c0f1",
-        "type": "github"
-      },
-      "original": {
-        "owner": "lewis6991",
-        "repo": "gitsigns.nvim",
-        "rev": "c18b7ca0b5b50596722f3a1572eb9b8eb520c0f1",
-        "type": "github"
-      }
-    },
     "knap-nvim-src": {
       "flake": false,
       "locked": {
@@ -65,29 +48,13 @@
         "type": "github"
       }
     },
-    "monokai-nvim-src": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1674050493,
-        "narHash": "sha256-Q6+la2P2L1QmdsRKszBBMee8oLXHwdJGWjG/FMMFgT0=",
-        "owner": "tanvirtin",
-        "repo": "monokai.nvim",
-        "rev": "b8bd44d5796503173627d7a1fc51f77ec3a08a63",
-        "type": "github"
-      },
-      "original": {
-        "owner": "tanvirtin",
-        "repo": "monokai.nvim",
-        "type": "github"
-      }
-    },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1709961763,
-        "narHash": "sha256-6H95HGJHhEZtyYA3rIQpvamMKAGoa8Yh2rFV29QnuGw=",
+        "lastModified": 1710631334,
+        "narHash": "sha256-rL5LSYd85kplL5othxK5lmAtjyMOBg390sGBTb3LRMM=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "3030f185ba6a4bf4f18b87f345f104e6a6961f34",
+        "rev": "c75037bbf9093a2acb617804ee46320d6d1fea5a",
         "type": "github"
       },
       "original": {
@@ -116,32 +83,13 @@
     "root": {
       "inputs": {
         "alpha-nvim-src": "alpha-nvim-src",
-        "gitsigns-nvim-src": "gitsigns-nvim-src",
         "knap-nvim-src": "knap-nvim-src",
         "lspkind-src": "lspkind-src",
-        "monokai-nvim-src": "monokai-nvim-src",
         "nixpkgs": "nixpkgs",
         "nvim-metals-src": "nvim-metals-src",
-        "rust-tools-nvim-src": "rust-tools-nvim-src",
         "session-manager-src": "session-manager-src",
         "tabout-nvim-src": "tabout-nvim-src",
         "vim-syntax-extra-src": "vim-syntax-extra-src"
-      }
-    },
-    "rust-tools-nvim-src": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1704259376,
-        "narHash": "sha256-kFane5ze7VDiOzF7jdmXkr50XQsNvdb+a9HQtybEVE0=",
-        "owner": "simrat39",
-        "repo": "rust-tools.nvim",
-        "rev": "676187908a1ce35ffcd727c654ed68d851299d3e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "simrat39",
-        "repo": "rust-tools.nvim",
-        "type": "github"
       }
     },
     "session-manager-src": {
