@@ -29,6 +29,10 @@
       url = "github:justinmk/vim-syntax-extra";
       flake = false;
     };
+    lspsaga-nvim-src = {
+      url = "github:nvimdev/lspsaga.nvim";
+      flake = false;
+    };
   };
   outputs = { nixpkgs, ... } @ inputs:
     let
