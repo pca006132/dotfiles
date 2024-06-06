@@ -91,7 +91,8 @@
       };
       inputMethod = {
         enabled = "fcitx5";
-        fcitx5.addons = with pkgs; [ fcitx5-rime fcitx5-gtk libsForQt5.fcitx5-qt ];
+        fcitx5.addons = with pkgs; [ fcitx5-rime fcitx5-mozc fcitx5-gtk libsForQt5.fcitx5-qt ];
+        fcitx5.plasma6Support = true;
       };
     };
 
@@ -132,26 +133,31 @@
       automatic-timezoned.enable = true;
       dbus.enable = true;
       flatpak.enable = true;
-      gnome.gnome-remote-desktop.enable = true;
+      displayManager = {
+        autoLogin = {
+          enable = true;
+          user = "pca006132";
+        };
+        # defaultSession = "plasmawayland";
+        sddm = {
+          enable = true;
+          wayland.enable = true;
+        };
+      };
+      desktopManager = {
+        plasma6.enable = true;
+      };
       xserver = {
         enable = true;
-        displayManager = {
-          autoLogin = {
-            enable = true;
-            user = "pca006132";
-          };
-          defaultSession = "plasmawayland";
-          # sddm is somehow buggy...
-          gdm.enable = true;
+        # desktopManager = {
+        #   gnome.enable = false;
+        #   plasma6.enable = true;
+        #   xterm.enable = false;
+        # };
+        xkb = {
+          layout = "us";
+          options = "eurosign:e";
         };
-        desktopManager = {
-          gnome.enable = false;
-          plasma5.enable = true;
-          xterm.enable = false;
-        };
-        layout = "us";
-        # Configure keymap in X11
-        xkbOptions = "eurosign:e";
       };
       printing = {
         enable = true;
@@ -212,6 +218,8 @@
 
       btrfs.autoScrub.enable = true;
       irqbalance.enable = true;
+
+      onlyoffice.enable = true;
     };
 
     # wait online is really slow and not really needed
@@ -222,11 +230,13 @@
       zsh.enable = true;
       mosh.enable = true;
       xwayland.enable = true;
+      adb.enable = true;
     };
 
     users.groups = {
       plugdev.members = [ "pca006132" ];
       vboxusers.members = [ "pca006132" ];
+      adbusers.members = [ "pca006132" ];
     };
     users.users.pca006132 = {
       isNormalUser = true;

@@ -50,7 +50,6 @@ let
     ripgrep
     ranger
     fzf
-    sioyek
     imagemagick
     vimv
     pandoc
@@ -75,20 +74,25 @@ let
     inotify-tools
     tikzit
     zk
-    inputs.emanote.packages.x86_64-linux.emanote
     zotero
     languagetool
+    inkscape
+    beamerpresenter
   ] ++ inputs.my-nvim.nvim-stuff;
   desktop-apps = with pkgs; [
     rime-data
     firefox-bin
-    nvtop
+    nvtopPackages.full
     intel-gpu-tools
     pinentry-qt
     vlc
     thunderbird
     inputs.nix-gaming.packages.${pkgs.hostPlatform.system}.osu-lazer-bin
     zoom-us
+    onlyoffice-bin
+    obs-studio
+    avidemux
+    anki-bin
   ];
 in
 {
@@ -98,6 +102,7 @@ in
 
   home.packages = with pkgs; [
     (callPackage ./prusa-slicer.nix { })
+    (qt6.callPackage ./sioyek.nix { })
   ] ++ development-packages ++ tools ++ desktop-apps;
 
   xdg.desktopEntries = {
@@ -171,22 +176,7 @@ in
   fonts.fontconfig.enable = true;
 
   nixpkgs.overlays = [
-    inputs.neovim-nightly-overlay.overlay
     inputs.nix-alien.overlays.default
-    (self: super: {
-      neovim-unwrapped = super.neovim-unwrapped.overrideAttrs (oa: {
-        patches = builtins.filter
-          (p:
-            let
-              patch =
-                if builtins.typeOf p == "set"
-                then baseNameOf p.name
-                else baseNameOf p;
-            in
-            patch != "neovim-build-make-generated-source-files-reproducible.patch")
-          oa.patches;
-      });
-    })
   ];
 
   programs.direnv = {
@@ -236,7 +226,7 @@ in
     enableSshSupport = true;
     enableExtraSocket = true;
     sshKeys = [ "996D13DF48B5A21F57298DD1B542F46ABECF3015" ];
-    pinentryFlavor = "qt";
+    pinentryPackage = pkgs.pinentry-qt;
   };
 
   programs.ssh = {
@@ -252,7 +242,7 @@ in
 
   programs.zsh = {
     enable = true;
-    enableAutosuggestions = true;
+    autosuggestion.enable = true;
     oh-my-zsh = {
       enable = true;
       plugins = [ "git" "z" "vi-mode" "history-substring-search" ];
