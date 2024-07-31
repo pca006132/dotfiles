@@ -89,9 +89,9 @@ local on_attach = function(client, bufnr)
   map(bufnr, 'n', '<leader>so', [[<cmd>lua require('telescope.builtin').lsp_document_symbols()<CR>]], opts)
 
   -- Enable inlay hints if the client supports it.
-  if client.server_capabilities.inlayHintProvider then
-    vim.lsp.inlay_hint.enable(true)
-  end
+  -- if client.server_capabilities.inlayHintProvider then
+  --   vim.lsp.inlay_hint.enable(true)
+  -- end
 end
 
 -- nvim-cmp supports additional completion capabilities

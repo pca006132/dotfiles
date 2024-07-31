@@ -1,27 +1,39 @@
 { config, lib, pkgs, inputs, ... }:
 {
   config = {
-    nixpkgs.overlays = [
-      (final: prev: {
-        # override plugins does not work... for some reason
-        librime = prev.librime.override {
-          plugins = [
-            (pkgs.stdenv.mkDerivation {
-              name = "librime-lua";
-              version = "0.1.0";
-              src = inputs.librime-lua;
-              propagatedBuildInputs = with pkgs; [ lua ];
-              installPhase = ''
-                mkdir -p $out
-                cp -r * $out
-              '';
-            })
-          ];
+    nixpkgs = {
+      overlays = [
+        (final: prev: {
+          # override plugins does not work... for some reason
+          librime = prev.librime.override {
+            plugins = [
+              (pkgs.stdenv.mkDerivation {
+                name = "librime-lua";
+                version = "0.1.0";
+                src = inputs.librime-lua;
+                propagatedBuildInputs = with pkgs; [ lua ];
+                installPhase = ''
+                  mkdir -p $out
+                  cp -r * $out
+                '';
+              })
+            ];
+          };
+        })
+      ];
+      config = {
+        allowUnfree = true;
+        packageOverrides = pkgs: {
+          blueman = pkgs.blueman.overrideAttrs (oldAttrs: {
+            src = pkgs.fetchurl {
+              url = "https://github.com/blueman-project/blueman/releases/download/2.3.5/blueman-2.3.5.tar.xz";
+              sha256 = "sha256-stIa/fd6Bs2G2vVAJAb30qU0WYF+KeC+vEkR1PDc/aE=";
+            };
+          });
         };
-      })
-    ];
-    nixpkgs.config.allowUnfree = true;
-    nixpkgs.hostPlatform = "x86_64-linux";
+        hostPlatform = "x86_64-linux";
+      };
+    };
     boot = {
       loader = {
         systemd-boot.enable = true;
@@ -223,7 +235,23 @@
     };
 
     # wait online is really slow and not really needed
-    systemd.services.NetworkManager-wait-online.enable = false;
+    systemd.services = {
+      NetworkManager-wait-online.enable = false;
+      # intel_lpmd = {
+      #   description = "Intel Low Power Daemon Service";
+      #   wantedBy = [ "multi-user.target" ];
+      #   after = [ "graphical-session.target" ];
+      #
+      #   restartIfChanged = true;
+      #
+      #   serviceConfig = {
+      #     Restart = "on-failure";
+      #     BusName = "org.freedesktop.intel_lpmd";
+      #     type = "dbus";
+      #     ExecStart = ''${pkgs.callPackage ./intel-lpmd.nix {}}/bin/intel_lpmd --systemd --dbus-enable'';
+      #   };
+      # };
+    };
 
     programs = {
       dconf.enable = true;
