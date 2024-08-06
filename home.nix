@@ -101,43 +101,42 @@ in
   programs.home-manager = { enable = true; };
 
   home.packages = with pkgs; [
-    (callPackage ./prusa-slicer.nix { })
+    # (callPackage ./prusa-slicer.nix { })
     (qt6.callPackage ./sioyek.nix { })
   ] ++ development-packages ++ tools ++ desktop-apps;
 
-  xdg.desktopEntries = {
-    prusa-slicer = {
-      name = "Prusa Slicer";
-      exec = "prusa-slicer";
-      icon = "prusa-slicer";
-      comment = "Prusa Slicer";
-      genericName = "3D printer tool";
-      categories = [ "Development" ];
+  xdg = {
+    dataFile = {
+      "fcitx5/rime" = {
+        recursive = true;
+        source = inputs.rime-ice;
+      };
+      "fcitx5/rime/rime_ice.custom.yaml" = {
+        text = ''
+          patch:
+            traditionalize/opencc_config: s2hk.json
+        '';
+      };
     };
-  };
-
-  xdg.dataFile."fcitx5/rime" = {
-    recursive = true;
-    source = inputs.rime-ice;
-  };
-  xdg.dataFile."fcitx5/rime/rime_ice.custom.yaml" = {
-    text = ''
-      patch:
-        translator.always_show_comments: false
-    '';
+    configFile = {
+      "neovide/config.toml" = {
+        text = ''
+          fork=true
+        '';
+      };
+    };
+    mimeApps.defaultApplications = {
+      "application/pdf" = "sioyek.desktop";
+    };
   };
 
   home.sessionVariables = {
     EDITOR = "nvim";
     LD_LIBRARY_PATH = "$LD_LIBRARY_PATH:/run/opengl-driver/lib";
-    ZK_NOTEBOOK_DIR = "$HOME/notebook";
     BIBINPUTS = "$HOME/texmf/bibtex/bib"; # Zotero bib path
   };
   home.sessionPath = [ "$HOME/.npm-packages/bin/" "$HOME/.local/bin" ];
 
-  xdg.mimeApps.defaultApplications = {
-    "application/pdf" = "sioyek.desktop";
-  };
 
   programs.kitty = {
     enable = true;

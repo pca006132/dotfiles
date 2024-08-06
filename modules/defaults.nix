@@ -44,18 +44,40 @@
         "mem_sleep_default=deep"
         "quiet"
       ];
-      kernelPackages = lib.mkDefault pkgs.linuxPackages_xanmod_stable;
+      # kernelPackages = lib.mkDefault pkgs.linuxPackages_xanmod_stable;
       kernel.sysctl = {
         "kernel.perf_event_paranoid" = -1;
-        "kernel.kptr_restrict" = 0; # enable perf from reading kernel ptrs
+        # enable perf from reading kernel ptrs
+        "kernel.kptr_restrict" = 0;
+        # Protect against tcp time-wait assassination hazards, drop RST packets for sockets in the time-wait state.
+        "net.ipv4.tcp_rfc1337" = 1;
+        # block source-routed packets
+        "net.ipv4.conf.default.accept_source_route" = 0;
+        # reverse path filtering
+        "net.ipv4.conf.default.rp_filter" = 1;
+        "net.ipv4.conf.all.rp_filter" = 1;
+        # disable ICMP redirect sending
+        "net.ipv4.conf.all.send_redirects" = 0;
+        "net.ipv4.conf.default.send_redirects" = 0;
+        # TCP syncookies
+        "net.ipv4.tcp_syncookies" = 1;
+        # BBR for tcp
+        "net.core.default_qdisc" = "cake";
+        "net.ipv4.tcp_congestion_control" = "bbr";
+        # MTU probing
+        "net.ipv4.tcp_mtu_probing" = 1;
+        # TCP fast open
+        "net.ipv4.tcp_fastopen" = 3;
       };
       supportedFilesystems = [ "ntfs" "exfat" ];
     };
     networking = {
       networkmanager.enable = true;
       wireless.userControlled.enable = true;
-      firewall.allowedTCPPorts = [ 22 8888 60000 ];
-      firewall.allowedUDPPorts = [ 22 8888 60000 ];
+      firewall = {
+        allowedTCPPorts = [ 22 80 443];
+        allowedUDPPorts = [ 22 80 443];
+      };
     };
     time = {
       # timeZone = "Asia/Hong_Kong";
@@ -150,7 +172,6 @@
           enable = true;
           user = "pca006132";
         };
-        # defaultSession = "plasmawayland";
         sddm = {
           enable = true;
           wayland.enable = true;
@@ -161,11 +182,6 @@
       };
       xserver = {
         enable = true;
-        # desktopManager = {
-        #   gnome.enable = false;
-        #   plasma6.enable = true;
-        #   xterm.enable = false;
-        # };
         xkb = {
           layout = "us";
           options = "eurosign:e";
@@ -210,6 +226,7 @@
         ];
         extraHwdb = ''
           ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="df11", MODE="664", GROUP="plugdev", TAG+="uaccess"
+          ACTION=="add", SUBSYSTEM=="usb", ENV{ID_VENDOR_ID}=="1050", ENV{ID_MODEL_ID}=="0116|0111", MODE="660", GROUP="scard"
         '';
       };
 
@@ -218,6 +235,14 @@
         settings = {
           PermitRootLogin = "no";
           PasswordAuthentication = false;
+          Macs =
+            [
+              "hmac-sha2-512-etm@openssh.com"
+              "hmac-sha2-256-etm@openssh.com"
+              "umac-128-etm@openssh.com"
+              "hmac-sha2-512,hmac-sha2-256"
+              "umac-128@openssh.com"
+            ];
         };
       };
 
@@ -230,12 +255,11 @@
 
       btrfs.autoScrub.enable = true;
       irqbalance.enable = true;
-
-      onlyoffice.enable = true;
+      fail2ban.enable = true;
     };
 
-    # wait online is really slow and not really needed
     systemd.services = {
+      # wait online is really slow and not really needed
       NetworkManager-wait-online.enable = false;
       # intel_lpmd = {
       #   description = "Intel Low Power Daemon Service";
@@ -265,6 +289,7 @@
       plugdev.members = [ "pca006132" ];
       vboxusers.members = [ "pca006132" ];
       adbusers.members = [ "pca006132" ];
+      scad.members = [ "pca006132" ];
     };
     users.users.pca006132 = {
       isNormalUser = true;
@@ -291,7 +316,7 @@
       sessionVariables = with lib; {
         NIX_PROFILES =
           "${concatStringsSep " " (reverseList config.environment.profiles)}";
-        VMLINUX = "${pkgs.linuxPackages_xanmod_stable.kernel.dev}/vmlinux";
+        VMLINUX = "${config.boot.kernelPackages.kernel.dev}/vmlinux";
       };
     };
 

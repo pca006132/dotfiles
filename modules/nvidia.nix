@@ -42,7 +42,7 @@ with lib; {
   };
   config = mkIf cfg.enable {
     boot = {
-      kernelParams = [ "nvidia_drm.modeset=1" ];
+      kernelParams = [ "nvidia_drm.modeset=1" "nvidia_drm.fbdev=1" ];
       extraModprobeConfig = ''
         options nvidia NVreg_PreserveVideoMemoryAllocations=1
       '';

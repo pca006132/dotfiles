@@ -1,4 +1,4 @@
-{ config, pkgs, modulesPath, ... }:
+{ pkgs, modulesPath, ... }:
 {
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
@@ -41,8 +41,6 @@
       name = "e1000e-bypass-checksum";
       patch = ./e1000e.diff;
     }];
-    # for testing realtime application
-    kernelParams = [ "nohz_full=19" "isolcpus=19" ];
     kernel.sysctl = {
       # Disable proactive compaction because it introduces jitter
       "vm.compaction_proactiveness" = 0;
@@ -55,41 +53,52 @@
 
   nvidia-quirks = { enable = true; };
 
-  # systemd.services = {
-  #   duckdns = {
-  #     startAt = "*-*-* *:0/5:00";
-  #     wantedBy = [ "sshd.service" ];
-  #     after = [ "network.target" ];
-  #     description = "Update duckdns IP";
-  #     path = with pkgs; [curl coreutils];
-  #     serviceConfig = {
-  #       User = "pca006132";
-  #       ExecStart = (pkgs.writeShellScript "duckdns-update.sh" ''
-  #         echo url="https://www.duckdns.org/update?domains=pca006132&token=$(cat $TOKENPATH)&ip=" | curl -k -K -
-  #       '');
-  #       LoadCredentialEncrypted = "duckdns-token:/home/pca006132/secrets/duckdns-token";
-  #       Environment = "TOKENPATH=%d/duckdns-token";
-  #       StandardOutput = "journal";
-  #     };
-  #   };
-  # };
-  #
-  # security.acme = rec {
+  systemd.services = {
+    duckdns = {
+      startAt = "*-*-* *:0/5:00";
+      wantedBy = [ "sshd.service" ];
+      after = [ "network.target" ];
+      description = "Update duckdns IP";
+      path = with pkgs; [ curl coreutils ];
+      serviceConfig = {
+        User = "pca006132";
+        ExecStart = (pkgs.writeShellScript "duckdns-update.sh" ''
+          echo url="https://www.duckdns.org/update?domains=pca006132&token=$(cat $TOKENPATH)&ip=" | curl -k -K -
+        '');
+        LoadCredentialEncrypted = "duckdns-token:/home/pca006132/secrets/duckdns-token";
+        Environment = "TOKENPATH=%d/duckdns-token";
+        StandardOutput = "journal";
+      };
+    };
+  };
+
+  # security.acme = {
   #   acceptTerms = true;
   #   defaults.email = "cklamaq@cse.ust.hk";
+  #   defaults.server = "https://acme-staging-v02.api.letsencrypt.org/directory";
   #   certs."pca006132.duckdns.org" = {
+  #     group = "nginx";
   #     domain = "pca006132.duckdns.org";
   #     # sadly cannot use LoadCredentialEncrypted here
   #     credentialsFile = "/home/pca006132/secrets/lego-secrets";
   #     dnsProvider = "duckdns";
   #   };
   # };
-  #
-  # services.nix-serve = {
-  #   enable = true;
-  #   openFirewall = true;
-  #   secretKeyFile = "/home/pca006132/secrets/nix-store";
-  # };
+
+  services.nginx = {
+    enable = true;
+    virtualHosts = {
+      "pca006132.duckdns.org" = {
+        forceSSL = true;
+        # enableACME = true;
+        sslCertificate = "/etc/letsencrypt/live/pca006132.cc/fullchain.pem";
+        sslCertificateKey = "/etc/letsencrypt/live/pca006132.cc/privkey.pem";
+        locations."/" = {
+          root = "/var/www";
+        };
+      };
+    };
+  };
 
   system.stateVersion = "22.11";
 }
