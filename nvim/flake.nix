@@ -337,7 +337,7 @@
       nvim-stuff = with pkgs; [
         typst
         typstfmt
-        typst-lsp
+        (callPackage ./tinymist.nix {})
         neovide
         gdb
       ];

@@ -127,7 +127,7 @@ local nil_config = require('lspconfig.server_configurations.nil_ls').default_con
 nil_config.settings = {['nil'] = {nix = {flake = {autoArchive = true}}}}
 
 -- Enable the following language servers
-local servers = { 'clangd', 'pyright', 'tsserver', 'texlab', 'hls', 'nil_ls', 'typst_lsp', 'rust_analyzer' }
+local servers = { 'clangd', 'pyright', 'tsserver', 'texlab', 'hls', 'nil_ls', 'tinymist', 'rust_analyzer' }
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
     on_attach = on_attach,
