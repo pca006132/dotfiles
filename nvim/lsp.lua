@@ -127,7 +127,7 @@ local nil_config = require('lspconfig.server_configurations.nil_ls').default_con
 nil_config.settings = {['nil'] = {nix = {flake = {autoArchive = true}}}}
 
 -- Enable the following language servers
-local servers = { 'clangd', 'pyright', 'tsserver', 'texlab', 'hls', 'nil_ls', 'tinymist', 'rust_analyzer' }
+local servers = { 'clangd', 'pyright', 'tsserver', 'texlab', 'hls', 'nil_ls', 'tinymist', 'rust_analyzer', 'jdtls' }
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
     on_attach = on_attach,
@@ -305,7 +305,7 @@ dap.configurations.scala = {
 metals_config.settings = {
   showImplicitArguments = true
 }
-metals_config.root_patterns = {"build.sbt", "build.sc", "build.gradle", "pom.xml", ".scala-build", "bleep.yaml", ".git"}
+metals_config.root_patterns = {"build.sbt", "build.sc", ".scala-build", "bleep.yaml"}
 metals_config.capabilities = require("cmp_nvim_lsp").default_capabilities
 metals_config.on_attach = function(client, bufnr)
   require("metals").setup_dap()
@@ -318,7 +318,7 @@ vim.api.nvim_create_autocmd("FileType", {
   -- NOTE: You may or may not want java included here. You will need it if you
   -- want basic Java support but it may also conflict if you are using
   -- something like nvim-jdtls which also works on a java filetype autocmd.
-  pattern = { "scala", "sbt", "java" },
+  pattern = { "scala", "sbt" },
   callback = function()
     require("metals").initialize_or_attach(metals_config)
   end,

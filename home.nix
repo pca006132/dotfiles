@@ -40,6 +40,8 @@ let
         black
       ]))
     rs-git-fsmonitor
+    rnote
+    bind
   ];
   tools = with pkgs; [
     tealdeer
@@ -197,39 +199,22 @@ in
       push = { autoSetupRemote = true; };
       submodule.fetchJobs = 8;
     };
+    difftastic.enable = true;
     lfs.enable = true;
     userEmail = "john.lck40@gmail.com";
     userName = "pca006132";
     ignores = [ ".envrc" ".direnv/" ".venv" ];
-    signing = {
-      key = "E9D2B552F9801C5D";
-      signByDefault = false;
-    };
-  };
-
-  programs.gpg = {
-    enable = true;
-    publicKeys = [{
-      source = ./public.key;
-      trust = 5;
-    }];
   };
 
   services.easyeffects = {
     enable = true;
   };
 
-  services.gpg-agent = {
-    defaultCacheTtlSsh = 60;
-    enable = true;
-    enableSshSupport = true;
-    enableExtraSocket = true;
-    sshKeys = [ "996D13DF48B5A21F57298DD1B542F46ABECF3015" ];
-    pinentryPackage = pkgs.pinentry-qt;
-  };
+  services.ssh-agent.enable = true;
 
   programs.ssh = {
     enable = true;
+    addKeysToAgent = "yes";
     matchBlocks = {
       pca-pc = {
         hostname = "pca006132.duckdns.org";
@@ -254,12 +239,6 @@ in
       r = ''
         ranger --choosedir=$HOME/.rangerdir; LASTDIR=`cat $HOME/.rangerdir`; cd "$LASTDIR"'';
     };
-    initExtra = ''
-      if [[ "$SSH_AUTH_SOCK" == "/run/user/1000/keyring/ssh" ]]
-      then
-        SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket) 
-      fi
-    '';
   };
 
   programs.tmux = {

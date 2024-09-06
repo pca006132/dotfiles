@@ -286,6 +286,8 @@
                 python
                 rust
                 markdown
+                java
+                typst
               ]));
             config = ''
               require'nvim-treesitter.configs'.setup {

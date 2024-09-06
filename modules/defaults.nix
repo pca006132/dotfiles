@@ -142,6 +142,7 @@
         comic-relief
         stix-two
         (nerdfonts.override { fonts = [ "DejaVuSansMono" ]; })
+        lmodern
       ];
       fontconfig = {
         hinting.enable = true;

@@ -75,7 +75,6 @@
   # security.acme = {
   #   acceptTerms = true;
   #   defaults.email = "cklamaq@cse.ust.hk";
-  #   defaults.server = "https://acme-staging-v02.api.letsencrypt.org/directory";
   #   certs."pca006132.duckdns.org" = {
   #     group = "nginx";
   #     domain = "pca006132.duckdns.org";
@@ -85,20 +84,19 @@
   #   };
   # };
 
-  services.nginx = {
-    enable = true;
-    virtualHosts = {
-      "pca006132.duckdns.org" = {
-        forceSSL = true;
-        # enableACME = true;
-        sslCertificate = "/etc/letsencrypt/live/pca006132.cc/fullchain.pem";
-        sslCertificateKey = "/etc/letsencrypt/live/pca006132.cc/privkey.pem";
-        locations."/" = {
-          root = "/var/www";
-        };
-      };
-    };
-  };
+  # services.nginx = {
+  #   enable = true;
+  #   virtualHosts = {
+  #     "pca006132.duckdns.org" = {
+  #       forceSSL = true;
+  #       enableACME = true;
+  #       acmeRoot = null;
+  #       locations."/" = {
+  #         root = "/var/www";
+  #       };
+  #     };
+  #   };
+  # };
 
   system.stateVersion = "22.11";
 }
