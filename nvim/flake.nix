@@ -124,9 +124,7 @@
             nnoremap <silent> <leader>dr :lua require'dap'.repl.open()<CR>
             nnoremap <silent> <leader>dl :lua require'dap'.run_last()<CR>
             " nvim tree
-            nnoremap <C-n> :NvimTreeToggle<CR>
-            nnoremap <leader>r :NvimTreeRefresh<CR>
-            nnoremap <leader>n :NvimTreeFindFile<CR>
+            nnoremap <C-n> :Neotree toggle reveal<CR>
             " nvim-cmp
             highlight! CmpItemAbbrDeprecated guibg=NONE gui=strikethrough guifg=#808080
             highlight! CmpItemAbbrMatch guibg=NONE guifg=#569CD6
@@ -150,16 +148,9 @@
           plenary-nvim
           dressing-nvim
           {
-            plugin = nvim-tree-lua;
+            plugin = neo-tree-nvim;
             config = ''
-              require("nvim-tree").setup({
-                renderer = {
-                  group_empty = true
-                },
-                update_focused_file = {
-                  enable = true
-                }
-              })
+              require("neo-tree").setup()
             '';
             type = "lua";
           }
@@ -205,26 +196,6 @@
             '';
             type = "lua";
           }
-          # {
-          #   plugin = session-manager;
-          #   config = ''
-          #     local Path = require('plenary.path')
-          #     require('session_manager').setup({
-          #       sessions_dir = Path:new(vim.fn.stdpath('data'), 'sessions'), -- The directory where the session files will be saved.
-          #       path_replacer = '__', -- The character to which the path separator will be replaced for session files.
-          #       colon_replacer = '++', -- The character to which the colon symbol will be replaced for session files.
-          #       autoload_mode = require('session_manager.config').AutoloadMode.CurrentDir, -- Define what to do when Neovim is started without arguments. Possible values: Disabled, CurrentDir, LastSession
-          #       autosave_last_session = true, -- Automatically save last session on exit and on session switch.
-          #       autosave_ignore_not_normal = true, -- Plugin will not save a session when no buffers are opened, or all of them aren't writable or listed.
-          #       autosave_ignore_filetypes = { -- All buffers of these file types will be closed before the session is saved.
-          #         'gitcommit',
-          #       },
-          #       autosave_only_in_session = true, -- Always autosaves session. If true, only autosaves after a session is active.
-          #       max_path_length = 80,  -- Shorten the display path if length exceeds this threshold. Use 0 if don't want to shorten the path at all.
-          #     })
-          #   '';
-          #   type = "lua";
-          # }
           {
             plugin = alpha-nvim;
             config = ''
