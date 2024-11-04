@@ -80,6 +80,7 @@
       nixosConfigurations = {
         pca-xps15 = build [ ./machines/xps-15.nix ];
         pca-pc = build [ ./machines/pc.nix ];
+        pca-workstation = build [ ./machines/workstation.nix ];
       };
     };
 }

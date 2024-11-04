@@ -90,7 +90,7 @@ let
     pinentry-qt
     vlc
     thunderbird
-    inputs.nix-gaming.packages.${pkgs.hostPlatform.system}.osu-lazer-bin
+    # inputs.nix-gaming.packages.${pkgs.hostPlatform.system}.osu-lazer-bin
     zoom-us
     onlyoffice-bin
     obs-studio
