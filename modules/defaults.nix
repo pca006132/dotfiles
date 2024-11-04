@@ -116,6 +116,11 @@
         amd.updateMicrocode = lib.mkDefault true;
       };
     };
+    musnix = {
+      enable = true;
+      rtcqs.enable = true;
+      soundcardPciId = "00:1f.3";
+    };
     # Select internationalisation properties.
     i18n = {
       defaultLocale = "en_US.UTF-8";
@@ -138,6 +143,7 @@
         noto-fonts-cjk-serif
         noto-fonts-emoji
         noto-fonts-extra
+        fira-math
         libertine
         comic-relief
         stix-two
@@ -226,6 +232,7 @@
           libu2f-host
         ];
         extraHwdb = ''
+          ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="046d", ATTRS{idProduct}=="c24f", MODE="664", GROUP="users", TAG+="uaccess"
           ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="0483", ATTRS{idProduct}=="df11", MODE="664", GROUP="plugdev", TAG+="uaccess"
           ACTION=="add", SUBSYSTEM=="usb", ENV{ID_VENDOR_ID}=="1050", ENV{ID_MODEL_ID}=="0116|0111", MODE="660", GROUP="scard"
         '';
@@ -292,21 +299,23 @@
       adbusers.members = [ "pca006132" ];
       scad.members = [ "pca006132" ];
     };
-    users.users.pca006132 = {
-      isNormalUser = true;
-      extraGroups = [
-        "wheel"
-        "uucp"
-        "audio"
-        "dialout"
-        "networkmanager"
-        "wireshark"
-        "plugdev"
-        "vboxusers"
-      ];
-      openssh.authorizedKeys.keys = pkgs.lib.splitString "\n" (builtins.readFile ./pca006132.keys);
-      initialPassword = "123456";
-      shell = pkgs.zsh;
+    users.users = {
+      pca006132 = {
+        isNormalUser = true;
+        extraGroups = [
+          "wheel"
+          "uucp"
+          "audio"
+          "dialout"
+          "networkmanager"
+          "wireshark"
+          "plugdev"
+          "vboxusers"
+        ];
+        openssh.authorizedKeys.keys = pkgs.lib.splitString "\n" (builtins.readFile ./pca006132.keys);
+        initialPassword = "123456";
+        shell = pkgs.zsh;
+      };
     };
 
     environment = {

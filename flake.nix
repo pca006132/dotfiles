@@ -5,6 +5,10 @@
       url = "github:nix-community/home-manager/release-24.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    musnix = {
+      url = "github:musnix/musnix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nix-alien.url = "github:thiagokokada/nix-alien";
@@ -29,6 +33,7 @@
   outputs =
     { self
     , nixpkgs
+    , nixpkgs-unstable
     , home-manager
     , my-nvim
     , nix-alien
@@ -38,11 +43,18 @@
       system = "x86_64-linux";
       build = modules: nixpkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = { inherit self inputs; };
+        specialArgs = {
+          inherit self inputs;
+          pkgs-unstable = import nixpkgs-unstable {
+            inherit system;
+            config.allowUnfree = true;
+          };
+        };
         modules = [
           ./modules/nvidia.nix
           ./modules/laptop-powermanagement.nix
           ./modules/defaults.nix
+          inputs.musnix.nixosModules.musnix
           home-manager.nixosModules.home-manager
           {
             home-manager = {
@@ -53,8 +65,8 @@
           }
           ({ ... }: {
             config = {
-              environment.etc."nix/channels/nixpkgs".source = inputs.nixpkgs.outPath;
-              environment.etc."nix/channels/nixpkgs-unstable".source = inputs.nixpkgs-unstable.outPath;
+              environment.etc."nix/channels/nixpkgs".source = nixpkgs.outPath;
+              environment.etc."nix/channels/nixpkgs-unstable".source = nixpkgs-unstable.outPath;
               nix.nixPath = [
                 "nixpkgs=/etc/nix/channels/nixpkgs"
                 "nixpkgs-unstable=/etc/nix/channels/nixpkgs-unstable"

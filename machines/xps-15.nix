@@ -34,7 +34,6 @@
     kernel.sysctl = {
       # Disable proactive compaction because it introduces jitter
       "vm.compaction_proactiveness" = 0;
-      "vm.swappiness" = 10;
       # increase interval from 1s to 120s
       "vm.stat_interval" = 120;
       # Reduce the maximum page lock acquisition latency while retaining adequate throughput

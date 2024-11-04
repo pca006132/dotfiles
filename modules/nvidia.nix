@@ -70,6 +70,7 @@ with lib; {
           enable = true;
           finegrained = cfg.enablePrimeOffload;
         };
+        forceFullCompositionPipeline = true;
         prime = mkIf cfg.enablePrimeOffload {
           offload.enable = true;
           nvidiaBusId = cfg.nvidiaBusId;

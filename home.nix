@@ -22,6 +22,7 @@ let
     (texlive.combine {
       inherit (texlive) scheme-full minted beamertheme-arguelles;
     })
+    tectonic
     vale
     powertop
     nodePackages.pyright
@@ -95,6 +96,9 @@ let
     obs-studio
     avidemux
     anki-bin
+
+    steam
+    protonup-qt
   ];
 in
 {

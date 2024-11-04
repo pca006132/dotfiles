@@ -1,4 +1,4 @@
-{ pkgs, modulesPath, ... }:
+{ pkgs, pkgs-unstable, modulesPath, ... }:
 {
   imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
@@ -41,10 +41,10 @@
       name = "e1000e-bypass-checksum";
       patch = ./e1000e.diff;
     }];
+    kernelPackages = pkgs-unstable.linuxPackages_latest;
     kernel.sysctl = {
       # Disable proactive compaction because it introduces jitter
       "vm.compaction_proactiveness" = 0;
-      "vm.swappiness" = 10;
       # Reduce the maximum page lock acquisition latency while retaining adequate throughput
       "vm.page_lock_unfairness" = 1;
       "vm.vfs_cache_pressure" = 50;
@@ -52,6 +52,15 @@
   };
 
   nvidia-quirks = { enable = true; };
+
+  # hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.legacy_470;
+  # services.displayManager.defaultSession = "plasmax11";
+  # services.displayManager.sddm.wayland = false;
+
+  nixpkgs.config = {
+    allowUnfree = true;
+    nvidia.acceptLicense = true;
+  };
 
   systemd.services = {
     duckdns = {
@@ -71,32 +80,6 @@
       };
     };
   };
-
-  # security.acme = {
-  #   acceptTerms = true;
-  #   defaults.email = "cklamaq@cse.ust.hk";
-  #   certs."pca006132.duckdns.org" = {
-  #     group = "nginx";
-  #     domain = "pca006132.duckdns.org";
-  #     # sadly cannot use LoadCredentialEncrypted here
-  #     credentialsFile = "/home/pca006132/secrets/lego-secrets";
-  #     dnsProvider = "duckdns";
-  #   };
-  # };
-
-  # services.nginx = {
-  #   enable = true;
-  #   virtualHosts = {
-  #     "pca006132.duckdns.org" = {
-  #       forceSSL = true;
-  #       enableACME = true;
-  #       acmeRoot = null;
-  #       locations."/" = {
-  #         root = "/var/www";
-  #       };
-  #     };
-  #   };
-  # };
 
   system.stateVersion = "22.11";
 }
