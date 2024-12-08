@@ -1,4 +1,4 @@
-{ config, lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, pkgs-unstable, inputs, ... }:
 {
   config = {
     nixpkgs = {
@@ -19,18 +19,11 @@
               })
             ];
           };
+          opentabletdriver = pkgs-unstable.opentabletdriver;
         })
       ];
       config = {
         allowUnfree = true;
-        packageOverrides = pkgs: {
-          blueman = pkgs.blueman.overrideAttrs (oldAttrs: {
-            src = pkgs.fetchurl {
-              url = "https://github.com/blueman-project/blueman/releases/download/2.3.5/blueman-2.3.5.tar.xz";
-              sha256 = "sha256-stIa/fd6Bs2G2vVAJAb30qU0WYF+KeC+vEkR1PDc/aE=";
-            };
-          });
-        };
         hostPlatform = "x86_64-linux";
       };
     };
@@ -75,8 +68,8 @@
       networkmanager.enable = true;
       wireless.userControlled.enable = true;
       firewall = {
-        allowedTCPPorts = [ 22 80 443];
-        allowedUDPPorts = [ 22 80 443];
+        allowedTCPPorts = [ 22 80 443 8080 ];
+        allowedUDPPorts = [ 22 80 443 8080 ];
       };
     };
     time = {
@@ -103,11 +96,7 @@
           "sap"
         ];
       };
-      opengl = {
-        enable = true;
-        driSupport = true;
-        driSupport32Bit = true;
-      };
+      graphics.enable = true;
       pulseaudio.enable = false;
       enableAllFirmware = true;
       opentabletdriver.enable = true;
@@ -129,7 +118,8 @@
         LC_MEASUREMENT = "en_HK.UTF-8";
       };
       inputMethod = {
-        enabled = "fcitx5";
+        enable = true;
+        type = "fcitx5";
         fcitx5.addons = with pkgs; [ fcitx5-rime fcitx5-mozc fcitx5-gtk libsForQt5.fcitx5-qt ];
         fcitx5.plasma6Support = true;
       };
@@ -149,6 +139,7 @@
         stix-two
         (nerdfonts.override { fonts = [ "DejaVuSansMono" ]; })
         lmodern
+        comic-mono
       ];
       fontconfig = {
         hinting.enable = true;
@@ -264,6 +255,8 @@
       btrfs.autoScrub.enable = true;
       irqbalance.enable = true;
       fail2ban.enable = true;
+
+      tailscale.enable = true;
     };
 
     systemd.services = {
@@ -291,6 +284,7 @@
       mosh.enable = true;
       xwayland.enable = true;
       adb.enable = true;
+      steam.enable = true;
     };
 
     users.groups = {

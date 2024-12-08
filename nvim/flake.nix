@@ -218,9 +218,6 @@
           }
           {
             plugin = vim-markdown;
-            config = ''
-              let g:vim_markdown_math = 1
-            '';
             type = "viml";
           }
           delimitMate
@@ -310,7 +307,8 @@
       nvim-stuff = with pkgs; [
         typst
         typstfmt
-        (callPackage ./tinymist.nix {})
+        tinymist
+        # (callPackage ./tinymist.nix {})
         neovide
         gdb
       ];

@@ -2,14 +2,14 @@
   inputs = {
     # Specify the source of Home Manager and Nixpkgs
     home-manager = {
-      url = "github:nix-community/home-manager/release-24.05";
+      url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     musnix = {
       url = "github:musnix/musnix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nix-alien.url = "github:thiagokokada/nix-alien";
     my-nvim = {
@@ -41,14 +41,19 @@
     }@inputs:
     let
       system = "x86_64-linux";
+      pkgs-unstable = import nixpkgs-unstable {
+        inherit system;
+        config = {
+          allowUnfree = true;
+          permittedInsecurePackages = [
+            "dotnet-runtime-6.0.428"
+          ];
+        };
+      };
       build = modules: nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = {
-          inherit self inputs;
-          pkgs-unstable = import nixpkgs-unstable {
-            inherit system;
-            config.allowUnfree = true;
-          };
+          inherit self inputs pkgs-unstable;
         };
         modules = [
           ./modules/nvidia.nix
@@ -60,7 +65,7 @@
             home-manager = {
               useUserPackages = true;
               users.pca006132 = import ./home.nix;
-              extraSpecialArgs = { inherit inputs; };
+              extraSpecialArgs = { inherit inputs pkgs-unstable; };
             };
           }
           ({ ... }: {
@@ -80,6 +85,7 @@
       nixosConfigurations = {
         pca-xps15 = build [ ./machines/xps-15.nix ];
         pca-pc = build [ ./machines/pc.nix ];
+        pca-workstation = build [ ./machines/workstation.nix ];
       };
     };
 }

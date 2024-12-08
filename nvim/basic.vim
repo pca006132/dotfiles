@@ -31,7 +31,7 @@ set hidden
 set wildmenu wildmode=full
 set splitbelow
 set splitright
-set bsdir=buffer
+" set bsdir=buffer
 if has('vim_starting')
     set encoding=UTF-8
     scriptencoding UTF-8

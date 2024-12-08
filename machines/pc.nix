@@ -41,7 +41,7 @@
       name = "e1000e-bypass-checksum";
       patch = ./e1000e.diff;
     }];
-    kernelPackages = pkgs-unstable.linuxPackages_latest;
+    # kernelPackages = pkgs-unstable.linuxPackages_latest;
     kernel.sysctl = {
       # Disable proactive compaction because it introduces jitter
       "vm.compaction_proactiveness" = 0;

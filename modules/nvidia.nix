@@ -76,16 +76,15 @@ with lib; {
           nvidiaBusId = cfg.nvidiaBusId;
           intelBusId = cfg.intelBusId;
         };
+        open = false;
       };
-      opengl = mkIf config.hardware.opengl.enable {
-        extraPackages = with pkgs; [
-          intel-media-driver
-          vaapiIntel
-          vaapiVdpau
-          libvdpau-va-gl
-          nvidia-vaapi-driver
-        ];
-      };
+      graphics.extraPackages = with pkgs; [
+        intel-media-driver
+        vaapiIntel
+        vaapiVdpau
+        libvdpau-va-gl
+        nvidia-vaapi-driver
+      ];
     };
     environment.systemPackages = mkIf cfg.enablePrimeOffload [ nvidia-offload ];
   };

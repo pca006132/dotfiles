@@ -1,12 +1,13 @@
 { pkgs
 , config
 , inputs
+, pkgs-unstable
 , ...
 }:
 let
   development-packages = with pkgs; [
     gnumake
-    clang-tools_16 # default clang is 16
+    clang-tools_18 # default clang is 18
     cmake
     pkg-config
     flamegraph
@@ -25,9 +26,9 @@ let
     tectonic
     vale
     powertop
-    nodePackages.pyright
-    nodePackages.typescript
-    nodePackages_latest.typescript-language-server
+    pyright
+    typescript
+    typescript-language-server
     nil
     (python3.withPackages (ps:
       with ps; [
@@ -70,8 +71,8 @@ let
     shntool
     flac
     nix-alien
-    quickemu
-    quickgui
+    # quickemu
+    # quickgui
     spice-gtk
     gh
     inotify-tools
@@ -97,8 +98,8 @@ let
     avidemux
     anki-bin
 
-    steam
     protonup-qt
+    sioyek
   ];
 in
 {
@@ -106,9 +107,7 @@ in
   home.stateVersion = "22.11";
   programs.home-manager = { enable = true; };
 
-  home.packages = with pkgs; [
-    # (callPackage ./prusa-slicer.nix { })
-    (qt6.callPackage ./sioyek.nix { })
+  home.packages = [
   ] ++ development-packages ++ tools ++ desktop-apps;
 
   xdg = {
@@ -130,9 +129,6 @@ in
           fork=true
         '';
       };
-    };
-    mimeApps.defaultApplications = {
-      "application/pdf" = "sioyek.desktop";
     };
   };
 
@@ -219,13 +215,6 @@ in
   programs.ssh = {
     enable = true;
     addKeysToAgent = "yes";
-    matchBlocks = {
-      pca-pc = {
-        hostname = "pca006132.duckdns.org";
-        forwardAgent = true;
-        compression = true;
-      };
-    };
   };
 
   programs.zsh = {

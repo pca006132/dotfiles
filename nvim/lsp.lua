@@ -116,24 +116,30 @@ local function metals_status_handler(err, status, ctx)
   vim.lsp.handlers["$/progress"](err, msg, ctx)
 end
 
-local metals_config = require('lspconfig.server_configurations.metals').default_config
-metals_config.init_options.statusBarProvider = "on"
-metals_config.handlers = {['metals/status'] = metals_status_handler}
-
-local clangd_config = require('lspconfig.server_configurations.clangd').default_config
-clangd_config.capabilities.offsetEncoding = "utf-8"
-
-local nil_config = require('lspconfig.server_configurations.nil_ls').default_config
-nil_config.settings = {['nil'] = {nix = {flake = {autoArchive = true}}}}
+-- local metals_config = require('lspconfig.server_configurations.metals').default_config
+-- metals_config.init_options.statusBarProvider = "on"
+-- metals_config.handlers = {['metals/status'] = metals_status_handler}
+-- 
+-- local clangd_config = require('lspconfig.server_configurations.clangd').default_config
+-- clangd_config.capabilities.offsetEncoding = "utf-8"
+-- 
+-- local nil_config = require('lspconfig.server_configurations.nil_ls').default_config
+-- nil_config.settings = {['nil'] = {nix = {flake = {autoArchive = true}}}}
 
 -- Enable the following language servers
-local servers = { 'clangd', 'pyright', 'ts_ls', 'texlab', 'hls', 'nil_ls', 'tinymist', 'rust_analyzer', 'jdtls' }
+local servers = { 'clangd', 'pyright', 'ts_ls', 'texlab', 'hls', 'nil_ls', 'rust_analyzer', 'jdtls' }
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
     on_attach = on_attach,
     capabilities = capabilities,
   }
 end
+
+lspconfig['tinymist'].setup {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  offset_encoding = "utf-8",
+}
 
 -- nvim-cmp setup
 
@@ -302,15 +308,15 @@ dap.configurations.scala = {
   },
 }
 
-metals_config.settings = {
-  showImplicitArguments = true
-}
-metals_config.root_patterns = {"build.sbt", "build.sc", ".scala-build", "bleep.yaml"}
-metals_config.capabilities = require("cmp_nvim_lsp").default_capabilities
-metals_config.on_attach = function(client, bufnr)
-  require("metals").setup_dap()
-  on_attach(client, bufnr)
-end
+-- metals_config.settings = {
+--   showImplicitArguments = true
+-- }
+-- metals_config.root_patterns = {"build.sbt", "build.sc", ".scala-build", "bleep.yaml"}
+-- metals_config.capabilities = require("cmp_nvim_lsp").default_capabilities
+-- metals_config.on_attach = function(client, bufnr)
+--   require("metals").setup_dap()
+--   on_attach(client, bufnr)
+-- end
 
 -- Autocmd that will actually be in charging of starting the whole thing
 local nvim_metals_group = vim.api.nvim_create_augroup("nvim-metals", { clear = true })
