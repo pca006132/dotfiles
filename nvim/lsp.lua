@@ -1,3 +1,30 @@
+local alpha = require'alpha'
+local startify = require'alpha.themes.startify'
+startify.section.top_buttons.val = {
+    startify.button( "e", "  New file" , ":ene <BAR> startinsert <CR>"),
+}
+-- disable MRU
+startify.section.mru.val = { { type = "padding", val = 0 } }
+startify.section.bottom_buttons.val = {
+    startify.button( "q", "  Quit NVIM" , ":qa<CR>"),
+}
+startify.section.footer = {
+    { type = "text", val = "footer" },
+}
+alpha.setup(startify.config)
+
+
+local gknapsettings = {
+    texoutputext = "pdf",
+    textopdf = "latexmk -pdf -pdflatex='lualatex -synctex=1 -halt-on-error -interaction=batchmode' %docroot%",
+}
+vim.g.knap_settings = gknapsettings
+local kmap = vim.keymap.set
+kmap('n','<F7>', function() require("knap").toggle_autopreviewing() end)
+kmap('i','<F8>', function() require("knap").forward_jump() end)
+kmap('v','<F8>', function() require("knap").forward_jump() end)
+kmap('n','<F8>', function() require("knap").forward_jump() end)
+
 -- DAP
 
 local dap = require('dap')
@@ -98,24 +125,6 @@ end
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 require('cmp_nvim_lsp').default_capabilities = capabilities
 
-local function metals_status_handler(err, status, ctx)
-  local val = {}
-  -- trim and remove spinner
-  local text = status.text:gsub('[⠇⠋⠙⠸⠴⠦]', ''):gsub("^%s*(.-)%s*$", "%1")
-  if status.hide then
-    val = {kind = "end"}
-  elseif status.show then
-    val = {kind = "begin", title = text}
-  elseif status.text then
-    val = {kind = "report", message = text}
-  else
-    return
-  end
-  local info = {client_id = ctx.client_id}
-  local msg = {token = "metals", value = val}
-  vim.lsp.handlers["$/progress"](err, msg, ctx)
-end
-
 -- local metals_config = require('lspconfig.server_configurations.metals').default_config
 -- metals_config.init_options.statusBarProvider = "on"
 -- metals_config.handlers = {['metals/status'] = metals_status_handler}
@@ -209,6 +218,7 @@ cmp.setup {
     end,
   },
   sources = {
+    { name = "copilot" },
     { name = 'nvim_lsp' },
     { name = 'path' },
     { name = 'buffer' },
@@ -225,6 +235,7 @@ cmp.setup {
         nvim_lsp = "[LSP]",
         path = "[Path]",
         latex_symbols = "[LaTeX]",
+        copilot = "[copilot]"
       })[entry.source.name]
       local strings = vim.split(kind.kind, "%s", { trimempty = true })
       kind.kind = " " .. strings[1] .. " "
@@ -288,69 +299,3 @@ dap.configurations.c = {
 }
 dap.configurations.cpp = dap.configurations.c
 dap.configurations.rust = dap.configurations.c
-dap.configurations.scala = {
-  {
-    type = "scala",
-    request = "launch",
-    name = "RunOrTest",
-    metals = {
-      runType = "runOrTestFile",
-      --args = { "firstArg", "secondArg", "thirdArg" }, -- here just as an example
-    },
-  },
-  {
-    type = "scala",
-    request = "launch",
-    name = "Test Target",
-    metals = {
-      runType = "testTarget",
-    },
-  },
-}
-
--- metals_config.settings = {
---   showImplicitArguments = true
--- }
--- metals_config.root_patterns = {"build.sbt", "build.sc", ".scala-build", "bleep.yaml"}
--- metals_config.capabilities = require("cmp_nvim_lsp").default_capabilities
--- metals_config.on_attach = function(client, bufnr)
---   require("metals").setup_dap()
---   on_attach(client, bufnr)
--- end
-
--- Autocmd that will actually be in charging of starting the whole thing
-local nvim_metals_group = vim.api.nvim_create_augroup("nvim-metals", { clear = true })
-vim.api.nvim_create_autocmd("FileType", {
-  -- NOTE: You may or may not want java included here. You will need it if you
-  -- want basic Java support but it may also conflict if you are using
-  -- something like nvim-jdtls which also works on a java filetype autocmd.
-  pattern = { "scala", "sbt" },
-  callback = function()
-    require("metals").initialize_or_attach(metals_config)
-  end,
-  group = nvim_metals_group,
-})
-
-require("zk").setup({
-  lsp = {
-    config = {
-      on_attach = on_attach
-    }
-  }
-})
-local opts = { noremap=true, silent=false }
--- Create a new note after asking for its title.
-vim.api.nvim_set_keymap("n", "<leader>zn", "<Cmd>ZkNew { title = vim.fn.input('Title: '), dir = 'notes' }<CR>", opts)
--- Create a new daily journal
-vim.api.nvim_set_keymap("n", "<leader>zd", "<Cmd>ZkNew { dir = 'journal' }<CR>", opts)
--- Open notes.
-vim.api.nvim_set_keymap("n", "<leader>zo", "<Cmd>ZkNotes { sort = { 'modified' } }<CR>", opts)
--- Open notes associated with the selected tags.
-vim.api.nvim_set_keymap("n", "<leader>zt", "<Cmd>ZkTags<CR>", opts)
--- Search for the notes matching a given query.
-vim.api.nvim_set_keymap("n", "<leader>zf", "<Cmd>ZkNotes { sort = { 'modified' }, match = { vim.fn.input('Search: ') } }<CR>", opts)
--- Open a list of backlinks
-vim.api.nvim_set_keymap("n", "<leader>zb", "<Cmd>ZkBacklinks<CR>", opts)
--- Search for the notes matching the current visual selection.
-vim.api.nvim_set_keymap("v", "<leader>zf", ":'<,'>ZkMatch<CR>", opts)
-

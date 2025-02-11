@@ -5,38 +5,6 @@
       url = "github:nix-community/neovim-nightly-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    lspkind-src = {
-      url = "github:onsails/lspkind.nvim";
-      flake = false;
-    };
-    alpha-nvim-src = {
-      url = "github:goolord/alpha-nvim";
-      flake = false;
-    };
-    tabout-nvim-src = {
-      url = "github:abecodes/tabout.nvim";
-      flake = false;
-    };
-    knap-nvim-src = {
-      url = "github:frabjous/knap";
-      flake = false;
-    };
-    session-manager-src = {
-      url = "github:Shatur/neovim-session-manager";
-      flake = false;
-    };
-    nvim-metals-src = {
-      url = "github:scalameta/nvim-metals";
-      flake = false;
-    };
-    vim-syntax-extra-src = {
-      url = "github:justinmk/vim-syntax-extra";
-      flake = false;
-    };
-    lspsaga-nvim-src = {
-      url = "github:nvimdev/lspsaga.nvim";
-      flake = false;
-    };
   };
   outputs = { nixpkgs, neovim-nightly-overlay, ... } @ inputs:
     let
@@ -163,8 +131,6 @@
           }
           vim-gitgutter
           vim-easy-align
-          nvim-metals
-          vim-syntax-extra
           nvim-web-devicons
           vim-fugitive
           (luaSetup comment-nvim "Comment")
@@ -180,51 +146,19 @@
           parinfer-rust
           nvim-notify
           zk-nvim
-          {
-            plugin = knap-nvim;
-            config = ''
-              local gknapsettings = {
-                  texoutputext = "pdf",
-                  textopdf = "latexmk -pdf -pdflatex='lualatex -synctex=1 -halt-on-error -interaction=batchmode' %docroot%",
-              }
-              vim.g.knap_settings = gknapsettings
-              local kmap = vim.keymap.set
-              kmap('n','<F7>', function() require("knap").toggle_autopreviewing() end)
-              kmap('i','<F8>', function() require("knap").forward_jump() end)
-              kmap('v','<F8>', function() require("knap").forward_jump() end)
-              kmap('n','<F8>', function() require("knap").forward_jump() end)
-            '';
-            type = "lua";
-          }
-          {
-            plugin = alpha-nvim;
-            config = ''
-              local alpha = require'alpha'
-              local startify = require'alpha.themes.startify'
-              startify.section.top_buttons.val = {
-                  startify.button( "e", "  New file" , ":ene <BAR> startinsert <CR>"),
-              }
-              -- disable MRU
-              startify.section.mru.val = { { type = "padding", val = 0 } }
-              startify.section.bottom_buttons.val = {
-                  startify.button( "q", "  Quit NVIM" , ":qa<CR>"),
-              }
-              startify.section.footer = {
-                  { type = "text", val = "footer" },
-              }
-              alpha.setup(startify.config)
-            '';
-            type = "lua";
-          }
+          knap
+          alpha-nvim
           {
             plugin = vim-markdown;
             type = "viml";
           }
+          (luaSetup copilot-lua "copilot")
+          (luaSetup copilot-cmp "copilot_cmp")
           delimitMate
           telescope-nvim
           lightspeed-nvim
           nvim-dap
-          lspkind
+          lspkind-nvim
           nvim-treesitter-textobjects
           nvim-lspconfig
           lspsaga-nvim
@@ -235,7 +169,6 @@
           cmp-latex-symbols
           lsp_signature-nvim
           codi-vim
-          tabout-nvim
           vim-sleuth
           typst-vim
           (luaSetup fidget-nvim "fidget")
@@ -302,13 +235,13 @@
             type = "lua";
           }
           nvim-dap-ui
+          (luaSetup tabout-nvim "tabout")
         ];
       };
       nvim-stuff = with pkgs; [
         typst
         typstfmt
         tinymist
-        # (callPackage ./tinymist.nix {})
         neovide
         gdb
       ];

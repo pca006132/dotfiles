@@ -171,7 +171,6 @@
           user = "pca006132";
         };
         sddm = {
-          enable = true;
           wayland.enable = true;
         };
       };
