@@ -140,6 +140,8 @@
         (nerdfonts.override { fonts = [ "DejaVuSansMono" ]; })
         lmodern
         comic-mono
+        font-awesome
+        roboto
       ];
       fontconfig = {
         hinting.enable = true;

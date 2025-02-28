@@ -100,6 +100,8 @@ let
 
     protonup-qt
     sioyek
+    prusa-slicer
+    orca-slicer
   ];
 in
 {
@@ -195,9 +197,28 @@ in
         preloadIndex = true;
         fsmonitor = "rs-git-fsmonitor";
       };
+      branch = { sort = "-committerdate"; };
+      diff = {
+        algorithm = "histogram";
+        colorMoved = "plain";
+        mnemonicPrefix = true;
+        renames = true;
+      };
+      rerere = {
+        enabled = true;
+        autoupdate = true;
+      };
+      fetch = { prune = true; jobs = 8; all = true; };
+      log = { date = "iso-local"; };
+      tag = { sort = "v:refname"; };
       pull = { ff = "only"; };
       push = { autoSetupRemote = true; };
       submodule.fetchJobs = 8;
+      rebase = {
+        updateRefs = true;
+        autoStash = true;
+        autoSquash = true;
+      };
     };
     difftastic.enable = true;
     lfs.enable = true;
