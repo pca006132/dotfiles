@@ -92,8 +92,8 @@ end
 
 -- Diagnostic keymaps
 vim.api.nvim_set_keymap('n', '<leader>e', '<cmd>Telescope diagnostics<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '[d', '<cmd>Lspsaga diagnostic_jump_prev<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', ']d', '<cmd>Lspsaga diagnostic_jump_next<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>q', '<cmd>lua vim.diagnostic.setloclist()<CR>', { noremap = true, silent = true })
 
 -- LSP settings
@@ -125,17 +125,7 @@ end
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 require('cmp_nvim_lsp').default_capabilities = capabilities
 
--- local metals_config = require('lspconfig.server_configurations.metals').default_config
--- metals_config.init_options.statusBarProvider = "on"
--- metals_config.handlers = {['metals/status'] = metals_status_handler}
--- 
--- local clangd_config = require('lspconfig.server_configurations.clangd').default_config
--- clangd_config.capabilities.offsetEncoding = "utf-8"
--- 
--- local nil_config = require('lspconfig.server_configurations.nil_ls').default_config
--- nil_config.settings = {['nil'] = {nix = {flake = {autoArchive = true}}}}
-
--- Enable the following language servers
+-- Enable the following language server
 local servers = { 'clangd', 'pyright', 'ts_ls', 'texlab', 'hls', 'nil_ls', 'rust_analyzer', 'jdtls' }
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {

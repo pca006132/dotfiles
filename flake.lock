@@ -218,22 +218,6 @@
         "type": "github"
       }
     },
-    "librime-lua": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1730516844,
-        "narHash": "sha256-ETjLN40G4I0FEsQgNY8JM4AInqyb3yJwEJTGqdIHGWg=",
-        "owner": "hchunhui",
-        "repo": "librime-lua",
-        "rev": "b210d0cfbd2a3cc6edd4709dd0a92c479bfca10b",
-        "type": "github"
-      },
-      "original": {
-        "owner": "hchunhui",
-        "repo": "librime-lua",
-        "type": "github"
-      }
-    },
     "musnix": {
       "inputs": {
         "nixpkgs": [
@@ -263,7 +247,7 @@
       },
       "locked": {
         "lastModified": 1,
-        "narHash": "sha256-w69Yw8GGdMLgVeV4Ctgw1Th/IZWg4tVisjjXmbYn938=",
+        "narHash": "sha256-S08Hrabeed/bT0ZwXTRztU5omwvyNCwULILzdBwh4og=",
         "path": "./nvim",
         "type": "path"
       },
@@ -454,6 +438,18 @@
         "type": "github"
       }
     },
+    "rime-3gram": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-fXAOYcE2Ekj/hKHiQjSK5tdYT4IaME7KC0NKodFxwR4=",
+        "type": "file",
+        "url": "https://github.com/amzxyz/RIME-LMDG/releases/download/v2n3/amz-v2n3m1-zh-hans.gram"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://github.com/amzxyz/RIME-LMDG/releases/download/v2n3/amz-v2n3m1-zh-hans.gram"
+      }
+    },
     "rime-ice": {
       "flake": false,
       "locked": {
@@ -473,13 +469,13 @@
     "root": {
       "inputs": {
         "home-manager": "home-manager",
-        "librime-lua": "librime-lua",
         "musnix": "musnix",
         "my-nvim": "my-nvim",
         "nix-alien": "nix-alien",
         "nix-gaming": "nix-gaming",
         "nixpkgs": "nixpkgs_2",
         "nixpkgs-unstable": "nixpkgs-unstable",
+        "rime-3gram": "rime-3gram",
         "rime-ice": "rime-ice"
       }
     },

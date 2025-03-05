@@ -24,8 +24,8 @@
       url = "github:iDvel/rime-ice";
       flake = false;
     };
-    librime-lua = {
-      url = "github:hchunhui/librime-lua";
+    rime-3gram = {
+      url = "https://github.com/amzxyz/RIME-LMDG/releases/download/v2n3/amz-v2n3m1-zh-hans.gram";
       flake = false;
     };
   };

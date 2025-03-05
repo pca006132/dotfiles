@@ -1,24 +1,9 @@
-{ config, lib, pkgs, pkgs-unstable, inputs, ... }:
+{ config, lib, pkgs, pkgs-unstable, ... }:
 {
   config = {
     nixpkgs = {
       overlays = [
         (final: prev: {
-          # override plugins does not work... for some reason
-          librime = prev.librime.override {
-            plugins = [
-              (pkgs.stdenv.mkDerivation {
-                name = "librime-lua";
-                version = "0.1.0";
-                src = inputs.librime-lua;
-                propagatedBuildInputs = with pkgs; [ lua ];
-                installPhase = ''
-                  mkdir -p $out
-                  cp -r * $out
-                '';
-              })
-            ];
-          };
           opentabletdriver = pkgs-unstable.opentabletdriver;
         })
       ];
@@ -125,7 +110,6 @@
       };
     };
 
-
     fonts = {
       packages = with pkgs; [
         noto-fonts
@@ -142,6 +126,7 @@
         comic-mono
         font-awesome
         roboto
+        source-serif
       ];
       fontconfig = {
         hinting.enable = true;
@@ -263,20 +248,6 @@
     systemd.services = {
       # wait online is really slow and not really needed
       NetworkManager-wait-online.enable = false;
-      # intel_lpmd = {
-      #   description = "Intel Low Power Daemon Service";
-      #   wantedBy = [ "multi-user.target" ];
-      #   after = [ "graphical-session.target" ];
-      #
-      #   restartIfChanged = true;
-      #
-      #   serviceConfig = {
-      #     Restart = "on-failure";
-      #     BusName = "org.freedesktop.intel_lpmd";
-      #     type = "dbus";
-      #     ExecStart = ''${pkgs.callPackage ./intel-lpmd.nix {}}/bin/intel_lpmd --systemd --dbus-enable'';
-      #   };
-      # };
     };
 
     programs = {

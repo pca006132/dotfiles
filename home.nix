@@ -96,7 +96,6 @@ let
     onlyoffice-bin
     obs-studio
     avidemux
-    anki-bin
 
     protonup-qt
     sioyek
@@ -118,10 +117,20 @@ in
         recursive = true;
         source = inputs.rime-ice;
       };
+      "fcitx5/rime/amz-v2n3m1-zh-hans.gram" = {
+        source = inputs.rime-3gram;
+      };
       "fcitx5/rime/rime_ice.custom.yaml" = {
         text = ''
           patch:
             traditionalize/opencc_config: s2hk.json
+            grammar:
+              language: amz-v2n3m1-zh-hans
+              collocation_max_length: 5
+              collocation_min_length: 2
+            translator/contextual_suggestions: true
+            translator/max_homophones: 7
+            translator/max_homographs: 7
         '';
       };
     };
