@@ -110,6 +110,10 @@
             let g:neoformat_enabled_python = ['black']
             " easy-align
             xmap ga <Plug>(EasyAlign)
+
+            let g:vimtex_view_method = 'zathura_simple'
+            let g:vimtex_callback_progpath = "/etc/profiles/per-user/pca006132/bin/nvim"
+            let g:vimtex_quickfix_open_on_warning = 0
         '';
         plugins = with pkgs.vimPlugins; with plugins; [
           Coqtail
@@ -146,7 +150,7 @@
           parinfer-rust
           nvim-notify
           zk-nvim
-          knap
+          # knap
           alpha-nvim
           {
             plugin = vim-markdown;

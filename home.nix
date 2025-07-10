@@ -21,7 +21,7 @@ let
     nixpkgs-fmt
     texlab
     (texlive.combine {
-      inherit (texlive) scheme-full minted beamertheme-arguelles;
+      inherit (texlive) scheme-full minted beamertheme-arguelles libertine;
     })
     tectonic
     vale
@@ -101,6 +101,8 @@ let
     sioyek
     prusa-slicer
     orca-slicer
+    zathura
+    stirling-pdf
   ];
 in
 {
@@ -138,6 +140,16 @@ in
       "neovide/config.toml" = {
         text = ''
           fork=true
+        '';
+      };
+      "zathura/zathurarc" = {
+        text = ''
+          set adjust-open "best-fit"
+          set scroll-page-aware "true"
+          set smooth-scroll "true"
+          set scroll-full-overlap 0.01
+          set scroll-step 100
+          set selection-clipboard clipboard
         '';
       };
     };
@@ -228,6 +240,7 @@ in
         autoStash = true;
         autoSquash = true;
       };
+      merge.conflictStyle = "zdiff3";
     };
     difftastic.enable = true;
     lfs.enable = true;

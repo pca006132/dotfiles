@@ -40,6 +40,8 @@
     kernelPatches = [{
       name = "e1000e-bypass-checksum";
       patch = ./e1000e.diff;
+# [Tue Jul  1 20:08:33 2025] e1000e 0000:00:1f.6: The NVM Checksum Is Not Valid
+# [Tue Jul  1 20:08:33 2025] e1000e: probe of 0000:00:1f.6 failed with error -5
     }];
     # kernelPackages = pkgs-unstable.linuxPackages_latest;
     kernel.sysctl = {

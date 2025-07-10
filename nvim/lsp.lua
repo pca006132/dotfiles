@@ -13,20 +13,7 @@ startify.section.footer = {
 }
 alpha.setup(startify.config)
 
-
-local gknapsettings = {
-    texoutputext = "pdf",
-    textopdf = "latexmk -pdf -pdflatex='lualatex -synctex=1 -halt-on-error -interaction=batchmode' %docroot%",
-}
-vim.g.knap_settings = gknapsettings
-local kmap = vim.keymap.set
-kmap('n','<F7>', function() require("knap").toggle_autopreviewing() end)
-kmap('i','<F8>', function() require("knap").forward_jump() end)
-kmap('v','<F8>', function() require("knap").forward_jump() end)
-kmap('n','<F8>', function() require("knap").forward_jump() end)
-
 -- DAP
-
 local dap = require('dap')
 dap.adapters.lldb = {
   type = 'executable',
@@ -126,7 +113,7 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 require('cmp_nvim_lsp').default_capabilities = capabilities
 
 -- Enable the following language server
-local servers = { 'clangd', 'pyright', 'ts_ls', 'texlab', 'hls', 'nil_ls', 'rust_analyzer', 'jdtls' }
+local servers = { 'clangd', 'pyright', 'ts_ls', 'texlab', 'hls', 'nil_ls', 'rust_analyzer', 'metals' }
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
     on_attach = on_attach,
@@ -186,11 +173,17 @@ cmp.setup {
     ['<C-n>'] = cmp.mapping.select_next_item(),
     ['<C-d>'] = cmp.mapping.scroll_docs(-4),
     ['<C-f>'] = cmp.mapping.scroll_docs(4),
-    ['<C-Space>'] = cmp.mapping.complete(),
     ['<C-e>'] = cmp.mapping.close(),
     ['<CR>'] = cmp.mapping.confirm {
-      behavior = cmp.ConfirmBehavior.Replace,
-      select = true,
+       i = function(fallback)
+         if cmp.visible() and cmp.get_active_entry() then
+           cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false })
+         else
+           fallback()
+         end
+       end,
+       s = cmp.mapping.confirm({ select = true }),
+       c = cmp.mapping.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = true }),
     },
     ['<Tab>'] = function(fallback)
       if cmp.visible() then
@@ -208,11 +201,11 @@ cmp.setup {
     end,
   },
   sources = {
-    { name = "copilot" },
-    { name = 'nvim_lsp' },
-    { name = 'path' },
-    { name = 'buffer' },
-    { name = 'latex_symbols' }
+    { name = 'latex_symbols', priority = -10 },
+    { name = 'path', priority = -9 },
+    { name = 'buffer', priority = -8 },
+    { name = 'nvim_lsp', priority = 0 },
+    { name = "copilot", priority = 1 }
   },
   formatting = {
     format = function(entry, vim_item)
@@ -234,15 +227,34 @@ cmp.setup {
     end,
   },
   sorting = {
-    priority_weight = 2,
     comparators = {
-      -- Below is the default comparitor list and order for nvim-cmp
+      function(entry1, entry2)
+        -- Note that this is not efficient, as each call to `get_source_config` performs a search
+        -- through the source configs in linear time
+        local diff = entry1.source:get_source_config().priority - entry2.source:get_source_config().priority
+        if diff > 0 then
+            return true
+        elseif diff < 0 then
+            return false
+        end
+        return nil
+      end,
       cmp.config.compare.offset,
-      -- cmp.config.compare.scopes, --this is commented in nvim-cmp too
       cmp.config.compare.exact,
       cmp.config.compare.score,
+      function(entry1, entry2)
+        local _, entry1_under = entry1.completion_item.label:find "^_+"
+        local _, entry2_under = entry2.completion_item.label:find "^_+"
+        entry1_under = entry1_under or 0
+        entry2_under = entry2_under or 0
+        if entry1_under > entry2_under then
+          return false
+        elseif entry1_under < entry2_under then
+          return true
+        end
+      end,
       cmp.config.compare.recently_used,
-      cmp.config.compare.locality,
+
       cmp.config.compare.kind,
       cmp.config.compare.sort_text,
       cmp.config.compare.length,

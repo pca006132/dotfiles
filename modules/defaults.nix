@@ -53,7 +53,7 @@
       networkmanager.enable = true;
       wireless.userControlled.enable = true;
       firewall = {
-        allowedTCPPorts = [ 22 80 443 8080 ];
+        allowedTCPPorts = [ 22 80 443 8080 60676 ];
         allowedUDPPorts = [ 22 80 443 8080 ];
       };
     };
@@ -117,8 +117,8 @@
         noto-fonts-cjk-serif
         noto-fonts-emoji
         noto-fonts-extra
+        libertinus
         fira-math
-        libertine
         comic-relief
         stix-two
         (nerdfonts.override { fonts = [ "DejaVuSansMono" ]; })
@@ -277,6 +277,7 @@
           "wireshark"
           "plugdev"
           "vboxusers"
+          "video"
         ];
         openssh.authorizedKeys.keys = pkgs.lib.splitString "\n" (builtins.readFile ./pca006132.keys);
         initialPassword = "123456";
