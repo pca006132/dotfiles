@@ -122,7 +122,7 @@
           {
             plugin = neo-tree-nvim;
             config = ''
-              require("neo-tree").setup()
+              require("neo-tree").setup({})
             '';
             type = "lua";
           }
@@ -156,8 +156,6 @@
             plugin = vim-markdown;
             type = "viml";
           }
-          (luaSetup copilot-lua "copilot")
-          (luaSetup copilot-cmp "copilot_cmp")
           delimitMate
           telescope-nvim
           lightspeed-nvim
@@ -244,7 +242,7 @@
       };
       nvim-stuff = with pkgs; [
         typst
-        typstfmt
+        typstyle
         tinymist
         neovide
         gdb

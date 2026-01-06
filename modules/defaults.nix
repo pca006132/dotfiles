@@ -17,6 +17,7 @@
         systemd-boot.enable = true;
         efi.canTouchEfiVariables = true;
       };
+      kernelPackages = pkgs.linuxPackages_latest;
       kernelModules = [ "coretemp" ];
       kernelParams = [
         "mem_sleep_default=deep"
@@ -82,7 +83,6 @@
         ];
       };
       graphics.enable = true;
-      pulseaudio.enable = false;
       enableAllFirmware = true;
       opentabletdriver.enable = true;
       cpu = {
@@ -106,7 +106,6 @@
         enable = true;
         type = "fcitx5";
         fcitx5.addons = with pkgs; [ fcitx5-rime fcitx5-mozc fcitx5-gtk libsForQt5.fcitx5-qt ];
-        fcitx5.plasma6Support = true;
       };
     };
 
@@ -115,13 +114,15 @@
         noto-fonts
         noto-fonts-cjk-sans
         noto-fonts-cjk-serif
-        noto-fonts-emoji
-        noto-fonts-extra
+        noto-fonts-color-emoji
         libertinus
         fira-math
         comic-relief
         stix-two
-        (nerdfonts.override { fonts = [ "DejaVuSansMono" ]; })
+        nerd-fonts.dejavu-sans-mono
+        nerd-fonts.hack
+        source-sans
+        source-serif
         lmodern
         comic-mono
         font-awesome
@@ -149,6 +150,7 @@
     };
 
     services = {
+      v2raya.enable = true;
       automatic-timezoned.enable = true;
       dbus.enable = true;
       flatpak.enable = true;
@@ -180,7 +182,8 @@
       earlyoom = {
         enable = true;
         extraArgs = [
-          "--prefer '(^|/)(java|chromium|firefox|clang|gcc|g++|rustc|openscad)'"
+          "--prefer"
+          "(^|/)(java|chromium|firefox|clang|gcc|g++|rustc|openscad)"
         ];
       };
       # nicer terminal
@@ -289,6 +292,7 @@
       systemPackages = with pkgs; [
         git
         libsForQt5.qt5.qtwayland
+        gparted
       ];
       sessionVariables = with lib; {
         NIX_PROFILES =

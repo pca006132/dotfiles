@@ -1,7 +1,8 @@
 { config, lib, pkgs, ... }:
 let
   cfg = config.laptop-powman;
-in with lib; {
+in
+with lib; {
   options.laptop-powman = {
     enable = mkOption {
       type = types.bool;
@@ -21,18 +22,14 @@ in with lib; {
           SOUND_POWER_SAVE_ON_AC = 0;
           SOUND_POWER_SAVE_ON_BAT = 1;
 
-          CPU_SCALING_GOVERNOR_ON_AC = "performance";
+          CPU_DRIVER_OPMODE_ON_AC = "guided";
+          CPU_DRIVER_OPMODE_ON_BAT = "active";
+          CPU_SCALING_GOVERNOR_ON_AC = "schedutil";
           CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
-
-          RADEON_DPM_STATE_ON_AC = "performance";
-          RADEON_DPM_STATE_ON_BAT = "auto";
-
           CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
           CPU_ENERGY_PERF_POLICY_ON_BAT = "powersave";
 
-          NATACPI_ENABLE = 1;
-          TPACPI_ENABLE = 1;
-          TPSMAPI_ENABLE = 1;
+          RUNTIME_PM_ENABLE = "01:00.0";
         };
       };
     };

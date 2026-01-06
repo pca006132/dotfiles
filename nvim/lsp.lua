@@ -84,7 +84,6 @@ vim.api.nvim_set_keymap('n', ']d', '<cmd>Lspsaga diagnostic_jump_next<CR>', { no
 vim.api.nvim_set_keymap('n', '<leader>q', '<cmd>lua vim.diagnostic.setloclist()<CR>', { noremap = true, silent = true })
 
 -- LSP settings
-local lspconfig = require 'lspconfig'
 local on_attach = function(client, bufnr)
   local opts = { noremap = true, silent = true }
   local map = vim.api.nvim_buf_set_keymap
@@ -113,19 +112,36 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 require('cmp_nvim_lsp').default_capabilities = capabilities
 
 -- Enable the following language server
-local servers = { 'clangd', 'pyright', 'ts_ls', 'texlab', 'hls', 'nil_ls', 'rust_analyzer', 'metals' }
+local servers = { 'clangd', 'pyright', 'ts_ls', 'texlab', 'hls', 'nil_ls', 'rust_analyzer', 'metals'}
 for _, lsp in ipairs(servers) do
-  lspconfig[lsp].setup {
+  vim.lsp.config(lsp, {
     on_attach = on_attach,
     capabilities = capabilities,
-  }
+  })
+  vim.lsp.enable(lsp)
 end
 
-lspconfig['tinymist'].setup {
+vim.lsp.config('ltex_plus', {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  settings = {
+    ltex = {
+      language = "en",
+      additionalRules = {
+        languageModel = "~/languagetools/ngrams/",
+      },
+      enabled = { "bib", "context", "gitcommit", "html", "markdown", "org", "pandoc", "plaintex", "quarto", "mail", "mdx", "rmd", "rnoweb", "rst", "tex", "latex", "text", "typst", "xhtml" }
+    },
+  },
+})
+vim.lsp.enable('ltex_plus')
+
+vim.lsp.config('tinymist', {
   on_attach = on_attach,
   capabilities = capabilities,
   offset_encoding = "utf-8",
-}
+})
+vim.lsp.enable('tinymist')
 
 -- nvim-cmp setup
 
@@ -205,7 +221,6 @@ cmp.setup {
     { name = 'path', priority = -9 },
     { name = 'buffer', priority = -8 },
     { name = 'nvim_lsp', priority = 0 },
-    { name = "copilot", priority = 1 }
   },
   formatting = {
     format = function(entry, vim_item)
@@ -218,7 +233,6 @@ cmp.setup {
         nvim_lsp = "[LSP]",
         path = "[Path]",
         latex_symbols = "[LaTeX]",
-        copilot = "[copilot]"
       })[entry.source.name]
       local strings = vim.split(kind.kind, "%s", { trimempty = true })
       kind.kind = " " .. strings[1] .. " "
@@ -227,6 +241,7 @@ cmp.setup {
     end,
   },
   sorting = {
+    priority_weight = 2,
     comparators = {
       function(entry1, entry2)
         -- Note that this is not efficient, as each call to `get_source_config` performs a search
@@ -241,6 +256,7 @@ cmp.setup {
       end,
       cmp.config.compare.offset,
       cmp.config.compare.exact,
+      cmp.config.compare.scopes,
       cmp.config.compare.score,
       function(entry1, entry2)
         local _, entry1_under = entry1.completion_item.label:find "^_+"
@@ -254,9 +270,8 @@ cmp.setup {
         end
       end,
       cmp.config.compare.recently_used,
-
+      cmp.config.compare.locality,
       cmp.config.compare.kind,
-      cmp.config.compare.sort_text,
       cmp.config.compare.length,
       cmp.config.compare.order,
     },

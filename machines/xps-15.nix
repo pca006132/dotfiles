@@ -23,23 +23,22 @@
     kernelParams = [
       "i915.enable_psr=0"
       "i915.enable_fbc=1"
+      "i915.enable_guc=3"
       "i915.fastboot=1"
+      "nvidia-drm.modeset=1"
+      "nvidia-drm.fbdev=1"
+      "nvidia.NVreg_PreserveVideoMemoryAllocations=1"
+      "nvidia.NVreg_OpenRmEnableUnsupportedGpus=1"
+      "ibt=off"
+
       # uncomment if we need cores for testing...
       # "nohz_full=19"
       # "isolcpus=19"
     ];
     extraModprobeConfig = ''
       options i915 force_probe=46a6
+      options iwlwifi power_save=1 
     '';
-    kernel.sysctl = {
-      # Disable proactive compaction because it introduces jitter
-      "vm.compaction_proactiveness" = 0;
-      # increase interval from 1s to 120s
-      "vm.stat_interval" = 120;
-      # Reduce the maximum page lock acquisition latency while retaining adequate throughput
-      "vm.page_lock_unfairness" = 1;
-      "vm.vfs_cache_pressure" = 50;
-    };
   };
 
   nvidia-quirks = {

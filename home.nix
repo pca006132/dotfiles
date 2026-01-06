@@ -7,11 +7,10 @@
 let
   development-packages = with pkgs; [
     gnumake
-    clang-tools_18 # default clang is 18
     cmake
     pkg-config
     flamegraph
-    linuxPackages.perf
+    perf
     hyperfine
     gcc
     nodejs
@@ -20,6 +19,7 @@ let
     scalafmt
     nixpkgs-fmt
     texlab
+    pkgs-unstable.ltex-ls-plus
     (texlive.combine {
       inherit (texlive) scheme-full minted beamertheme-arguelles libertine;
     })
@@ -44,6 +44,7 @@ let
     rs-git-fsmonitor
     rnote
     bind
+    codex
   ];
   tools = with pkgs; [
     tealdeer
@@ -84,6 +85,9 @@ let
     beamerpresenter
   ] ++ inputs.my-nvim.nvim-stuff;
   desktop-apps = with pkgs; [
+    pkgs-unstable.feishin
+    vscode-fhs
+    pkgs-unstable.chromium
     rime-data
     firefox-bin
     nvtopPackages.full
@@ -91,9 +95,8 @@ let
     pinentry-qt
     vlc
     thunderbird
-    inputs.nix-gaming.packages.${pkgs.hostPlatform.system}.osu-lazer-bin
     zoom-us
-    onlyoffice-bin
+    onlyoffice-desktopeditors
     obs-studio
     avidemux
 
@@ -211,7 +214,7 @@ in
 
   programs.git = {
     enable = true;
-    extraConfig = {
+    settings = {
       core = {
         editor = "nvim";
         autocrlf = "input";
@@ -241,13 +244,16 @@ in
         autoSquash = true;
       };
       merge.conflictStyle = "zdiff3";
+      user = {
+        email = "john.lck40@gmail.com";
+        name = "pca006132";
+      };
     };
-    difftastic.enable = true;
     lfs.enable = true;
-    userEmail = "john.lck40@gmail.com";
-    userName = "pca006132";
     ignores = [ ".envrc" ".direnv/" ".venv" ];
   };
+
+  programs.difftastic.git.enable = true;
 
   services.easyeffects = {
     enable = true;

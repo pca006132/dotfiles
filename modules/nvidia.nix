@@ -59,7 +59,6 @@ with lib; {
         Option "AllowNVIDIAGPUScreens"
       '';
       displayManager.setupCommands = mkIf cfg.enablePrimeOffload ''
-        xrandr --setprovideroutputsource Intel modesetting
       '';
     };
     hardware = {
@@ -68,22 +67,26 @@ with lib; {
         nvidiaPersistenced = false;
         powerManagement = {
           enable = true;
-          finegrained = cfg.enablePrimeOffload;
+          finegrained = true;
         };
-        forceFullCompositionPipeline = true;
+        # forceFullCompositionPipeline = true;
         prime = mkIf cfg.enablePrimeOffload {
-          offload.enable = true;
+          offload = {
+            enable = true;
+            enableOffloadCmd = true;
+          };
           nvidiaBusId = cfg.nvidiaBusId;
           intelBusId = cfg.intelBusId;
+          # reverseSync.enable = true;
         };
-        open = false;
+        open = true;
       };
       graphics.extraPackages = with pkgs; [
+        intel-vaapi-driver
         intel-media-driver
-        vaapiIntel
-        vaapiVdpau
+        intel-compute-runtime
+        vpl-gpu-rt
         libvdpau-va-gl
-        nvidia-vaapi-driver
       ];
     };
     environment.systemPackages = mkIf cfg.enablePrimeOffload [ nvidia-offload ];
